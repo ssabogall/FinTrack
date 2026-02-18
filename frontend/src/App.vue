@@ -1,89 +1,115 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from 'vue-router';
+import logo from '@/assets/logo/FinTrack.png';
 </script>
 
 <template>
-  <div class="bg-gray-100 min-h-screen">
+  <div class="min-h-screen bg-white text-[#0B2C3D]">
     <div class="flex h-screen overflow-hidden">
-      <!-- sidebar -->
-
-      <aside class="w-64 bg-gray-800 text-white shadow-lg fixed h-full flex flex-col">
-        <div class="p-6 flex-1">
-          <div class="flex items-center mb-8">
-            <i class="fas fa-graduation-cap text-2xl mr-3 text-blue-400"></i>
-
-            <span class="font-bold text-xl">Library Dashboard</span>
+      <!-- Sidebar -->
+      <aside
+        class="w-72 bg-[#0B2C3D] text-white shadow-xl fixed h-full flex flex-col border-r border-black/10"
+      >
+        <!-- Brand -->
+        <div class="px-6 pt-6 pb-4 flex items-center justify-center">
+          <div class="bg-white rounded-lg p-3">
+            <img :src="logo" alt="FinTrack Logo" class="h-24 w-auto object-contain" />
           </div>
-
-          <nav class="space-y-2">
-            <RouterLink
-              to="/"
-              class="flex items-center px-4 py-3 rounded-lg hover:bg-gray-700 transition duration-200"
-            >
-              <i class="fas fa-home mr-3"></i>
-
-              <span>Home</span>
-            </RouterLink>
-
-            <RouterLink
-              to="/about"
-              class="flex items-center px-4 py-3 rounded-lg hover:bg-gray-700 transition duration-200"
-            >
-              <i class="fas fa-info-circle mr-3"></i>
-
-              <span>About</span>
-            </RouterLink>
-          </nav>
         </div>
 
-        <div class="w-full p-6 border-t border-gray-700 mt-auto">
-          <div class="flex items-center">
-            <div class="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center mr-3">
-              <i class="fas fa-user text-white"></i>
+        <!-- User card -->
+        <div class="px-6">
+          <div
+            class="rounded-2xl px-4 py-4 flex items-center gap-3 bg-white/5 border border-white/10"
+          >
+            <div
+              class="w-12 h-12 rounded-full bg-orange-400 text-[#0B2C3D] flex items-center justify-center font-semibold"
+            >
+              JD
             </div>
 
-            <div>
-              <p class="text-sm font-semibold">Admin User</p>
+            <div class="flex flex-col">
+              <span class="font-semibold text-sm">John Doe</span>
 
-              <p class="text-xs text-gray-400">admin@example.com</p>
+              <span class="text-xs text-slate-400">john@email.com</span>
             </div>
           </div>
+        </div>
+
+        <!-- Main navigation -->
+        <nav class="px-4 mt-6 space-y-1 flex-1">
+          <RouterLink
+            to="/"
+            class="flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-medium transition duration-200"
+            :class="{
+              'bg-orange-400 text-[#0B2C3D] shadow-md': $route.path === '/',
+              'text-slate-100 hover:bg-white/10': $route.path !== '/',
+            }"
+          >
+            <i
+              class="fas fa-th-large"
+            ></i>
+
+            <span>Dashboard</span>
+          </RouterLink>
+
+          <button
+            type="button"
+            class="w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-medium text-slate-200 hover:bg-slate-800 transition duration-200 text-left"
+          >
+            <i class="fas fa-exchange-alt"></i>
+
+            <span>Transactions</span>
+          </button>
+
+          <button
+            type="button"
+            class="w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-medium text-slate-200 hover:bg-slate-800 transition duration-200 text-left"
+          >
+            <i class="fas fa-tags"></i>
+
+            <span>Categories</span>
+          </button>
+
+          <button
+            type="button"
+            class="w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-medium text-slate-200 hover:bg-slate-800 transition duration-200 text-left"
+          >
+            <i class="fas fa-bullseye"></i>
+
+            <span>Goals</span>
+          </button>
+        </nav>
+
+        <!-- Bottom actions -->
+        <div class="px-4 pb-6 pt-2 space-y-1">
+          <button
+            type="button"
+            class="w-full flex items-center gap-3 px-4 py-2.5 rounded-2xl text-sm text-rose-300 hover:bg-rose-500 hover:text-slate-950 transition duration-200 text-left mt-1"
+          >
+            <i class="fas fa-sign-out-alt text-sm"></i>
+
+            <span>Sign Out</span>
+          </button>
         </div>
       </aside>
 
-      <!-- main content area -->
-
-      <div class="flex-1 flex flex-col overflow-hidden ml-64">
-        <!-- top header -->
-
-        <header class="bg-white shadow-sm border-b border-gray-200">
-          <div class="px-6 py-4 flex items-center justify-between">
+      <!-- Main content area -->
+      <div class="flex-1 flex flex-col overflow-hidden ml-72">
+        <!-- Top header -->
+        <header class="bg-white border-b border-[#0B2C3D]/10 backdrop-blur">
+          <div class="px-8 py-5 flex items-center justify-between">
             <div>
-              <h1 class="text-2xl font-bold text-gray-800">
-                {{ $route.meta.title }}
+              <h1 class="text-2xl font-semibold text-[#0B2C3D]">
+                {{ $route.meta.title || 'Dashboard' }}
               </h1>
-            </div>
-
-            <div class="flex items-center space-x-4">
-              <button
-                class="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition duration-200"
-              >
-                <i class="fas fa-search"></i>
-              </button>
-
-              <div
-                class="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center cursor-pointer hover:bg-blue-600 transition duration-200"
-              >
-                <i class="fas fa-user text-white"></i>
-              </div>
             </div>
           </div>
         </header>
 
-        <!-- main content -->
-
-        <main class="flex-1 overflow-y-auto p-6">
-          <RouterView />
+        <!-- Main content -->
+        <main class="flex-1 overflow-y-auto p-8 bg-white">
+            <RouterView />
         </main>
       </div>
     </div>
