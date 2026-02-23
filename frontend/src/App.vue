@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from 'vue-router';
-import logo from '@/assets/logo/FinTrack.png';
+import logo from '@/assets/logo/FinTrack-white.png';
 </script>
 
 <template>
@@ -12,9 +12,7 @@ import logo from '@/assets/logo/FinTrack.png';
       >
         <!-- Brand -->
         <div class="px-6 pt-6 pb-4 flex items-center justify-center">
-          <div class="bg-white rounded-lg p-3">
-            <img :src="logo" alt="FinTrack Logo" class="h-24 w-auto object-contain" />
-          </div>
+          <img :src="logo" alt="FinTrack Logo" class="h-35 w-auto object-contain" />
         </div>
 
         <!-- User card -->
@@ -23,7 +21,7 @@ import logo from '@/assets/logo/FinTrack.png';
             class="rounded-2xl px-4 py-4 flex items-center gap-3 bg-white/5 border border-white/10"
           >
             <div
-              class="w-12 h-12 rounded-full bg-orange-400 text-[#0B2C3D] flex items-center justify-center font-semibold"
+              class="w-12 h-12 rounded-full bg-[#1FA971] text-[#0B2C3D] flex items-center justify-center font-semibold"
             >
               JD
             </div>
@@ -42,8 +40,8 @@ import logo from '@/assets/logo/FinTrack.png';
             to="/"
             class="flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-medium transition duration-200"
             :class="{
-              'bg-orange-400 text-[#0B2C3D] shadow-md': $route.path === '/',
-              'text-slate-100 hover:bg-white/10': $route.path !== '/',
+              'bg-[#1FA971] text-white shadow-md': $route.path === '/',
+              'text-white hover:bg-[#1FA971]': $route.path !== '/',
             }"
           >
             <i
