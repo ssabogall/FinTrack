@@ -1,5 +1,3 @@
-import type { TransactionInterface } from '@/interfaces/TransactionInterface';
-
 export interface CategoryInterface {
   id: number;
   name: string;
@@ -9,5 +7,5 @@ export interface CategoryInterface {
   updatedAt: Date;
 
   // relations
-  transaction: TransactionInterface[];
+  transactionIds: number[] | null;
 }

@@ -1,7 +1,3 @@
-import type { UserInterface } from '@/interfaces/UserInterface';
-import type { CategoryInterface } from '@/interfaces/CategoryInterface';
-import type { GoalInterface } from '@/interfaces/GoalInterface';
-
 export interface TransactionInterface {
   id: number;
   amount: number;
@@ -11,7 +7,7 @@ export interface TransactionInterface {
   updatedAt: Date;
 
   // relations
-  user: UserInterface;
-  category: CategoryInterface;
-  goal: GoalInterface;
+  userId: number;
+  categoryIds: number[] | null;
+  goalIds: number[] | null;
 }

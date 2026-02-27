@@ -1,6 +1,3 @@
-import type { TransactionInterface } from '@/interfaces/TransactionInterface';
-import type { GoalInterface } from '@/interfaces/GoalInterface';
-
 export interface UserInterface {
   id: number;
   name: string;
@@ -11,6 +8,6 @@ export interface UserInterface {
   updatedAt: Date;
 
   // relations
-  transaction: TransactionInterface[];
-  goal: GoalInterface[];
+  transactionIds: number[] | null;
+  goalIds: number[] | null;
 }
