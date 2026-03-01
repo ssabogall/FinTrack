@@ -7,18 +7,20 @@ import { useAuthStore } from '@/stores/authstore';
 const authStore = useAuthStore();
 const router = useRouter();
 
-const displayName = computed(() => authStore.user?.name || 'Guest user');
+const displayName = computed(() => authStore.currentUser?.name || 'Guest user');
 
-const displayEmail = computed(() => authStore.user?.email || 'guest@example.com');
+const displayEmail = computed(
+  () => authStore.currentUser?.email || 'guest@example.com',
+);
 
 const initials = computed(() => {
-  const name = authStore.user?.name;
+  const name = authStore.currentUser?.name;
   if (!name) return 'FT';
 
   return name
     .split(' ')
     .filter(Boolean)
-    .map((part) => part[0]?.toUpperCase())
+    .map((part: string) => part[0]?.toUpperCase())
     .slice(0, 2)
     .join('');
 });

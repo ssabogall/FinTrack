@@ -2,10 +2,10 @@
 import { createRouter, createWebHistory } from 'vue-router';
 
 // internal imports
-import HomeView from '@/views/HomeView.vue';
-import LoginView from '@/views/LoginView.vue';
-import ProfileView from '@/views/ProfileView.vue';
-import RegisterView from '@/views/RegisterView.vue';
+import HomeView from '@/views/home/HomeView.vue';
+import LoginView from '@/views/auth/LoginView.vue';
+import ProfileView from '@/views/profile/ProfileView.vue';
+import RegisterView from '@/views/auth/RegisterView.vue';
 import { useAuthStore } from '@/stores/authstore';
 
 const router = createRouter({

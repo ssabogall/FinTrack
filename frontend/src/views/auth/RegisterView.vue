@@ -2,8 +2,6 @@
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores/authstore';
-import { AuthService } from '@/services/AuthService';
-import type { UserInterface } from '@/interfaces/UserInterface';
 
 const router = useRouter();
 const authStore = useAuthStore();
@@ -26,30 +24,19 @@ const handleSubmit = () => {
 
   submitting.value = true;
 
-  const newUser: UserInterface = {
-    id: Date.now(),
-    name: name.value,
-    email: email.value,
-    password: password.value,
-    role: 'user',
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    transactionIds: [],
-    goalIds: [],
-  };
+  try {
+    authStore.register(name.value, email.value, password.value);
 
-  AuthService.register(newUser);
-
-  const success = authStore.login(email.value, password.value);
-
-  submitting.value = false;
-
-  if (success) {
     router.push('/');
-    return;
+  } catch (error) {
+    const message =
+      error instanceof Error
+        ? error.message
+        : 'There was a problem creating your account.';
+    errorMessage.value = message;
+  } finally {
+    submitting.value = false;
   }
-
-  errorMessage.value = 'There was a problem creating your account.';
 };
 </script>
 

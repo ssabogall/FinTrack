@@ -17,17 +17,18 @@ const handleSubmit = () => {
   submitting.value = true;
   localError.value = null;
 
-  const success = authStore.login(email.value, password.value);
+  try {
+    authStore.login(email.value, password.value);
 
-  submitting.value = false;
-
-  if (success) {
     const redirect = (route.query.redirect as string) || '/';
     router.push(redirect);
-    return;
+  } catch (error) {
+    const message =
+      error instanceof Error ? error.message : 'Invalid email or password.';
+    localError.value = message;
+  } finally {
+    submitting.value = false;
   }
-
-  localError.value = 'Invalid email or password.';
 };
 </script>
 
@@ -61,8 +62,8 @@ const handleSubmit = () => {
           />
         </div>
 
-        <p v-if="localError || authStore.errorMessage" class="text-sm text-red-600">
-          {{ localError || authStore.errorMessage }}
+        <p v-if="localError" class="text-sm text-red-600">
+          {{ localError }}
         </p>
 
         <button

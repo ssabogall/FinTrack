@@ -1,33 +1,27 @@
 // author: Santiago Gómez Ospina
+
 // internal imports
+import { useAuthStore } from '@/stores/authstore';
 import type { UserInterface } from '@/interfaces/UserInterface';
 
-const USERS_KEY = 'users';
-
 export class AuthService {
-  public static register(user: UserInterface) {
-    const users = this.getUsers();
-    users.push(user);
-    localStorage.setItem(USERS_KEY, JSON.stringify(users));
+  static getCurrentUser(): UserInterface | null {
+    return useAuthStore().currentUser;
   }
 
-  public static login(email: string, password: string): UserInterface | null {
-    const users = this.getUsers();
-    const user = users.find((u) => u.email === email && u.password === password);
-
-    if (user) {
-      return user;
-    }
-
-    return null;
+  static isAuthenticated(): boolean {
+    return useAuthStore().isAuthenticated;
   }
 
-  public static getAllUsers(): UserInterface[] {
-    return this.getUsers();
+  static register(name: string, email: string, password: string): void {
+    useAuthStore().register(name, email, password);
   }
 
-  private static getUsers(): UserInterface[] {
-    const users = localStorage.getItem(USERS_KEY);
-    return users ? JSON.parse(users) : [];
+  static login(email: string, password: string): void {
+    useAuthStore().login(email, password);
+  }
+
+  static logout(): void {
+    useAuthStore().logout();
   }
 }

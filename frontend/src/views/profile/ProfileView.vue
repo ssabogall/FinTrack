@@ -6,7 +6,7 @@ import { useAuthStore } from '@/stores/authstore';
 const authStore = useAuthStore();
 const router = useRouter();
 
-const user = computed(() => authStore.user);
+const user = computed(() => authStore.currentUser);
 
 const initials = computed(() => {
   if (!user.value?.name) return 'FT';

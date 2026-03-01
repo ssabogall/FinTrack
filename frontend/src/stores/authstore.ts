@@ -2,50 +2,64 @@
 
 // external imports
 import { defineStore } from 'pinia';
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 
 // internal imports
-import { AuthService } from '@/services/AuthService';
 import type { UserInterface } from '@/interfaces/UserInterface';
 
-type AuthStatus = 'idle' | 'loading' | 'authenticated' | 'error';
-
 export const useAuthStore = defineStore('auth', () => {
-  const user = ref<UserInterface | null>(null);
-  const isAuthenticated = ref(false);
-  const status = ref<AuthStatus>('idle');
-  const errorMessage = ref<string | null>(null);
+  const currentUser = ref<UserInterface | null>(null);
+  const users = ref<UserInterface[]>([]);
 
-  function login(email: string, password: string): boolean {
-    status.value = 'loading';
-    errorMessage.value = null;
+  const isAuthenticated = computed(() => currentUser.value !== null);
 
-    const foundUser = AuthService.login(email, password);
+  function register(name: string, email: string, password: string): void {
+    const existingUser = users.value.find((user) => user.email === email);
 
-    if (foundUser) {
-      user.value = foundUser;
-      isAuthenticated.value = true;
-      status.value = 'authenticated';
-      return true;
+    if (existingUser) {
+      throw new Error('The email is already registered.');
     }
 
-    status.value = 'error';
-    errorMessage.value = 'Invalid credentials';
-    return false;
+    const id = Date.now();
+    const now = new Date();
+
+    const newUser: UserInterface = {
+      id,
+      name,
+      email,
+      password,
+      role: 'user',
+      createdAt: now,
+      updatedAt: now,
+      transactionIds: [],
+      goalIds: [],
+    };
+
+    users.value.push(newUser);
+    currentUser.value = newUser;
+  }
+
+  function login(email: string, password: string): void {
+    const user = users.value.find(
+      (u) => u.email === email && u.password === password,
+    );
+
+    if (!user) {
+      throw new Error('Invalid credentials.');
+    }
+
+    currentUser.value = user;
   }
 
   function logout(): void {
-    user.value = null;
-    isAuthenticated.value = false;
-    status.value = 'idle';
-    errorMessage.value = null;
+    currentUser.value = null;
   }
 
   return {
-    user,
+    currentUser,
+    users,
     isAuthenticated,
-    status,
-    errorMessage,
+    register,
     login,
     logout,
   };
