@@ -1,11 +1,10 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
-import { useAuthStore } from '@/stores/authstore';
+import { AuthService } from '@/services/AuthService';
 
 const router = useRouter();
 const route = useRoute();
-const authStore = useAuthStore();
 
 const email = ref('');
 const password = ref('');
@@ -18,7 +17,7 @@ const handleSubmit = () => {
   localError.value = null;
 
   try {
-    authStore.login(email.value, password.value);
+    AuthService.login(email.value, password.value);
 
     const redirect = (route.query.redirect as string) || '/';
     router.push(redirect);

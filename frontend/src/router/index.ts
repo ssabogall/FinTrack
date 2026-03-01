@@ -6,7 +6,7 @@ import HomeView from '@/views/home/HomeView.vue';
 import LoginView from '@/views/auth/LoginView.vue';
 import ProfileView from '@/views/profile/ProfileView.vue';
 import RegisterView from '@/views/auth/RegisterView.vue';
-import { useAuthStore } from '@/stores/authstore';
+import { AuthService } from '@/services/AuthService';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -40,9 +40,7 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from, next) => {
-  const authStore = useAuthStore();
-
-  if (to.meta.requiresAuth && !authStore.isAuthenticated) {
+  if (to.meta.requiresAuth && !AuthService.isAuthenticated()) {
     next({
       name: 'login',
       query: { redirect: to.fullPath },
@@ -50,7 +48,7 @@ router.beforeEach((to, from, next) => {
     return;
   }
 
-  if (to.meta.guestOnly && authStore.isAuthenticated) {
+  if (to.meta.guestOnly && AuthService.isAuthenticated()) {
     next({ name: 'home' });
     return;
   }

@@ -2,19 +2,18 @@
 import { computed } from 'vue';
 import { RouterLink, RouterView, useRouter } from 'vue-router';
 import logo from '@/assets/logo/FinTrack-white.png';
-import { useAuthStore } from '@/stores/authstore';
+import { AuthService } from '@/services/AuthService';
 
-const authStore = useAuthStore();
 const router = useRouter();
 
-const displayName = computed(() => authStore.currentUser?.name || 'Guest user');
+const displayName = computed(() => AuthService.getCurrentUser()?.name || 'Guest user');
 
 const displayEmail = computed(
-  () => authStore.currentUser?.email || 'guest@example.com',
+  () => AuthService.getCurrentUser()?.email || 'guest@example.com',
 );
 
 const initials = computed(() => {
-  const name = authStore.currentUser?.name;
+  const name = AuthService.getCurrentUser()?.name;
   if (!name) return 'FT';
 
   return name
@@ -26,7 +25,7 @@ const initials = computed(() => {
 });
 
 const handleLogout = () => {
-  authStore.logout();
+  AuthService.logout();
   router.push({ name: 'login' });
 };
 </script>
@@ -78,7 +77,7 @@ const handleLogout = () => {
           </RouterLink>
 
           <RouterLink
-            v-if="authStore.isAuthenticated"
+            v-if="AuthService.isAuthenticated()"
             to="/profile"
             class="flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-medium transition duration-200"
             :class="{
@@ -91,7 +90,7 @@ const handleLogout = () => {
           </RouterLink>
 
           <RouterLink
-            v-if="!authStore.isAuthenticated"
+            v-if="!AuthService.isAuthenticated()"
             to="/login"
             class="flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-medium transition duration-200"
             :class="{
@@ -104,7 +103,7 @@ const handleLogout = () => {
           </RouterLink>
 
           <RouterLink
-            v-if="!authStore.isAuthenticated"
+            v-if="!AuthService.isAuthenticated()"
             to="/register"
             class="flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-medium transition duration-200"
             :class="{
@@ -120,7 +119,7 @@ const handleLogout = () => {
         <!-- Bottom actions -->
         <div class="px-4 pb-6 pt-2 space-y-1">
           <button
-            v-if="authStore.isAuthenticated"
+            v-if="AuthService.isAuthenticated()"
             type="button"
             class="w-full flex items-center gap-3 px-4 py-2.5 rounded-2xl text-sm text-rose-300 hover:bg-rose-500 hover:text-slate-950 transition duration-200 text-left mt-1"
             @click="handleLogout"

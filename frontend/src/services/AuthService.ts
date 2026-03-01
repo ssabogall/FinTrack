@@ -5,23 +5,60 @@ import { useAuthStore } from '@/stores/authstore';
 import type { UserInterface } from '@/interfaces/UserInterface';
 
 export class AuthService {
-  static getCurrentUser(): UserInterface | null {
+  public static getCurrentUser(): UserInterface | null {
     return useAuthStore().currentUser;
   }
 
-  static isAuthenticated(): boolean {
+  public static isAuthenticated(): boolean {
     return useAuthStore().isAuthenticated;
   }
 
-  static register(name: string, email: string, password: string): void {
-    useAuthStore().register(name, email, password);
+  public static register(name: string, email: string, password: string): void {
+    const authStore = useAuthStore();
+
+    const existingUser = authStore.users.find(
+      (user) => user.email === email,
+    );
+
+    if (existingUser) {
+      throw new Error('The email is already registered.');
+    }
+
+    const id = Date.now();
+    const now = new Date();
+
+    const newUser: UserInterface = {
+      id,
+      name,
+      email,
+      password,
+      role: 'user',
+      createdAt: now,
+      updatedAt: now,
+      transactionIds: [],
+      goalIds: [],
+    };
+
+    authStore.users.push(newUser);
+    authStore.currentUser = newUser;
   }
 
-  static login(email: string, password: string): void {
-    useAuthStore().login(email, password);
+  public static login(email: string, password: string): void {
+    const authStore = useAuthStore();
+
+    const user = authStore.users.find(
+      (u) => u.email === email && u.password === password,
+    );
+
+    if (!user) {
+      throw new Error('Invalid credentials.');
+    }
+
+    authStore.currentUser = user;
   }
 
-  static logout(): void {
-    useAuthStore().logout();
+  public static logout(): void {
+    const authStore = useAuthStore();
+    authStore.currentUser = null;
   }
 }

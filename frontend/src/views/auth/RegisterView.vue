@@ -1,10 +1,9 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
-import { useAuthStore } from '@/stores/authstore';
+import { AuthService } from '@/services/AuthService';
 
 const router = useRouter();
-const authStore = useAuthStore();
 
 const name = ref('');
 const email = ref('');
@@ -25,7 +24,7 @@ const handleSubmit = () => {
   submitting.value = true;
 
   try {
-    authStore.register(name.value, email.value, password.value);
+    AuthService.register(name.value, email.value, password.value);
 
     router.push('/');
   } catch (error) {

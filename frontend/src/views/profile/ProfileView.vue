@@ -1,12 +1,11 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import { useRouter } from 'vue-router';
-import { useAuthStore } from '@/stores/authstore';
+import { AuthService } from '@/services/AuthService';
 
-const authStore = useAuthStore();
 const router = useRouter();
 
-const user = computed(() => authStore.currentUser);
+const user = computed(() => AuthService.getCurrentUser());
 
 const initials = computed(() => {
   if (!user.value?.name) return 'FT';
@@ -20,7 +19,7 @@ const initials = computed(() => {
 });
 
 const handleLogout = () => {
-  authStore.logout();
+  AuthService.logout();
   router.push({ name: 'login' });
 };
 </script>
