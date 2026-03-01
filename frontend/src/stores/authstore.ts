@@ -2,43 +2,51 @@
 
 // external imports
 import { defineStore } from 'pinia';
+import { ref } from 'vue';
 
 // internal imports
 import { AuthService } from '@/services/AuthService';
 import type { UserInterface } from '@/interfaces/UserInterface';
 
-export const useAuthStore = defineStore('auth', {
-  state: () => ({
-    user: null as UserInterface | null,
-    isAuthenticated: false,
-    status: 'idle' as 'idle' | 'loading' | 'authenticated' | 'error',
-    errorMessage: null as string | null,
-  }),
+type AuthStatus = 'idle' | 'loading' | 'authenticated' | 'error';
 
-  actions: {
-    login(email: string, password: string): boolean {
-      this.status = 'loading';
-      this.errorMessage = null;
+export const useAuthStore = defineStore('auth', () => {
+  const user = ref<UserInterface | null>(null);
+  const isAuthenticated = ref(false);
+  const status = ref<AuthStatus>('idle');
+  const errorMessage = ref<string | null>(null);
 
-      const user = AuthService.login(email, password);
+  function login(email: string, password: string): boolean {
+    status.value = 'loading';
+    errorMessage.value = null;
 
-      if (user) {
-        this.user = user;
-        this.isAuthenticated = true;
-        this.status = 'authenticated';
-        return true;
-      }
+    const foundUser = AuthService.login(email, password);
 
-      this.status = 'error';
-      this.errorMessage = 'Invalid credentials';
-      return false;
-    },
+    if (foundUser) {
+      user.value = foundUser;
+      isAuthenticated.value = true;
+      status.value = 'authenticated';
+      return true;
+    }
 
-    logout(): void {
-      this.user = null;
-      this.isAuthenticated = false;
-      this.status = 'idle';
-      this.errorMessage = null;
-    },
-  },
+    status.value = 'error';
+    errorMessage.value = 'Invalid credentials';
+    return false;
+  }
+
+  function logout(): void {
+    user.value = null;
+    isAuthenticated.value = false;
+    status.value = 'idle';
+    errorMessage.value = null;
+  }
+
+  return {
+    user,
+    isAuthenticated,
+    status,
+    errorMessage,
+    login,
+    logout,
+  };
 });
