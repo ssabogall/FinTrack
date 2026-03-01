@@ -22,8 +22,7 @@ const handleSubmit = () => {
     const redirect = (route.query.redirect as string) || '/';
     router.push(redirect);
   } catch (error) {
-    const message =
-      error instanceof Error ? error.message : 'Invalid email or password.';
+    const message = error instanceof Error ? error.message : 'Invalid email or password.';
     localError.value = message;
   } finally {
     submitting.value = false;
@@ -84,4 +83,3 @@ const handleSubmit = () => {
     </div>
   </div>
 </template>
-

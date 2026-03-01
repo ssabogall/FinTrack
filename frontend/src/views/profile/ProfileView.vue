@@ -64,4 +64,3 @@ const handleLogout = () => {
     </div>
   </section>
 </template>
-

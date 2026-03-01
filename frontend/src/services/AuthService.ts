@@ -16,9 +16,7 @@ export class AuthService {
   public static register(name: string, email: string, password: string): void {
     const authStore = useAuthStore();
 
-    const existingUser = authStore.users.find(
-      (user) => user.email === email,
-    );
+    const existingUser = authStore.users.find((user) => user.email === email);
 
     if (existingUser) {
       throw new Error('The email is already registered.');
@@ -46,9 +44,7 @@ export class AuthService {
   public static login(email: string, password: string): void {
     const authStore = useAuthStore();
 
-    const user = authStore.users.find(
-      (u) => u.email === email && u.password === password,
-    );
+    const user = authStore.users.find((u) => u.email === email && u.password === password);
 
     if (!user) {
       throw new Error('Invalid credentials.');

@@ -29,9 +29,7 @@ const handleSubmit = () => {
     router.push('/');
   } catch (error) {
     const message =
-      error instanceof Error
-        ? error.message
-        : 'There was a problem creating your account.';
+      error instanceof Error ? error.message : 'There was a problem creating your account.';
     errorMessage.value = message;
   } finally {
     submitting.value = false;

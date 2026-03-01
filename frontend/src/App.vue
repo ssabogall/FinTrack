@@ -8,9 +8,7 @@ const router = useRouter();
 
 const displayName = computed(() => AuthService.getCurrentUser()?.name || 'Guest user');
 
-const displayEmail = computed(
-  () => AuthService.getCurrentUser()?.email || 'guest@example.com',
-);
+const displayEmail = computed(() => AuthService.getCurrentUser()?.email || 'guest@example.com');
 
 const initials = computed(() => {
   const name = AuthService.getCurrentUser()?.name;
