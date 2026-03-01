@@ -1,6 +1,32 @@
 <script setup lang="ts">
-import { RouterLink, RouterView } from 'vue-router';
+import { computed } from 'vue';
+import { RouterLink, RouterView, useRouter } from 'vue-router';
 import logo from '@/assets/logo/FinTrack-white.png';
+import { useAuthStore } from '@/stores/authstore';
+
+const authStore = useAuthStore();
+const router = useRouter();
+
+const displayName = computed(() => authStore.user?.name || 'Guest user');
+
+const displayEmail = computed(() => authStore.user?.email || 'guest@example.com');
+
+const initials = computed(() => {
+  const name = authStore.user?.name;
+  if (!name) return 'FT';
+
+  return name
+    .split(' ')
+    .filter(Boolean)
+    .map((part) => part[0]?.toUpperCase())
+    .slice(0, 2)
+    .join('');
+});
+
+const handleLogout = () => {
+  authStore.logout();
+  router.push({ name: 'login' });
+};
 </script>
 
 <template>
@@ -23,13 +49,13 @@ import logo from '@/assets/logo/FinTrack-white.png';
             <div
               class="w-12 h-12 rounded-full bg-[#1FA971] text-[#0B2C3D] flex items-center justify-center font-semibold"
             >
-              JD
+              {{ initials }}
             </div>
 
             <div class="flex flex-col">
-              <span class="font-semibold text-sm">John Doe</span>
+              <span class="font-semibold text-sm">{{ displayName }}</span>
 
-              <span class="text-xs text-slate-400">john@email.com</span>
+              <span class="text-xs text-slate-400">{{ displayEmail }}</span>
             </div>
           </div>
         </div>
@@ -44,46 +70,58 @@ import logo from '@/assets/logo/FinTrack-white.png';
               'text-white hover:bg-[#1FA971]': $route.path !== '/',
             }"
           >
-            <i
-              class="fas fa-th-large"
-            ></i>
+            <i class="fas fa-th-large"></i>
 
             <span>Dashboard</span>
           </RouterLink>
 
-          <button
-            type="button"
-            class="w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-medium text-slate-200 hover:bg-slate-800 transition duration-200 text-left"
+          <RouterLink
+            v-if="authStore.isAuthenticated"
+            to="/profile"
+            class="flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-medium transition duration-200"
+            :class="{
+              'bg-[#1FA971] text-white shadow-md': $route.path === '/profile',
+              'text-white hover:bg-[#1FA971]': $route.path !== '/profile',
+            }"
           >
-            <i class="fas fa-exchange-alt"></i>
+            <i class="fas fa-user-circle"></i>
+            <span>Profile</span>
+          </RouterLink>
 
-            <span>Transactions</span>
-          </button>
-
-          <button
-            type="button"
-            class="w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-medium text-slate-200 hover:bg-slate-800 transition duration-200 text-left"
+          <RouterLink
+            v-if="!authStore.isAuthenticated"
+            to="/login"
+            class="flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-medium transition duration-200"
+            :class="{
+              'bg-[#1FA971] text-white shadow-md': $route.path === '/login',
+              'text-white hover:bg-[#1FA971]': $route.path !== '/login',
+            }"
           >
-            <i class="fas fa-tags"></i>
+            <i class="fas fa-sign-in-alt"></i>
+            <span>Sign In</span>
+          </RouterLink>
 
-            <span>Categories</span>
-          </button>
-
-          <button
-            type="button"
-            class="w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-medium text-slate-200 hover:bg-slate-800 transition duration-200 text-left"
+          <RouterLink
+            v-if="!authStore.isAuthenticated"
+            to="/register"
+            class="flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-medium transition duration-200"
+            :class="{
+              'bg-[#1FA971] text-white shadow-md': $route.path === '/register',
+              'text-white hover:bg-[#1FA971]': $route.path !== '/register',
+            }"
           >
-            <i class="fas fa-bullseye"></i>
-
-            <span>Goals</span>
-          </button>
+            <i class="fas fa-user-plus"></i>
+            <span>Register</span>
+          </RouterLink>
         </nav>
 
         <!-- Bottom actions -->
         <div class="px-4 pb-6 pt-2 space-y-1">
           <button
+            v-if="authStore.isAuthenticated"
             type="button"
             class="w-full flex items-center gap-3 px-4 py-2.5 rounded-2xl text-sm text-rose-300 hover:bg-rose-500 hover:text-slate-950 transition duration-200 text-left mt-1"
+            @click="handleLogout"
           >
             <i class="fas fa-sign-out-alt text-sm"></i>
 
@@ -107,7 +145,7 @@ import logo from '@/assets/logo/FinTrack-white.png';
 
         <!-- Main content -->
         <main class="flex-1 overflow-y-auto p-8 bg-white">
-            <RouterView />
+          <RouterView />
         </main>
       </div>
     </div>
