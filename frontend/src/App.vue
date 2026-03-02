@@ -30,7 +30,8 @@ const handleLogout = () => {
 
 <template>
   <div class="min-h-screen bg-white text-[#0B2C3D]">
-    <div class="flex h-screen overflow-hidden">
+    <!-- Main application layout (only for authenticated routes) -->
+    <div v-if="!$route.meta.guestOnly" class="flex h-screen overflow-hidden">
       <!-- Sidebar -->
       <aside
         class="w-72 bg-[#0B2C3D] text-white shadow-xl fixed h-full flex flex-col border-r border-black/10"
@@ -147,6 +148,11 @@ const handleLogout = () => {
           <RouterView />
         </main>
       </div>
+    </div>
+
+    <!-- Auth pages (login / register) without sidebar layout -->
+    <div v-else class="min-h-screen bg-[#0B2C3D]">
+      <RouterView />
     </div>
   </div>
 </template>

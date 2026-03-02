@@ -2,6 +2,7 @@
 import { ref } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { AuthService } from '@/services/AuthService';
+import logo from '@/assets/logo/FinTrack-white.png';
 
 const router = useRouter();
 const route = useRoute();
@@ -31,55 +32,116 @@ const handleSubmit = () => {
 </script>
 
 <template>
-  <div class="flex items-center justify-center h-full">
-    <div class="w-full max-w-md bg-white rounded-2xl shadow-md border border-slate-100 p-8">
-      <h2 class="text-2xl font-semibold text-[#0B2C3D] mb-6 text-center">Sign in to FinTrack</h2>
+  <div class="min-h-screen flex flex-col lg:flex-row bg-[#0B2C3D] text-slate-100">
+    <!-- Left marketing panel -->
+    <section
+      class="hidden lg:flex lg:w-1/2 flex-col px-12 py-10 bg-gradient-to-b from-[#0B2C3D] to-[#0B2C3D]"
+    >
+      <header class="flex justify-center">
+        <img :src="logo" alt="FinTrack logo" class="h-60 w-auto" />
+      </header>
 
-      <form @submit.prevent="handleSubmit" class="space-y-4">
-        <div class="space-y-1">
-          <label for="email" class="block text-sm font-medium text-slate-700">Email</label>
-          <input
-            id="email"
-            v-model="email"
-            type="email"
-            required
-            class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#1FA971] focus:border-transparent"
-            placeholder="you@example.com"
-          />
+      <div class="mt-10 flex-1 flex flex-col justify-center space-y-6">
+        <div>
+          <h2 class="text-3xl xl:text-4xl font-semibold tracking-tight mb-3">
+            Take control of your personal finances
+          </h2>
+          <p class="text-sm text-slate-300 max-w-md">
+            Track your income, expenses and savings goals in one simple, visual dashboard so you can
+            make smarter financial decisions every day.
+          </p>
         </div>
 
-        <div class="space-y-1">
-          <label for="password" class="block text-sm font-medium text-slate-700">Password</label>
-          <input
-            id="password"
-            v-model="password"
-            type="password"
-            required
-            class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#1FA971] focus:border-transparent"
-            placeholder="••••••••"
-          />
+        <div class="grid grid-cols-3 gap-4 max-w-lg">
+          <div class="rounded-2xl bg-white/5 border border-white/10 px-4 py-3">
+            <p class="text-xs text-slate-400">Active users</p>
+            <p class="text-lg font-semibold mt-1">+10K</p>
+          </div>
+          <div class="rounded-2xl bg-white/5 border border-white/10 px-4 py-3">
+            <p class="text-xs text-slate-400">Tracked balance</p>
+            <p class="text-lg font-semibold mt-1">$2M</p>
+          </div>
+          <div class="rounded-2xl bg-white/5 border border-white/10 px-4 py-3">
+            <p class="text-xs text-slate-400">Satisfaction</p>
+            <p class="text-lg font-semibold mt-1">98%</p>
+          </div>
         </div>
+      </div>
 
-        <p v-if="localError" class="text-sm text-red-600">
-          {{ localError }}
+      <footer class="mt-10 text-[11px] text-slate-500">
+        © {{ new Date().getFullYear() }} FinTrack. All rights reserved.
+      </footer>
+    </section>
+
+    <!-- Right auth card -->
+    <section
+      class="flex-1 flex items-center justify-center px-4 py-10 bg-slate-50 lg:px-10"
+    >
+      <div
+        class="w-full max-w-md bg-white rounded-2xl shadow-xl border border-slate-200 px-8 py-8 space-y-6"
+      >
+        <header class="space-y-1">
+          <div class="flex justify-center lg:hidden mb-2">
+            <img :src="logo" alt="FinTrack logo" class="h-12 w-auto" />
+          </div>
+          <p class="text-xs text-slate-500 mb-1">
+            Back to
+            <router-link to="/" class="underline-offset-2 hover:underline text-slate-700">
+              dashboard
+            </router-link>
+          </p>
+          <h2 class="text-2xl font-semibold text-slate-900 tracking-tight">Sign in</h2>
+          <p class="text-sm text-slate-500">
+            Enter your credentials to access your FinTrack account.
+          </p>
+        </header>
+
+        <form @submit.prevent="handleSubmit" class="space-y-4">
+          <div class="space-y-1">
+            <label for="email" class="block text-sm font-medium text-slate-700">Email</label>
+            <input
+              id="email"
+              v-model="email"
+              type="email"
+              required
+              class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent"
+              placeholder="you@example.com"
+            />
+          </div>
+
+          <div class="space-y-1">
+            <label for="password" class="block text-sm font-medium text-slate-700">Password</label>
+            <input
+              id="password"
+              v-model="password"
+              type="password"
+              required
+              class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent"
+              placeholder="••••••••"
+            />
+          </div>
+
+          <p v-if="localError" class="text-sm text-red-600">
+            {{ localError }}
+          </p>
+
+          <button
+            type="submit"
+            class="w-full inline-flex items-center justify-center rounded-lg bg-slate-900 text-white text-sm font-medium py-2.5 mt-1 hover:bg-slate-800 transition disabled:opacity-60 disabled:cursor-not-allowed"
+            :disabled="submitting"
+          >
+            <span v-if="!submitting">Sign in</span>
+            <span v-else>Signing in...</span>
+          </button>
+        </form>
+
+        <p class="mt-2 text-xs text-center text-slate-500">
+          Don't have an account?
+          <router-link to="/register" class="text-slate-900 font-medium hover:underline">
+            Register here
+          </router-link>
         </p>
-
-        <button
-          type="submit"
-          class="w-full inline-flex items-center justify-center rounded-lg bg-[#1FA971] text-white text-sm font-medium py-2.5 mt-2 hover:bg-[#17825a] transition disabled:opacity-60 disabled:cursor-not-allowed"
-          :disabled="submitting"
-        >
-          <span v-if="!submitting">Sign in</span>
-          <span v-else>Signing in...</span>
-        </button>
-      </form>
-
-      <p class="mt-4 text-xs text-center text-slate-500">
-        Don't have an account?
-        <router-link to="/register" class="text-[#1FA971] font-medium hover:underline">
-          Create one
-        </router-link>
-      </p>
-    </div>
+      </div>
+    </section>
   </div>
 </template>
