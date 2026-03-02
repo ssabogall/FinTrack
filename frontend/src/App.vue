@@ -3,6 +3,7 @@ import { computed } from 'vue';
 import { RouterLink, RouterView, useRouter } from 'vue-router';
 import logo from '@/assets/logo/FinTrack-white.png';
 import { AuthService } from '@/services/AuthService';
+import { Formatters } from '@/utils/Formatters';
 
 const router = useRouter();
 
@@ -10,17 +11,9 @@ const displayName = computed(() => AuthService.getCurrentUser()?.name || 'Guest 
 
 const displayEmail = computed(() => AuthService.getCurrentUser()?.email || 'guest@example.com');
 
-const initials = computed(() => {
-  const name = AuthService.getCurrentUser()?.name;
-  if (!name) return 'FT';
-
-  return name
-    .split(' ')
-    .filter(Boolean)
-    .map((part: string) => part[0]?.toUpperCase())
-    .slice(0, 2)
-    .join('');
-});
+const initials = computed(() =>
+  Formatters.initialsFromName(AuthService.getCurrentUser()?.name),
+);
 
 const handleLogout = () => {
   AuthService.logout();
@@ -86,6 +79,19 @@ const handleLogout = () => {
           >
             <i class="fas fa-user-circle"></i>
             <span>Profile</span>
+          </RouterLink>
+
+          <RouterLink
+            v-if="AuthService.isAdmin()"
+            to="/admin/users"
+            class="flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-medium transition duration-200"
+            :class="{
+              'bg-[#1FA971] text-white shadow-md': $route.path === '/admin/users',
+              'text-white hover:bg-[#1FA971]': $route.path !== '/admin/users',
+            }"
+          >
+            <i class="fas fa-users-cog"></i>
+            <span>Manage users</span>
           </RouterLink>
 
           <RouterLink

@@ -4,6 +4,9 @@
 import { createPinia } from 'pinia';
 import { watch } from 'vue';
 
+// internal imports
+import { userSeeder } from '@/seeders/userseeder';
+
 export default class PiniaConfig {
   public static init() {
     const pinia = createPinia();
@@ -14,11 +17,14 @@ export default class PiniaConfig {
       pinia.state.value = JSON.parse(savedState);
     } else {
       // initialize the state with the seeders
-
-      pinia.state.value = {};
+      pinia.state.value = {
+        auth: {
+          currentUser: null,
+          users: userSeeder,
+        },
+      };
 
       // save the initial state to localStorage
-
       localStorage.setItem('piniaState', JSON.stringify(pinia.state.value));
     }
 

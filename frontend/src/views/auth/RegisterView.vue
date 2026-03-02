@@ -14,18 +14,17 @@ const passwordConfirmation = ref('');
 const errorMessage = ref<string | null>(null);
 const submitting = ref(false);
 
-const handleSubmit = () => {
+const handleSubmit = (): void => {
   errorMessage.value = null;
-
-  if (password.value !== passwordConfirmation.value) {
-    errorMessage.value = 'Passwords do not match.';
-    return;
-  }
-
   submitting.value = true;
 
   try {
-    AuthService.register(name.value, email.value, password.value);
+    AuthService.register({
+      name: name.value,
+      email: email.value,
+      password: password.value,
+      passwordConfirmation: passwordConfirmation.value,
+    });
 
     router.push('/');
   } catch (error) {
