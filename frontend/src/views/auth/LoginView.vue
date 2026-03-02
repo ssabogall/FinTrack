@@ -74,9 +74,7 @@ const handleSubmit = () => {
     </section>
 
     <!-- Right auth card -->
-    <section
-      class="flex-1 flex items-center justify-center px-4 py-10 bg-slate-50 lg:px-10"
-    >
+    <section class="flex-1 flex items-center justify-center px-4 py-10 bg-slate-50 lg:px-10">
       <div
         class="w-full max-w-md bg-white rounded-2xl shadow-xl border border-slate-200 px-8 py-8 space-y-6"
       >
