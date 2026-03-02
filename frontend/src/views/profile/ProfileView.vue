@@ -3,6 +3,7 @@ import { computed, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { AuthService } from '@/services/AuthService';
 import { UserService } from '@/services/UserService';
+import { Formatters } from '@/utils/Formatters';
 
 const router = useRouter();
 const user = computed(() => AuthService.getCurrentUser());
@@ -29,27 +30,11 @@ watch(
   { immediate: true },
 );
 
-const initials = computed(() => {
-  if (!user.value?.name) return 'FT';
-  return user.value.name
-    .split(' ')
-    .filter(Boolean)
-    .map((part) => part[0]?.toUpperCase())
-    .slice(0, 2)
-    .join('');
-});
+const initials = computed(() => Formatters.initialsFromName(user.value?.name));
 
-const memberSince = computed(() => {
-  const d = user.value?.createdAt;
-  if (!d) return '';
-  const date = d instanceof Date ? d : new Date(d);
-  return date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
-});
+const memberSince = computed(() => Formatters.memberSince(user.value?.createdAt, 'en-US'));
 
-const roleLabel = computed(() => {
-  const r = user.value?.role;
-  return r === 'admin' ? 'Admin' : 'User';
-});
+const roleLabel = computed(() => Formatters.roleLabel(user.value?.role));
 
 function handleSaveProfile() {
   saveMessage.value = null;

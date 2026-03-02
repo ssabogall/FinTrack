@@ -3,6 +3,7 @@ import { computed } from 'vue';
 import { RouterLink, RouterView, useRouter } from 'vue-router';
 import logo from '@/assets/logo/FinTrack-white.png';
 import { AuthService } from '@/services/AuthService';
+import { Formatters } from '@/utils/Formatters';
 
 const router = useRouter();
 
@@ -10,17 +11,9 @@ const displayName = computed(() => AuthService.getCurrentUser()?.name || 'Guest 
 
 const displayEmail = computed(() => AuthService.getCurrentUser()?.email || 'guest@example.com');
 
-const initials = computed(() => {
-  const name = AuthService.getCurrentUser()?.name;
-  if (!name) return 'FT';
-
-  return name
-    .split(' ')
-    .filter(Boolean)
-    .map((part: string) => part[0]?.toUpperCase())
-    .slice(0, 2)
-    .join('');
-});
+const initials = computed(() =>
+  Formatters.initialsFromName(AuthService.getCurrentUser()?.name),
+);
 
 const handleLogout = () => {
   AuthService.logout();

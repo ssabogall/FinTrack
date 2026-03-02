@@ -5,7 +5,7 @@ import { createPinia } from 'pinia';
 import { watch } from 'vue';
 
 // internal imports
-import { userSeeder } from '@/seeders/UserSeeder';
+import { userSeeder } from '@/seeders/userseeder';
 
 export default class PiniaConfig {
   public static init() {

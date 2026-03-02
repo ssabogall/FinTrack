@@ -2,6 +2,7 @@
 import { computed, ref } from 'vue';
 import { UserService } from '@/services/UserService';
 import type { UserInterface } from '@/interfaces/UserInterface';
+import { Formatters } from '@/utils/Formatters';
 
 const users = computed(() => UserService.getAllUsers());
 
@@ -43,13 +44,11 @@ function saveEdit() {
 }
 
 function roleLabel(role: string): string {
-  return role === 'admin' ? 'Admin' : 'User';
+  return Formatters.roleLabel(role);
 }
 
 function formatDate(d: Date | undefined): string {
-  if (!d) return '—';
-  const date = d instanceof Date ? d : new Date(d);
-  return date.toLocaleDateString();
+  return Formatters.formatShortDate(d);
 }
 </script>
 
