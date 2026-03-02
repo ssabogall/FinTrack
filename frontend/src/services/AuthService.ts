@@ -1,8 +1,9 @@
 // author: Santiago Gómez Ospina
 
 // internal imports
-import { useAuthStore } from '@/stores/authstore';
+import type { RegisterUserDto } from '@/dtos/RegisterUserDto';
 import type { UserInterface } from '@/interfaces/UserInterface';
+import { useAuthStore } from '@/stores/authstore';
 
 export class AuthService {
   public static getCurrentUser(): UserInterface | null {
@@ -13,13 +14,17 @@ export class AuthService {
     return useAuthStore().isAuthenticated;
   }
 
-  public static register(name: string, email: string, password: string): void {
+  public static register(dto: RegisterUserDto): void {
     const authStore = useAuthStore();
 
-    const existingUser = authStore.users.find((user) => user.email === email);
+    const existingUser = authStore.users.find((user) => user.email === dto.email);
 
     if (existingUser) {
       throw new Error('The email is already registered.');
+    }
+
+    if (dto.password !== dto.passwordConfirmation) {
+      throw new Error('Passwords do not match.');
     }
 
     const id = Date.now();
@@ -27,9 +32,9 @@ export class AuthService {
 
     const newUser: UserInterface = {
       id,
-      name,
-      email,
-      password,
+      name: dto.name,
+      email: dto.email,
+      password: dto.password,
       role: 'user',
       createdAt: now,
       updatedAt: now,
