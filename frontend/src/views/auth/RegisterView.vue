@@ -48,43 +48,59 @@ const handleSubmit = () => {
         <img :src="logo" alt="FinTrack logo" class="h-60 w-auto" />
       </header>
 
-      <div class="mt-10 flex-1 flex flex-col justify-center space-y-6">
-        <div>
-          <h2 class="text-3xl xl:text-4xl font-semibold tracking-tight mb-3">
-            Start your journey to financial freedom
-          </h2>
-          <p class="text-sm text-slate-300 max-w-md">
-            Join users who are already tracking their cash flow, setting savings goals and staying
-            on top of their budgets with FinTrack.
-          </p>
-        </div>
+      <div class="mt-10 flex flex-col">
+        <div class="max-w-xl space-y-8">
+          <div class="space-y-3">
+            <p class="text-xs uppercase tracking-[0.2em] text-[#1FA971]">
+              Create your free account
+            </p>
+            <h2 class="text-3xl xl:text-4xl font-semibold tracking-tight">
+              Start your journey to financial freedom
+            </h2>
+            <p class="text-sm text-slate-300">
+              Join users who are already tracking their cash flow, setting savings goals and staying
+              on top of their budgets with FinTrack.
+            </p>
+          </div>
 
-        <ul class="space-y-2 text-sm text-slate-200">
-          <li class="flex items-start gap-2">
-            <span class="mt-1 h-4 w-4 rounded-full bg-[#1FA971] flex items-center justify-center">
-              <i class="fas fa-check text-[10px] text-slate-900" />
-            </span>
-            <span>Income and expense tracking</span>
-          </li>
-          <li class="flex items-start gap-2">
-            <span class="mt-1 h-4 w-4 rounded-full bg-[#1FA971] flex items-center justify-center">
-              <i class="fas fa-check text-[10px] text-slate-900" />
-            </span>
-            <span>Personalized savings goals</span>
-          </li>
-          <li class="flex items-start gap-2">
-            <span class="mt-1 h-4 w-4 rounded-full bg-[#1FA971] flex items-center justify-center">
-              <i class="fas fa-check text-[10px] text-slate-900" />
-            </span>
-            <span>Visual reports and charts</span>
-          </li>
-          <li class="flex items-start gap-2">
-            <span class="mt-1 h-4 w-4 rounded-full bg-[#1FA971] flex items-center justify-center">
-              <i class="fas fa-check text-[10px] text-slate-900" />
-            </span>
-            <span>Access from any device</span>
-          </li>
-        </ul>
+          <div class="space-y-3">
+            <h3 class="text-sm font-semibold text-slate-100">What you'll get with FinTrack</h3>
+            <ul class="space-y-2 text-sm text-slate-200">
+              <li class="flex items-start gap-2">
+                <span
+                  class="mt-1 h-4 w-4 rounded-full bg-[#1FA971] flex items-center justify-center"
+                >
+                  <i class="fas fa-check text-[10px] text-slate-900" />
+                </span>
+                <span>Income and expense tracking</span>
+              </li>
+              <li class="flex items-start gap-2">
+                <span
+                  class="mt-1 h-4 w-4 rounded-full bg-[#1FA971] flex items-center justify-center"
+                >
+                  <i class="fas fa-check text-[10px] text-slate-900" />
+                </span>
+                <span>Personalized savings goals</span>
+              </li>
+              <li class="flex items-start gap-2">
+                <span
+                  class="mt-1 h-4 w-4 rounded-full bg-[#1FA971] flex items-center justify-center"
+                >
+                  <i class="fas fa-check text-[10px] text-slate-900" />
+                </span>
+                <span>Visual reports and charts</span>
+              </li>
+              <li class="flex items-start gap-2">
+                <span
+                  class="mt-1 h-4 w-4 rounded-full bg-[#1FA971] flex items-center justify-center"
+                >
+                  <i class="fas fa-check text-[10px] text-slate-900" />
+                </span>
+                <span>Access from any device</span>
+              </li>
+            </ul>
+          </div>
+        </div>
       </div>
 
       <footer class="mt-10 text-[11px] text-slate-500">
@@ -101,12 +117,6 @@ const handleSubmit = () => {
           <div class="flex justify-center lg:hidden mb-2">
             <img :src="logo" alt="FinTrack logo" class="h-12 w-auto" />
           </div>
-          <p class="text-xs text-slate-500 mb-1">
-            Back to
-            <router-link to="/" class="underline-offset-2 hover:underline text-slate-700">
-              dashboard
-            </router-link>
-          </p>
           <h2 class="text-2xl font-semibold text-slate-900 tracking-tight">Create account</h2>
           <p class="text-sm text-slate-500">
             Fill out the form to start tracking your finances with FinTrack.

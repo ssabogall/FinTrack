@@ -41,29 +41,38 @@ const handleSubmit = () => {
         <img :src="logo" alt="FinTrack logo" class="h-60 w-auto" />
       </header>
 
-      <div class="mt-10 flex-1 flex flex-col justify-center space-y-6">
-        <div>
-          <h2 class="text-3xl xl:text-4xl font-semibold tracking-tight mb-3">
-            Take control of your personal finances
-          </h2>
-          <p class="text-sm text-slate-300 max-w-md">
-            Track your income, expenses and savings goals in one simple, visual dashboard so you can
-            make smarter financial decisions every day.
-          </p>
-        </div>
+      <div class="mt-10 flex flex-col">
+        <div class="max-w-xl space-y-8">
+          <div class="space-y-3">
+            <p class="text-xs uppercase tracking-[0.2em] text-[#1FA971]">Smart personal finance</p>
+            <h2 class="text-3xl xl:text-4xl font-semibold tracking-tight">
+              Take control of your personal finances
+            </h2>
+            <p class="text-sm text-slate-300">
+              Track your income, expenses and savings goals in one simple, visual dashboard so you
+              can make smarter financial decisions every day.
+            </p>
+          </div>
 
-        <div class="grid grid-cols-3 gap-4 max-w-lg">
-          <div class="rounded-2xl bg-white/5 border border-white/10 px-4 py-3">
-            <p class="text-xs text-slate-400">Active users</p>
-            <p class="text-lg font-semibold mt-1">+10K</p>
-          </div>
-          <div class="rounded-2xl bg-white/5 border border-white/10 px-4 py-3">
-            <p class="text-xs text-slate-400">Tracked balance</p>
-            <p class="text-lg font-semibold mt-1">$2M</p>
-          </div>
-          <div class="rounded-2xl bg-white/5 border border-white/10 px-4 py-3">
-            <p class="text-xs text-slate-400">Satisfaction</p>
-            <p class="text-lg font-semibold mt-1">98%</p>
+          <div class="grid grid-cols-3 gap-4">
+            <div
+              class="rounded-2xl bg-white/5 border border-white/10 px-4 py-3 backdrop-blur-sm shadow-sm"
+            >
+              <p class="text-[11px] text-slate-300">Active users</p>
+              <p class="text-lg font-semibold mt-1 text-white">+10K</p>
+            </div>
+            <div
+              class="rounded-2xl bg-white/5 border border-white/10 px-4 py-3 backdrop-blur-sm shadow-sm"
+            >
+              <p class="text-[11px] text-slate-300">Tracked balance</p>
+              <p class="text-lg font-semibold mt-1 text-white">$2M</p>
+            </div>
+            <div
+              class="rounded-2xl bg-white/5 border border-white/10 px-4 py-3 backdrop-blur-sm shadow-sm"
+            >
+              <p class="text-[11px] text-slate-300">Satisfaction</p>
+              <p class="text-lg font-semibold mt-1 text-white">98%</p>
+            </div>
           </div>
         </div>
       </div>
@@ -82,12 +91,6 @@ const handleSubmit = () => {
           <div class="flex justify-center lg:hidden mb-2">
             <img :src="logo" alt="FinTrack logo" class="h-12 w-auto" />
           </div>
-          <p class="text-xs text-slate-500 mb-1">
-            Back to
-            <router-link to="/" class="underline-offset-2 hover:underline text-slate-700">
-              dashboard
-            </router-link>
-          </p>
           <h2 class="text-2xl font-semibold text-slate-900 tracking-tight">Sign in</h2>
           <p class="text-sm text-slate-500">
             Enter your credentials to access your FinTrack account.
