@@ -53,6 +53,11 @@ export class AuthService {
     authStore.currentUser = user;
   }
 
+  public static isAdmin(): boolean {
+    const user = useAuthStore().currentUser;
+    return user?.role === 'admin';
+  }
+
   public static logout(): void {
     const authStore = useAuthStore();
     authStore.currentUser = null;

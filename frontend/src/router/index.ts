@@ -2,6 +2,7 @@
 import { createRouter, createWebHistory } from 'vue-router';
 
 // internal imports
+import AdminUsersView from '@/views/admin/AdminUsersView.vue';
 import HomeView from '@/views/home/HomeView.vue';
 import LoginView from '@/views/auth/LoginView.vue';
 import ProfileView from '@/views/profile/ProfileView.vue';
@@ -36,6 +37,12 @@ const router = createRouter({
       component: ProfileView,
       meta: { title: 'Profile', requiresAuth: true },
     },
+    {
+      path: '/admin/users',
+      name: 'admin-users',
+      component: AdminUsersView,
+      meta: { title: 'Manage users', requiresAuth: true, requiresAdmin: true },
+    },
   ],
 });
 
@@ -45,6 +52,11 @@ router.beforeEach((to, from, next) => {
       name: 'login',
       query: { redirect: to.fullPath },
     });
+    return;
+  }
+
+  if (to.meta.requiresAdmin && !AuthService.isAdmin()) {
+    next({ name: 'home' });
     return;
   }
 

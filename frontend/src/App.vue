@@ -89,6 +89,19 @@ const handleLogout = () => {
           </RouterLink>
 
           <RouterLink
+            v-if="AuthService.isAdmin()"
+            to="/admin/users"
+            class="flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-medium transition duration-200"
+            :class="{
+              'bg-[#1FA971] text-white shadow-md': $route.path === '/admin/users',
+              'text-white hover:bg-[#1FA971]': $route.path !== '/admin/users',
+            }"
+          >
+            <i class="fas fa-users-cog"></i>
+            <span>Manage users</span>
+          </RouterLink>
+
+          <RouterLink
             v-if="!AuthService.isAuthenticated()"
             to="/login"
             class="flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-medium transition duration-200"
