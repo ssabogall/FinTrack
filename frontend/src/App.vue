@@ -71,7 +71,6 @@ const handleLogout = () => {
             }"
           >
             <i class="fas fa-th-large"></i>
-
             <span>Dashboard</span>
           </RouterLink>
 
@@ -86,6 +85,19 @@ const handleLogout = () => {
           >
             <i class="fas fa-user-circle"></i>
             <span>Profile</span>
+          </RouterLink>
+
+          <RouterLink
+            v-if="AuthService.isAuthenticated()"
+            :to="{ name: 'goal.create' }"
+            class="flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-medium transition duration-200"
+            :class="{
+              'bg-[#1FA971] text-white shadow-md': $route.path.startsWith('/goals'),
+              'text-white hover:bg-[#1FA971]': !$route.path.startsWith('/goals'),
+            }"
+          >
+            <i class="fas fa-bullseye"></i>
+            <span>Goals</span>
           </RouterLink>
 
           <RouterLink
@@ -124,7 +136,6 @@ const handleLogout = () => {
             @click="handleLogout"
           >
             <i class="fas fa-sign-out-alt text-sm"></i>
-
             <span>Sign Out</span>
           </button>
         </div>

@@ -2,11 +2,12 @@
 import { createRouter, createWebHistory } from 'vue-router';
 
 // internal imports
-import HomeView from '@/views/home/HomeView.vue';
-import LoginView from '@/views/auth/LoginView.vue';
-import ProfileView from '@/views/profile/ProfileView.vue';
-import RegisterView from '@/views/auth/RegisterView.vue';
 import { AuthService } from '@/services/AuthService';
+import LoginView from '@/views/auth/LoginView.vue';
+import RegisterView from '@/views/auth/RegisterView.vue';
+import CreateGoalView from '@/views/goals/CreateView.vue';
+import HomeView from '@/views/home/HomeView.vue';
+import ProfileView from '@/views/profile/ProfileView.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -29,6 +30,12 @@ const router = createRouter({
       name: 'register',
       component: RegisterView,
       meta: { title: 'Register', guestOnly: true },
+    },
+    {
+      path: '/goals/create',
+      name: 'goal.create',
+      component: CreateGoalView,
+      meta: { title: 'New Savings Goal', requiresAuth: true },
     },
     {
       path: '/profile',
