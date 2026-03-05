@@ -4,6 +4,7 @@
 import type { RegisterUserDto } from '@/dtos/RegisterUserDto';
 import type { UserInterface } from '@/interfaces/UserInterface';
 import { useAuthStore } from '@/stores/authstore';
+import { useUserStore } from '@/stores/userstore';
 
 export class AuthService {
   public static getCurrentUser(): UserInterface | null {
@@ -16,8 +17,9 @@ export class AuthService {
 
   public static register(dto: RegisterUserDto): void {
     const authStore = useAuthStore();
+    const userStore = useUserStore();
 
-    const existingUser = authStore.users.find((user) => user.email === dto.email);
+    const existingUser = userStore.users.find((user) => user.email === dto.email);
 
     if (existingUser) {
       throw new Error('The email is already registered.');
@@ -39,17 +41,18 @@ export class AuthService {
       createdAt: now,
       updatedAt: now,
       transactionIds: [],
-      goalIds: [],
+      goalIds: null,
     };
 
-    authStore.users.push(newUser);
+    userStore.users.push(newUser);
     authStore.currentUser = newUser;
   }
 
   public static login(email: string, password: string): void {
     const authStore = useAuthStore();
+    const userStore = useUserStore();
 
-    const user = authStore.users.find((u) => u.email === email && u.password === password);
+    const user = userStore.users.find((u) => u.email === email && u.password === password);
 
     if (!user) {
       throw new Error('Invalid credentials.');

@@ -23,6 +23,8 @@ export default class PiniaConfig {
       pinia.state.value = {
         auth: {
           currentUser: null,
+        },
+        user: {
           users: userSeeder,
         },
         transaction: {
