@@ -11,11 +11,9 @@ const displayName = computed(() => AuthService.getCurrentUser()?.name || 'Guest 
 
 const displayEmail = computed(() => AuthService.getCurrentUser()?.email || 'guest@example.com');
 
-const initials = computed(() =>
-  Formatters.initialsFromName(AuthService.getCurrentUser()?.name),
-);
+const initials = computed(() => Formatters.initialsFromName(AuthService.getCurrentUser()?.name));
 
-const handleLogout = () => {
+const handleLogout = (): void => {
   AuthService.logout();
   router.push({ name: 'login' });
 };

@@ -4,12 +4,14 @@ export class Formatters {
   public static initialsFromName(name: string | null | undefined): string {
     if (!name) return 'FT';
 
-    return name
-      .split(' ')
-      .filter(Boolean)
-      .map((part) => part[0]?.toUpperCase() ?? '')
-      .slice(0, 2)
-      .join('') || 'FT';
+    return (
+      name
+        .split(' ')
+        .filter(Boolean)
+        .map((part) => part[0]?.toUpperCase() ?? '')
+        .slice(0, 2)
+        .join('') || 'FT'
+    );
   }
 
   public static roleLabel(role: string | null | undefined): string {
@@ -34,4 +36,3 @@ export class Formatters {
     return d.toLocaleDateString(locale);
   }
 }
-

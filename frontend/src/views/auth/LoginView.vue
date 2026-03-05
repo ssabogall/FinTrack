@@ -13,7 +13,7 @@ const localError = ref<string | null>(null);
 
 const submitting = ref(false);
 
-const handleSubmit = () => {
+const handleSubmit = (): void => {
   submitting.value = true;
   localError.value = null;
 

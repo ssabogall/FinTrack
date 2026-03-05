@@ -6,4 +6,3 @@ export type RegisterUserDto = Omit<
 > & {
   passwordConfirmation: string;
 };
-

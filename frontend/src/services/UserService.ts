@@ -2,17 +2,19 @@
 
 // internal imports
 import type { UpdateUserDto } from '@/dtos/UpdateUserDto';
-import { useAuthStore } from '@/stores/authstore';
 import type { UserInterface } from '@/interfaces/UserInterface';
+import { useAuthStore } from '@/stores/authstore';
+import { useUserStore } from '@/stores/userstore';
 
 export class UserService {
   public static updateProfile(name: string, email: string): void {
     const authStore = useAuthStore();
+    const userStore = useUserStore();
     const user = authStore.currentUser;
     if (!user) return;
 
-    const index = authStore.users.findIndex((u) => u.id === user.id);
-    const existing = index !== -1 ? authStore.users[index] : null;
+    const index = userStore.users.findIndex((u) => u.id === user.id);
+    const existing = index !== -1 ? userStore.users[index] : null;
     if (!existing) return;
 
     const updated: UserInterface = {
@@ -26,12 +28,13 @@ export class UserService {
       transactionIds: existing.transactionIds ?? null,
       goalIds: existing.goalIds ?? null,
     };
-    authStore.users[index] = updated;
+    userStore.users[index] = updated;
     authStore.currentUser = updated;
   }
 
   public static changePassword(currentPassword: string, newPassword: string): void {
     const authStore = useAuthStore();
+    const userStore = useUserStore();
     const user = authStore.currentUser;
     if (!user) throw new Error('Not authenticated.');
 
@@ -43,8 +46,8 @@ export class UserService {
       throw new Error('New password must be at least 6 characters.');
     }
 
-    const index = authStore.users.findIndex((u) => u.id === user.id);
-    const existing = index !== -1 ? authStore.users[index] : null;
+    const index = userStore.users.findIndex((u) => u.id === user.id);
+    const existing = index !== -1 ? userStore.users[index] : null;
     if (!existing) return;
 
     const updated: UserInterface = {
@@ -52,22 +55,23 @@ export class UserService {
       password: newPassword,
       updatedAt: new Date(),
     };
-    authStore.users[index] = updated;
+    userStore.users[index] = updated;
     authStore.currentUser = updated;
   }
 
   public static getAllUsers(): UserInterface[] {
-    return useAuthStore().users;
+    return useUserStore().users;
   }
 
   public static getUserById(id: number): UserInterface | null {
-    return useAuthStore().users.find((u) => u.id === id) ?? null;
+    return useUserStore().users.find((u) => u.id === id) ?? null;
   }
 
   public static updateUser(id: number, dto: UpdateUserDto): void {
     const authStore = useAuthStore();
-    const index = authStore.users.findIndex((u) => u.id === id);
-    const existing = index !== -1 ? authStore.users[index] : null;
+    const userStore = useUserStore();
+    const index = userStore.users.findIndex((u) => u.id === id);
+    const existing = index !== -1 ? userStore.users[index] : null;
     if (!existing) throw new Error('User not found.');
 
     const updated: UserInterface = {
@@ -81,7 +85,7 @@ export class UserService {
       transactionIds: existing.transactionIds ?? null,
       goalIds: existing.goalIds ?? null,
     };
-    authStore.users[index] = updated;
+    userStore.users[index] = updated;
     if (authStore.currentUser?.id === id) {
       authStore.currentUser = updated;
     }
