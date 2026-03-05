@@ -10,4 +10,3 @@ export const useGoalStore = defineStore('goal', () => {
 
   return { goals };
 });
-

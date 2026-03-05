@@ -36,7 +36,7 @@ const memberSince = computed(() => Formatters.memberSince(user.value?.createdAt,
 
 const roleLabel = computed(() => Formatters.roleLabel(user.value?.role));
 
-function handleSaveProfile() {
+function handleSaveProfile(): void {
   saveMessage.value = null;
   try {
     UserService.updateProfile(fullName.value.trim(), email.value.trim());
@@ -47,7 +47,7 @@ function handleSaveProfile() {
   }
 }
 
-function handleChangePassword() {
+function handleChangePassword(): void {
   passwordMessage.value = null;
   if (newPassword.value !== confirmPassword.value) {
     passwordMessage.value = 'error';
@@ -65,7 +65,7 @@ function handleChangePassword() {
   }
 }
 
-const handleLogout = () => {
+const handleLogout = (): void => {
   AuthService.logout();
   router.push({ name: 'login' });
 };

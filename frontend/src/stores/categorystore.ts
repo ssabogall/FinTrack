@@ -10,4 +10,3 @@ export const useCategoryStore = defineStore('category', () => {
 
   return { categories };
 });
-

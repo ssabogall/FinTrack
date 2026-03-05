@@ -49,4 +49,3 @@ export const categorySeeder: CategoryInterface[] = [
     transactionIds: [8, 10, 11, 12],
   },
 ];
-

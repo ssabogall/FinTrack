@@ -46,4 +46,3 @@ export const goalSeeder: GoalInterface[] = [
     transactionIds: [12],
   },
 ];
-

@@ -10,4 +10,3 @@ export const useTransactionStore = defineStore('transaction', () => {
 
   return { transactions };
 });
-

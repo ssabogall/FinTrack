@@ -12,7 +12,7 @@ const editEmail = ref('');
 const editRole = ref<'user' | 'admin'>('user');
 const editMessage = ref<'success' | 'error' | null>(null);
 
-function startEdit(user: UserInterface) {
+function startEdit(user: UserInterface): void {
   editingId.value = user.id;
   editName.value = user.name;
   editEmail.value = user.email;
@@ -20,11 +20,11 @@ function startEdit(user: UserInterface) {
   editMessage.value = null;
 }
 
-function cancelEdit() {
+function cancelEdit(): void {
   editingId.value = null;
 }
 
-function saveEdit() {
+function saveEdit(): void {
   if (editingId.value == null) return;
   editMessage.value = null;
   try {
