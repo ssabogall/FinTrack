@@ -6,6 +6,9 @@ import { watch } from 'vue';
 
 // internal imports
 import { userSeeder } from '@/seeders/userseeder';
+import { categorySeeder } from '@/seeders/categoryseeder';
+import { goalSeeder } from '@/seeders/goalseeder';
+import { transactionSeeder } from '@/seeders/transactionseeder.ts';
 
 export default class PiniaConfig {
   public static init() {
@@ -21,6 +24,15 @@ export default class PiniaConfig {
         auth: {
           currentUser: null,
           users: userSeeder,
+        },
+        transaction: {
+          transactions: transactionSeeder,
+        },
+        category: {
+          categories: categorySeeder,
+        },
+        goal: {
+          goals: goalSeeder,
         },
       };
 
