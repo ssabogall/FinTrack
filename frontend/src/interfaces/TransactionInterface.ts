@@ -8,6 +8,6 @@ export interface TransactionInterface {
 
   // relations
   userId: number;
-  categoryId: number | null;
-  goalId: number | null;
+  categoryIds: number[] | null;
+  goalIds: number[] | null;
 }
