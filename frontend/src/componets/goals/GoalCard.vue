@@ -5,6 +5,8 @@ import { Chart, ArcElement, DoughnutController, Tooltip } from 'chart.js';
 
 import type { GoalInterface } from '@/interfaces/GoalInterface';
 import { Formatters } from '@/utils/Formatters';
+import { GoalStatusHelper } from '@/utils/GoalStatusHelper';
+import type { GoalStatus } from '@/utils/GoalStatusHelper';
 
 Chart.register(ArcElement, DoughnutController, Tooltip);
 
@@ -52,11 +54,15 @@ const percentage = computed((): number => {
   );
 });
 
-const statusColor = computed((): string => {
-  if (percentage.value >= 100) return '#1FA971';
-  if (percentage.value >= 50) return '#3B82F6';
-  return '#F59E0B';
-});
+const goalStatus = computed((): GoalStatus =>
+  GoalStatusHelper.compute(props.goal.currentAmount, props.goal.targetAmount),
+);
+
+const statusColor = computed((): string => GoalStatusHelper.color(goalStatus.value));
+
+const statusBgColor = computed((): string => GoalStatusHelper.bgColor(goalStatus.value));
+
+const statusIcon = computed((): string => GoalStatusHelper.icon(goalStatus.value));
 
 const remaining = computed((): number => {
   return Math.max(props.goal.targetAmount - props.goal.currentAmount, 0);
@@ -148,10 +154,11 @@ watch(
         </p>
       </div>
       <span
-        class="shrink-0 text-xs font-medium px-2.5 py-1 rounded-full"
-        :style="{ backgroundColor: statusColor + '20', color: statusColor }"
+        class="shrink-0 inline-flex items-center gap-1 text-xs font-medium px-2.5 py-1 rounded-full"
+        :style="{ backgroundColor: statusBgColor, color: statusColor }"
       >
-        {{ percentage }}%
+        <i :class="['fas', statusIcon, 'text-[10px]']" />
+        {{ goalStatus }}
       </span>
     </header>
 

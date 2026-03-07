@@ -4,6 +4,7 @@ import type { CreateGoalDTO } from '@/dtos/CreateGoalDTO';
 import type { UpdateGoalDTO } from '@/dtos/UpdateGoalDTO';
 import { useGoalStore } from '@/stores/goalStore';
 import { useAuthStore } from '@/stores/authstore';
+import { GoalStatusHelper } from '@/utils/GoalStatusHelper';
 
 export class GoalService {
   public static getAll(): GoalInterface[] {
@@ -62,13 +63,16 @@ export class GoalService {
       throw new Error('End date must be after start date.');
     }
 
+    const updatedTargetAmount = dto.targetAmount ?? current.targetAmount;
+
     goalStore.goals[index] = {
       ...current,
       name: dto.name ?? current.name,
       description: dto.description ?? current.description,
-      targetAmount: dto.targetAmount ?? current.targetAmount,
+      targetAmount: updatedTargetAmount,
       startDate,
       endDate,
+      status: GoalStatusHelper.compute(current.currentAmount, updatedTargetAmount),
       updatedAt: new Date(),
     };
   }
@@ -100,7 +104,7 @@ export class GoalService {
       currentAmount: 0,
       startDate: new Date(dto.startDate),
       endDate: new Date(dto.endDate),
-      status: 'Active',
+      status: GoalStatusHelper.compute(0, dto.targetAmount),
       createdAt: now,
       updatedAt: now,
       userId: dto.userId,
