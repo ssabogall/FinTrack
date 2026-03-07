@@ -80,7 +80,7 @@ const handleLogout = (): void => {
 
           <RouterLink
             v-if="AuthService.isAuthenticated()"
-            :to="{ name: 'goal.create' }"
+            :to="{ name: 'goal.index' }"
             class="flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-medium transition duration-200"
             :class="{
               'bg-[#1FA971] text-white shadow-md': $route.path.startsWith('/goals'),
