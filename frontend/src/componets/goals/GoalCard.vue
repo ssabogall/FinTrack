@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue';
+import { useRouter } from 'vue-router';
 import { Chart, ArcElement, DoughnutController, Tooltip } from 'chart.js';
 
 import type { GoalInterface } from '@/interfaces/GoalInterface';
@@ -12,6 +13,12 @@ interface Props {
 }
 
 const props = defineProps<Props>();
+
+const router = useRouter();
+
+const navigateToEdit = (): void => {
+  router.push({ name: 'goal.edit', params: { id: props.goal.id } });
+};
 
 const canvasRef = ref<HTMLCanvasElement | null>(null);
 let chartInstance: Chart | null = null;
@@ -138,9 +145,17 @@ watch(
       />
     </div>
 
-    <!-- Dates -->
-    <footer class="flex justify-between text-xs text-slate-400 pt-1 border-t border-slate-100">
+    <!-- Dates + Edit -->
+    <footer class="flex items-center justify-between text-xs text-slate-400 pt-1 border-t border-slate-100">
       <span>{{ Formatters.formatShortDate(goal.startDate) }}</span>
+      <button
+        type="button"
+        class="inline-flex items-center gap-1 text-xs font-medium text-[#0B2C3D] hover:text-[#1FA971] transition"
+        @click="navigateToEdit"
+      >
+        <i class="fas fa-pencil-alt text-[10px]" />
+        <span>Edit</span>
+      </button>
       <span>{{ Formatters.formatShortDate(goal.endDate) }}</span>
     </footer>
   </article>

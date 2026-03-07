@@ -7,6 +7,7 @@ import AdminUsersView from '@/views/admin/AdminUsersView.vue';
 import LoginView from '@/views/auth/LoginView.vue';
 import RegisterView from '@/views/auth/RegisterView.vue';
 import CreateGoalView from '@/views/goals/CreateView.vue';
+import EditGoalView from '@/views/goals/EditView.vue';
 import ListGoalView from '@/views/goals/ListView.vue';
 import HomeView from '@/views/home/HomeView.vue';
 import ProfileView from '@/views/profile/ProfileView.vue';
@@ -44,6 +45,12 @@ const router = createRouter({
       name: 'goal.create',
       component: CreateGoalView,
       meta: { title: 'New Savings Goal', requiresAuth: true },
+    },
+    {
+      path: '/goals/:id/edit',
+      name: 'goal.edit',
+      component: EditGoalView,
+      meta: { title: 'Edit Savings Goal', requiresAuth: true },
     },
     {
       path: '/profile',
