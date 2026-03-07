@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import { useRouter } from 'vue-router';
 
 import GoalCard from '@/componets/goals/GoalCard.vue';
@@ -7,6 +7,8 @@ import { AuthService } from '@/services/AuthService';
 import { GoalService } from '@/services/GoalService';
 
 const router = useRouter();
+
+const deleteError = ref<string | null>(null);
 
 const goals = computed(() => {
   const currentUser = AuthService.getCurrentUser();
@@ -16,6 +18,15 @@ const goals = computed(() => {
 
 const navigateToCreate = (): void => {
   router.push({ name: 'goal.create' });
+};
+
+const handleDelete = (id: number): void => {
+  deleteError.value = null;
+  try {
+    GoalService.delete(id);
+  } catch (err) {
+    deleteError.value = err instanceof Error ? err.message : 'Could not delete goal.';
+  }
 };
 </script>
 
@@ -36,6 +47,11 @@ const navigateToCreate = (): void => {
         <span>New goal</span>
       </button>
     </header>
+
+    <!-- Delete error -->
+    <p v-if="deleteError" class="text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-4 py-2">
+      {{ deleteError }}
+    </p>
 
     <!-- Empty state -->
     <div
@@ -61,7 +77,7 @@ const navigateToCreate = (): void => {
 
     <!-- Goals grid -->
     <div v-else class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
-      <GoalCard v-for="goal in goals" :key="goal.id" :goal="goal" />
+      <GoalCard v-for="goal in goals" :key="goal.id" :goal="goal" @delete="handleDelete" />
     </div>
   </section>
 </template>

@@ -14,10 +14,31 @@ interface Props {
 
 const props = defineProps<Props>();
 
+const emit = defineEmits<{
+  (e: 'delete', id: number): void;
+}>();
+
 const router = useRouter();
+
+const showConfirm = ref(false);
+
+const isCompleted = computed((): boolean => props.goal.status === 'Completed');
 
 const navigateToEdit = (): void => {
   router.push({ name: 'goal.edit', params: { id: props.goal.id } });
+};
+
+const requestDelete = (): void => {
+  showConfirm.value = true;
+};
+
+const confirmDelete = (): void => {
+  showConfirm.value = false;
+  emit('delete', props.goal.id);
+};
+
+const cancelDelete = (): void => {
+  showConfirm.value = false;
 };
 
 const canvasRef = ref<HTMLCanvasElement | null>(null);
@@ -86,8 +107,38 @@ watch(
 
 <template>
   <article
-    class="rounded-2xl border border-slate-200 bg-white shadow-sm p-6 flex flex-col gap-4 hover:shadow-md transition"
+    class="rounded-2xl border border-slate-200 bg-white shadow-sm p-6 flex flex-col gap-4 hover:shadow-md transition relative"
   >
+    <!-- Delete confirmation overlay -->
+    <div
+      v-if="showConfirm"
+      class="absolute inset-0 z-10 rounded-2xl bg-white/95 backdrop-blur-sm flex flex-col items-center justify-center gap-4 px-6 text-center"
+    >
+      <div class="w-12 h-12 rounded-full bg-red-100 text-red-500 flex items-center justify-center text-xl">
+        <i class="fas fa-trash-alt" />
+      </div>
+      <div class="space-y-1">
+        <p class="text-sm font-semibold text-[#0B2C3D]">Delete this goal?</p>
+        <p class="text-xs text-slate-500">This action cannot be undone.</p>
+      </div>
+      <div class="flex gap-2 w-full">
+        <button
+          type="button"
+          class="flex-1 rounded-lg border border-slate-300 text-slate-700 text-xs font-medium py-2 hover:bg-slate-50 transition"
+          @click="cancelDelete"
+        >
+          Cancel
+        </button>
+        <button
+          type="button"
+          class="flex-1 rounded-lg bg-red-500 text-white text-xs font-medium py-2 hover:bg-red-600 transition"
+          @click="confirmDelete"
+        >
+          Delete
+        </button>
+      </div>
+    </div>
+
     <!-- Header -->
     <header class="flex items-start justify-between gap-3">
       <div class="flex-1 min-w-0">
@@ -145,17 +196,37 @@ watch(
       />
     </div>
 
-    <!-- Dates + Edit -->
+    <!-- Dates + actions -->
     <footer class="flex items-center justify-between text-xs text-slate-400 pt-1 border-t border-slate-100">
       <span>{{ Formatters.formatShortDate(goal.startDate) }}</span>
-      <button
-        type="button"
-        class="inline-flex items-center gap-1 text-xs font-medium text-[#0B2C3D] hover:text-[#1FA971] transition"
-        @click="navigateToEdit"
-      >
-        <i class="fas fa-pencil-alt text-[10px]" />
-        <span>Edit</span>
-      </button>
+
+      <div class="flex items-center gap-3">
+        <!-- Edit -->
+        <button
+          type="button"
+          class="inline-flex items-center gap-1 text-xs font-medium text-[#0B2C3D] hover:text-[#1FA971] transition"
+          @click="navigateToEdit"
+        >
+          <i class="fas fa-pencil-alt text-[10px]" />
+          <span>Edit</span>
+        </button>
+
+        <!-- Delete — disabled if completed -->
+        <button
+          type="button"
+          class="inline-flex items-center gap-1 text-xs font-medium transition"
+          :class="isCompleted
+            ? 'text-slate-300 cursor-not-allowed'
+            : 'text-red-400 hover:text-red-600'"
+          :disabled="isCompleted"
+          :title="isCompleted ? 'Completed goals cannot be deleted' : 'Delete goal'"
+          @click="requestDelete"
+        >
+          <i class="fas fa-trash-alt text-[10px]" />
+          <span>Delete</span>
+        </button>
+      </div>
+
       <span>{{ Formatters.formatShortDate(goal.endDate) }}</span>
     </footer>
   </article>

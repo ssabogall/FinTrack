@@ -60,7 +60,7 @@ function handleChangePassword(): void {
     newPassword.value = '';
     confirmPassword.value = '';
     setTimeout(() => (passwordMessage.value = null), 3000);
-  } catch (e) {
+  } catch {
     passwordMessage.value = 'error';
   }
 }

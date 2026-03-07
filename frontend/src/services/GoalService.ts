@@ -14,6 +14,29 @@ export class GoalService {
     return useGoalStore().goals.find((goal) => goal.id === id);
   }
 
+  public static delete(id: number): void {
+    const goalStore = useGoalStore();
+    const authStore = useAuthStore();
+
+    const index = goalStore.goals.findIndex((goal) => goal.id === id);
+
+    if (index === -1) {
+      throw new Error('Goal not found.');
+    }
+
+    if (goalStore.goals[index].status === 'Completed') {
+      throw new Error('Completed goals cannot be deleted.');
+    }
+
+    goalStore.goals.splice(index, 1);
+
+    if (authStore.currentUser?.goalIds) {
+      authStore.currentUser.goalIds = authStore.currentUser.goalIds.filter(
+        (goalId) => goalId !== id,
+      );
+    }
+  }
+
   public static update(id: number, dto: UpdateGoalDTO): void {
     if (dto.name !== undefined && !dto.name.trim()) {
       throw new Error('Goal name cannot be empty.');
