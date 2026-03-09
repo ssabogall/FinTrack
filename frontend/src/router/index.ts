@@ -7,6 +7,7 @@ import AdminUsersView from '@/views/admin/AdminUsersView.vue';
 import CreateGoalView from '@/views/goals/CreateView.vue';
 import EditGoalView from '@/views/goals/EditView.vue';
 import HomeView from '@/views/home/HomeView.vue';
+import IndexCategoryView from '@/views/categories/IndexView.vue';
 import IndexGoalView from '@/views/goals/IndexView.vue';
 import LoginView from '@/views/auth/LoginView.vue';
 import ProfileView from '@/views/profile/ProfileView.vue';
@@ -35,6 +36,14 @@ const router = createRouter({
       name: 'register',
       component: RegisterView,
       meta: { title: 'Register', guestOnly: true },
+    },
+
+    // Category routes
+    {
+      path: '/categories',
+      name: 'category.index',
+      component: IndexCategoryView,
+      meta: { title: 'Categories', requiresAuth: true },
     },
 
     // Goals routes

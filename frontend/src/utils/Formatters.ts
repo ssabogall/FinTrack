@@ -35,4 +35,8 @@ export class Formatters {
 
     return d.toLocaleDateString(locale);
   }
+
+  public static formatCurrency(value: number): string {
+    return `$${Math.abs(value).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  }
 }
