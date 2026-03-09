@@ -55,7 +55,7 @@ export const transactionSeeder: TransactionInterface[] = [
     createdAt: now,
     updatedAt: now,
     userId: 3,
-    categoryId: 1,
+    categoryId: 6,
     goalId: null,
   },
   {
@@ -66,7 +66,7 @@ export const transactionSeeder: TransactionInterface[] = [
     createdAt: now,
     updatedAt: now,
     userId: 3,
-    categoryId: 2,
+    categoryId: 7,
     goalId: null,
   },
   {
@@ -77,7 +77,7 @@ export const transactionSeeder: TransactionInterface[] = [
     createdAt: now,
     updatedAt: now,
     userId: 3,
-    categoryId: 4,
+    categoryId: 8,
     goalId: null,
   },
   {
@@ -99,7 +99,7 @@ export const transactionSeeder: TransactionInterface[] = [
     createdAt: now,
     updatedAt: now,
     userId: 4,
-    categoryId: 2,
+    categoryId: 10,
     goalId: null,
   },
   {
@@ -121,7 +121,7 @@ export const transactionSeeder: TransactionInterface[] = [
     createdAt: now,
     updatedAt: now,
     userId: 3,
-    categoryId: 5,
+    categoryId: 9,
     goalId: 2,
   },
   {
@@ -132,7 +132,7 @@ export const transactionSeeder: TransactionInterface[] = [
     createdAt: now,
     updatedAt: now,
     userId: 4,
-    categoryId: 5,
+    categoryId: 11,
     goalId: 3,
   },
 ];

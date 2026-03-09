@@ -2,12 +2,26 @@
 import type { CreateCategoryDTO } from '@/dtos/category/CreateCategoryDTO';
 import type { UpdateCategoryDTO } from '@/dtos/category/UpdateCategoryDTO';
 import type { CategoryInterface } from '@/interfaces/CategoryInterface';
+import { AuthService } from '@/services/AuthService';
 import { useCategoryStore } from '@/stores/categorystore';
 import { useTransactionStore } from '@/stores/transactionstore';
 
 export class CategoryService {
   public static getAll(): CategoryInterface[] {
     return useCategoryStore().categories;
+  }
+
+  public static getByUser(userId: number): CategoryInterface[] {
+    return useCategoryStore().categories.filter((c) => c.userId === userId);
+  }
+
+  public static getForCurrentUser(includeAdminGlobal = false): CategoryInterface[] {
+    const currentUser = AuthService.getCurrentUser();
+    if (!currentUser) return [];
+    if (includeAdminGlobal && AuthService.isAdmin()) {
+      return CategoryService.getAll();
+    }
+    return CategoryService.getByUser(currentUser.id);
   }
 
   public static getById(id: number): CategoryInterface | undefined {
@@ -19,10 +33,17 @@ export class CategoryService {
       throw new Error('Category name cannot be empty.');
     }
 
+    const currentUser = AuthService.getCurrentUser();
+    if (!currentUser) {
+      throw new Error('You must be logged in to create a category.');
+    }
+
     const categoryStore = useCategoryStore();
 
     const duplicate = categoryStore.categories.find(
-      (c) => c.name.toLowerCase() === dto.name.trim().toLowerCase(),
+      (c) =>
+        c.userId === currentUser.id &&
+        c.name.toLowerCase() === dto.name.trim().toLowerCase(),
     );
 
     if (duplicate) {
@@ -39,6 +60,7 @@ export class CategoryService {
       type: dto.type,
       createdAt: now,
       updatedAt: now,
+      userId: currentUser.id,
       transactionIds: [],
     };
 
@@ -64,7 +86,10 @@ export class CategoryService {
 
     if (dto.name !== undefined) {
       const duplicate = categoryStore.categories.find(
-        (c) => c.id !== id && c.name.toLowerCase() === dto.name!.trim().toLowerCase(),
+        (c) =>
+          c.id !== id &&
+          c.userId === current.userId &&
+          c.name.toLowerCase() === dto.name!.trim().toLowerCase(),
       );
       if (duplicate) {
         throw new Error('A category with this name already exists.');
@@ -78,6 +103,7 @@ export class CategoryService {
       type: dto.type ?? current.type,
       createdAt: current.createdAt,
       updatedAt: new Date(),
+      userId: current.userId,
       transactionIds: current.transactionIds,
     } as CategoryInterface;
   }
@@ -101,20 +127,23 @@ export class CategoryService {
     categoryStore.categories.splice(index, 1);
   }
 
-  public static getTransactionCount(categoryId: number): number {
+  public static getTransactionCount(categoryId: number, userId: number): number {
     const transactionStore = useTransactionStore();
-    return transactionStore.transactions.filter((t) => t.categoryId === categoryId).length;
+    return transactionStore.transactions.filter(
+      (t) => t.categoryId === categoryId && t.userId === userId,
+    ).length;
   }
 
-  public static getTotalAmount(categoryId: number): number {
+  public static getTotalAmount(categoryId: number, userId: number): number {
     const transactionStore = useTransactionStore();
     return transactionStore.transactions
-      .filter((t) => t.categoryId === categoryId)
+      .filter((t) => t.categoryId === categoryId && t.userId === userId)
       .reduce((sum, t) => sum + Math.abs(t.amount), 0);
   }
 
-  public static getSummary(): { total: number; expense: number; income: number } {
-    const categories = CategoryService.getAll();
+  public static getSummary(
+    categories: CategoryInterface[],
+  ): { total: number; expense: number; income: number } {
     const total = categories.length;
     const expense = categories.filter((c) => c.type === 'expense').length;
     const income = categories.filter((c) => c.type === 'income').length;
@@ -122,8 +151,11 @@ export class CategoryService {
     return { total, expense, income };
   }
 
-  public static filter(search: string, type: string): CategoryInterface[] {
-    const categories = CategoryService.getAll();
+  public static filter(
+    categories: CategoryInterface[],
+    search: string,
+    type: string,
+  ): CategoryInterface[] {
     let result = categories;
 
     if (search) {
@@ -138,14 +170,18 @@ export class CategoryService {
     return result;
   }
 
-  public static getExpenseDistribution(): { name: string; amount: number; color: string }[] {
+  public static getExpenseDistribution(userId: number): {
+    name: string;
+    amount: number;
+    color: string;
+  }[] {
     const transactionStore = useTransactionStore();
     const categoryStore = useCategoryStore();
 
     const map = new Map<number, { name: string; amount: number; color: string }>();
 
     for (const tx of transactionStore.transactions) {
-      if (tx.amount >= 0 || !tx.categoryId) continue;
+      if (tx.userId !== userId || tx.amount >= 0 || !tx.categoryId) continue;
       const cat = categoryStore.categories.find((c) => c.id === tx.categoryId);
       if (!cat || cat.type !== 'expense') continue;
 

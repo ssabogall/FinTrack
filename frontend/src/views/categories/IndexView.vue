@@ -8,6 +8,7 @@ import CategoryDistributionChart from '@/components/categories/CategoryDistribut
 import CategoryFormModal from '@/components/categories/CategoryFormModal.vue';
 import CategorySummaryCards from '@/components/categories/CategorySummaryCards.vue';
 import type { CategoryInterface } from '@/interfaces/CategoryInterface';
+import { AuthService } from '@/services/AuthService';
 import { CategoryService } from '@/services/CategoryService';
 
 // reactive variables
@@ -20,18 +21,31 @@ const searchQuery = ref('');
 const typeFilter = ref('all');
 
 // selectors
-const filteredCategories = computed((): CategoryInterface[] =>
-  CategoryService.filter(searchQuery.value, typeFilter.value),
+const userCategories = computed((): CategoryInterface[] =>
+  CategoryService.getForCurrentUser(true),
 );
 
-const categorySummary = computed(() => CategoryService.getSummary());
+const filteredCategories = computed((): CategoryInterface[] =>
+  CategoryService.filter(userCategories.value, searchQuery.value, typeFilter.value),
+);
+
+const categorySummary = computed(() =>
+  CategoryService.getSummary(userCategories.value),
+);
 
 const totalCount = computed((): number => categorySummary.value.total);
 const expenseCount = computed((): number => categorySummary.value.expense);
 const incomeCount = computed((): number => categorySummary.value.income);
 
+const currentUserId = computed((): number | null =>
+  AuthService.getCurrentUser()?.id ?? null,
+);
+
 const expenseCategorySlices = computed(
-  (): { name: string; amount: number; color: string }[] => CategoryService.getExpenseDistribution(),
+  (): { name: string; amount: number; color: string }[] =>
+    currentUserId.value
+      ? CategoryService.getExpenseDistribution(currentUserId.value)
+      : [],
 );
 
 const modalInitialValues = computed(() => {
@@ -188,8 +202,14 @@ const handleDelete = (id: number): void => {
         v-for="cat in filteredCategories"
         :key="cat.id"
         :category="cat"
-        :transaction-count="CategoryService.getTransactionCount(cat.id)"
-        :total-amount="CategoryService.getTotalAmount(cat.id)"
+        :transaction-count="
+          currentUserId
+            ? CategoryService.getTransactionCount(cat.id, currentUserId)
+            : 0
+        "
+        :total-amount="
+          currentUserId ? CategoryService.getTotalAmount(cat.id, currentUserId) : 0
+        "
         @edit="openEdit"
         @delete="handleDelete"
       />

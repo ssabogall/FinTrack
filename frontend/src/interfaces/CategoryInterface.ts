@@ -7,5 +7,6 @@ export interface CategoryInterface {
   updatedAt: Date;
 
   // relations
+  userId: number;
   transactionIds: number[] | null;
 }
