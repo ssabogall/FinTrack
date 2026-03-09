@@ -1,13 +1,18 @@
 <script setup lang="ts">
+// external imports
 import { computed, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
+
+// internal imports
 import { AuthService } from '@/services/AuthService';
 import { UserService } from '@/services/UserService';
 import { Formatters } from '@/utils/Formatters';
 
+// variables
 const router = useRouter();
 const user = computed(() => AuthService.getCurrentUser());
 
+// reactive variables
 const activeTab = ref<'general' | 'security'>('general');
 
 const fullName = ref('');
@@ -30,6 +35,7 @@ watch(
   { immediate: true },
 );
 
+// selectors
 const initials = computed(() => Formatters.initialsFromName(user.value?.name));
 
 const memberSince = computed(() => Formatters.memberSince(user.value?.createdAt, 'en-US'));
@@ -60,7 +66,7 @@ function handleChangePassword(): void {
     newPassword.value = '';
     confirmPassword.value = '';
     setTimeout(() => (passwordMessage.value = null), 3000);
-  } catch (e) {
+  } catch {
     passwordMessage.value = 'error';
   }
 }

@@ -1,14 +1,24 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 
 interface Props {
   loading?: boolean;
   error?: string | null;
+  initialValues?: {
+    name?: string;
+    description?: string;
+    targetAmount?: number;
+    startDate?: string;
+    endDate?: string;
+  };
+  submitLabel?: string;
 }
 
 const props = withDefaults(defineProps<Props>(), {
   loading: false,
   error: null,
+  initialValues: () => ({}),
+  submitLabel: 'Save',
 });
 
 const emit = defineEmits<{
@@ -24,11 +34,23 @@ const emit = defineEmits<{
   ): void;
 }>();
 
-const name = ref('');
-const description = ref('');
-const targetAmount = ref<number | ''>('');
-const startDate = ref('');
-const endDate = ref('');
+const name = ref(props.initialValues.name ?? '');
+const description = ref(props.initialValues.description ?? '');
+const targetAmount = ref<number | ''>(props.initialValues.targetAmount ?? '');
+const startDate = ref(props.initialValues.startDate ?? '');
+const endDate = ref(props.initialValues.endDate ?? '');
+
+// sync if parent updates initialValues after mount (e.g. async load)
+watch(
+  () => props.initialValues,
+  (values) => {
+    name.value = values.name ?? '';
+    description.value = values.description ?? '';
+    targetAmount.value = values.targetAmount ?? '';
+    startDate.value = values.startDate ?? '';
+    endDate.value = values.endDate ?? '';
+  },
+);
 
 const handleSubmit = (): void => {
   emit('submit', {
@@ -121,8 +143,8 @@ const handleSubmit = (): void => {
       :disabled="props.loading"
       class="w-full inline-flex items-center justify-center rounded-lg bg-[#0B2C3D] text-white text-sm font-medium py-2.5 hover:bg-[#0d3a52] transition disabled:opacity-60 disabled:cursor-not-allowed"
     >
-      <span v-if="!props.loading">Create goal</span>
-      <span v-else>Creating...</span>
+      <span v-if="!props.loading">{{ props.submitLabel }}</span>
+      <span v-else>Saving...</span>
     </button>
   </form>
 </template>

@@ -1,16 +1,20 @@
 <script setup lang="ts">
+// external imports
 import { ref } from 'vue';
-import { useRouter, useRoute } from 'vue-router';
-import { AuthService } from '@/services/AuthService';
-import logo from '@/assets/logo/FinTrack-white.png';
+import { useRoute, useRouter } from 'vue-router';
 
+// internal imports
+import logo from '@/assets/logo/FinTrack-white.png';
+import { AuthService } from '@/services/AuthService';
+
+// variables
 const router = useRouter();
 const route = useRoute();
 
+// reactive variables
 const email = ref('');
 const password = ref('');
 const localError = ref<string | null>(null);
-
 const submitting = ref(false);
 
 const handleSubmit = (): void => {
@@ -105,7 +109,7 @@ const handleSubmit = (): void => {
               v-model="email"
               type="email"
               required
-              class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent"
+              class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent"
               placeholder="you@example.com"
             />
           </div>
@@ -117,7 +121,7 @@ const handleSubmit = (): void => {
               v-model="password"
               type="password"
               required
-              class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent"
+              class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent"
               placeholder="••••••••"
             />
           </div>

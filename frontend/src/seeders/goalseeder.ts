@@ -1,4 +1,5 @@
 import type { GoalInterface } from '@/interfaces/GoalInterface';
+import { GoalStatusHelper } from '@/utils/GoalStatusHelper';
 
 const now = new Date();
 
@@ -11,7 +12,7 @@ export const goalSeeder: GoalInterface[] = [
     currentAmount: 1200,
     startDate: new Date(now.getFullYear(), now.getMonth() - 5, 1),
     endDate: new Date(now.getFullYear(), now.getMonth() + 1, 1),
-    status: 'in-progress',
+    status: GoalStatusHelper.compute(1200, 3000),
     createdAt: now,
     updatedAt: now,
     userId: 2,
@@ -25,7 +26,7 @@ export const goalSeeder: GoalInterface[] = [
     currentAmount: 800,
     startDate: new Date(now.getFullYear(), now.getMonth() - 3, 15),
     endDate: new Date(now.getFullYear(), now.getMonth() + 3, 15),
-    status: 'in-progress',
+    status: GoalStatusHelper.compute(800, 1500),
     createdAt: now,
     updatedAt: now,
     userId: 3,
@@ -39,7 +40,7 @@ export const goalSeeder: GoalInterface[] = [
     currentAmount: 1500,
     startDate: new Date(now.getFullYear(), now.getMonth() - 6, 10),
     endDate: new Date(now.getFullYear(), now.getMonth() + 2, 10),
-    status: 'in-progress',
+    status: GoalStatusHelper.compute(1500, 2000),
     createdAt: now,
     updatedAt: now,
     userId: 4,
