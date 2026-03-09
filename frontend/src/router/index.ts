@@ -8,6 +8,7 @@ import CreateGoalView from '@/views/goals/CreateView.vue';
 import EditGoalView from '@/views/goals/EditView.vue';
 import HomeView from '@/views/home/HomeView.vue';
 import IndexGoalView from '@/views/goals/IndexView.vue';
+import IndexTransactionView from '@/views/transactions/IndexView.vue';
 import LoginView from '@/views/auth/LoginView.vue';
 import ProfileView from '@/views/profile/ProfileView.vue';
 import RegisterView from '@/views/auth/RegisterView.vue';
@@ -35,6 +36,14 @@ const router = createRouter({
       name: 'register',
       component: RegisterView,
       meta: { title: 'Register', guestOnly: true },
+    },
+
+    // Transaction routes
+    {
+      path: '/transactions',
+      name: 'transaction.index',
+      component: IndexTransactionView,
+      meta: { title: 'Transactions', requiresAuth: true },
     },
 
     // Goals routes
