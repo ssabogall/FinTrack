@@ -46,4 +46,3 @@ export class ChartUtils {
     return new Chart(canvas, config);
   }
 }
-

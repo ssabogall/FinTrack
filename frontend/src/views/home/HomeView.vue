@@ -1,4 +1,16 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+// external imports
+
+// internal imports
+
+// variables
+
+// reactive variables
+
+// selectors
+
+// watchers
+</script>
 
 <template>
   <section class="mt-4 mb-4">

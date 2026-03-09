@@ -1,22 +1,28 @@
 <script setup lang="ts">
+// external imports
 import { computed, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
+// internal imports
 import GoalForm from '@/components/goals/GoalForm.vue';
 import { GoalService } from '@/services/GoalService';
 
+// variables
 const route = useRoute();
 const router = useRouter();
 
+// selectors
 const goalId = computed((): number => Number(route.params.id));
 
 const goal = computed(() => GoalService.getById(goalId.value));
 
+// variables
 const toDateInput = (date: Date | string): string => {
   const d = date instanceof Date ? date : new Date(date);
   return d.toISOString().substring(0, 10);
 };
 
+// selectors
 const initialValues = computed(() => {
   if (!goal.value) return {};
   return {
@@ -28,6 +34,7 @@ const initialValues = computed(() => {
   };
 });
 
+// reactive variables
 const loading = ref(false);
 const error = ref<string | null>(null);
 const success = ref(false);

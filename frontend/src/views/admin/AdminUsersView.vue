@@ -1,11 +1,16 @@
 <script setup lang="ts">
+// external imports
 import { computed, ref } from 'vue';
-import { UserService } from '@/services/UserService';
+
+// internal imports
 import type { UserInterface } from '@/interfaces/UserInterface';
+import { UserService } from '@/services/UserService';
 import { Formatters } from '@/utils/Formatters';
 
+// variables
 const users = computed(() => UserService.getAllUsers());
 
+// reactive variables
 const editingId = ref<number | null>(null);
 const editName = ref('');
 const editEmail = ref('');
@@ -43,6 +48,7 @@ function saveEdit(): void {
   }
 }
 
+// selectors
 function roleLabel(role: string): string {
   return Formatters.roleLabel(role);
 }

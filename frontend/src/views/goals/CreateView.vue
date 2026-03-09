@@ -1,13 +1,17 @@
 <script setup lang="ts">
+// external imports
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 
+// internal imports
+import GoalForm from '@/components/goals/GoalForm.vue';
 import { AuthService } from '@/services/AuthService';
 import { GoalService } from '@/services/GoalService';
-import GoalForm from '@/components/goals/GoalForm.vue';
 
+// variables
 const router = useRouter();
 
+// reactive variables
 const loading = ref(false);
 const error = ref<string | null>(null);
 const success = ref(false);

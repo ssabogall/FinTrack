@@ -1,15 +1,20 @@
 <script setup lang="ts">
+// external imports
 import { computed, ref } from 'vue';
 import { useRouter } from 'vue-router';
 
+// internal imports
 import GoalCard from '@/components/goals/GoalCard.vue';
 import { AuthService } from '@/services/AuthService';
 import { GoalService } from '@/services/GoalService';
 
+// variables
 const router = useRouter();
 
+// reactive variables
 const deleteError = ref<string | null>(null);
 
+// selectors
 const goals = computed(() => {
   const currentUser = AuthService.getCurrentUser();
   if (!currentUser) return [];

@@ -1,11 +1,16 @@
 <script setup lang="ts">
+// external imports
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
-import { AuthService } from '@/services/AuthService';
-import logo from '@/assets/logo/FinTrack-white.png';
 
+// internal imports
+import logo from '@/assets/logo/FinTrack-white.png';
+import { AuthService } from '@/services/AuthService';
+
+// variables
 const router = useRouter();
 
+// reactive variables
 const name = ref('');
 const email = ref('');
 const password = ref('');
