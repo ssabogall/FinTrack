@@ -1,7 +1,7 @@
 // internal imports
-import type { CategoryInterface } from '@/interfaces/CategoryInterface';
 import type { CreateCategoryDTO } from '@/dtos/category/CreateCategoryDTO';
 import type { UpdateCategoryDTO } from '@/dtos/category/UpdateCategoryDTO';
+import type { CategoryInterface } from '@/interfaces/CategoryInterface';
 import { useCategoryStore } from '@/stores/categorystore';
 import { useTransactionStore } from '@/stores/transactionstore';
 
@@ -111,5 +111,52 @@ export class CategoryService {
     return transactionStore.transactions
       .filter((t) => t.categoryId === categoryId)
       .reduce((sum, t) => sum + Math.abs(t.amount), 0);
+  }
+
+  public static getSummary(): { total: number; expense: number; income: number } {
+    const categories = CategoryService.getAll();
+    const total = categories.length;
+    const expense = categories.filter((c) => c.type === 'expense').length;
+    const income = categories.filter((c) => c.type === 'income').length;
+
+    return { total, expense, income };
+  }
+
+  public static filter(search: string, type: string): CategoryInterface[] {
+    const categories = CategoryService.getAll();
+    let result = categories;
+
+    if (search) {
+      const q = search.toLowerCase();
+      result = result.filter((c) => c.name.toLowerCase().includes(q));
+    }
+
+    if (type !== 'all') {
+      result = result.filter((c) => c.type === type);
+    }
+
+    return result;
+  }
+
+  public static getExpenseDistribution(): { name: string; amount: number; color: string }[] {
+    const transactionStore = useTransactionStore();
+    const categoryStore = useCategoryStore();
+
+    const map = new Map<number, { name: string; amount: number; color: string }>();
+
+    for (const tx of transactionStore.transactions) {
+      if (tx.amount >= 0 || !tx.categoryId) continue;
+      const cat = categoryStore.categories.find((c) => c.id === tx.categoryId);
+      if (!cat || cat.type !== 'expense') continue;
+
+      const existing = map.get(cat.id);
+      if (existing) {
+        existing.amount += Math.abs(tx.amount);
+      } else {
+        map.set(cat.id, { name: cat.name, amount: Math.abs(tx.amount), color: cat.color });
+      }
+    }
+
+    return Array.from(map.values()).sort((a, b) => b.amount - a.amount);
   }
 }

@@ -10,7 +10,7 @@ import CategorySummaryCards from '@/components/categories/CategorySummaryCards.v
 import type { CategoryInterface } from '@/interfaces/CategoryInterface';
 import { CategoryService } from '@/services/CategoryService';
 
-// reactive state
+// reactive variables
 const showModal = ref(false);
 const editingCategory = ref<CategoryInterface | null>(null);
 const formError = ref<string | null>(null);
@@ -19,43 +19,19 @@ const deleteError = ref<string | null>(null);
 const searchQuery = ref('');
 const typeFilter = ref('all');
 
-// computed
-const allCategories = computed((): CategoryInterface[] => CategoryService.getAll());
-
-const filteredCategories = computed((): CategoryInterface[] => {
-  let result = allCategories.value;
-
-  if (searchQuery.value) {
-    const q = searchQuery.value.toLowerCase();
-    result = result.filter((c) => c.name.toLowerCase().includes(q));
-  }
-
-  if (typeFilter.value !== 'all') {
-    result = result.filter((c) => c.type === typeFilter.value);
-  }
-
-  return result;
-});
-
-const totalCount = computed((): number => allCategories.value.length);
-
-const expenseCount = computed(
-  (): number => allCategories.value.filter((c) => c.type === 'expense').length,
+// selectors
+const filteredCategories = computed((): CategoryInterface[] =>
+  CategoryService.filter(searchQuery.value, typeFilter.value),
 );
 
-const incomeCount = computed(
-  (): number => allCategories.value.filter((c) => c.type === 'income').length,
-);
+const categorySummary = computed(() => CategoryService.getSummary());
 
-const expenseCategorySlices = computed((): { name: string; amount: number; color: string }[] =>
-  allCategories.value
-    .filter((c) => c.type === 'expense')
-    .map((c) => ({
-      name: c.name,
-      amount: CategoryService.getTotalAmount(c.id),
-      color: c.color,
-    }))
-    .filter((s) => s.amount > 0),
+const totalCount = computed((): number => categorySummary.value.total);
+const expenseCount = computed((): number => categorySummary.value.expense);
+const incomeCount = computed((): number => categorySummary.value.income);
+
+const expenseCategorySlices = computed(
+  (): { name: string; amount: number; color: string }[] => CategoryService.getExpenseDistribution(),
 );
 
 const modalInitialValues = computed(() => {
@@ -67,7 +43,6 @@ const modalInitialValues = computed(() => {
   };
 });
 
-// handlers
 const openCreate = (): void => {
   editingCategory.value = null;
   formError.value = null;
