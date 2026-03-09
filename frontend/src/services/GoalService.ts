@@ -25,7 +25,13 @@ export class GoalService {
       throw new Error('Goal not found.');
     }
 
-    if (goalStore.goals[index].status === 'Completed') {
+    const goal = goalStore.goals[index];
+
+    if (!goal) {
+      throw new Error('Goal not found.');
+    }
+
+    if (goal.status === 'Completed') {
       throw new Error('Completed goals cannot be deleted.');
     }
 
@@ -55,6 +61,9 @@ export class GoalService {
     }
 
     const current = goalStore.goals[index];
+    if (!current) {
+      throw new Error('Goal not found.');
+    }
 
     const startDate = dto.startDate ? new Date(dto.startDate) : current.startDate;
     const endDate = dto.endDate ? new Date(dto.endDate) : current.endDate;
@@ -66,15 +75,19 @@ export class GoalService {
     const updatedTargetAmount = dto.targetAmount ?? current.targetAmount;
 
     goalStore.goals[index] = {
-      ...current,
+      id: current.id,
       name: dto.name ?? current.name,
       description: dto.description ?? current.description,
       targetAmount: updatedTargetAmount,
+      currentAmount: current.currentAmount,
       startDate,
       endDate,
       status: GoalStatusHelper.compute(current.currentAmount, updatedTargetAmount),
+      createdAt: current.createdAt,
       updatedAt: new Date(),
-    };
+      userId: current.userId,
+      transactionIds: current.transactionIds,
+    } as GoalInterface;
   }
 
   public static create(dto: CreateGoalDTO): void {
