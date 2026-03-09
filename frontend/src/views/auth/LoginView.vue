@@ -109,7 +109,7 @@ const handleSubmit = (): void => {
               v-model="email"
               type="email"
               required
-              class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent"
+              class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent"
               placeholder="you@example.com"
             />
           </div>
@@ -121,7 +121,7 @@ const handleSubmit = (): void => {
               v-model="password"
               type="password"
               required
-              class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent"
+              class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent"
               placeholder="••••••••"
             />
           </div>
