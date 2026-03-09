@@ -48,14 +48,11 @@ let chartInstance: Chart | null = null;
 
 const percentage = computed((): number => {
   if (props.goal.targetAmount <= 0) return 0;
-  return Math.min(
-    Math.round((props.goal.currentAmount / props.goal.targetAmount) * 100),
-    100,
-  );
+  return Math.min(Math.round((props.goal.currentAmount / props.goal.targetAmount) * 100), 100);
 });
 
-const goalStatus = computed((): GoalStatus =>
-  GoalStatusHelper.compute(props.goal.currentAmount, props.goal.targetAmount),
+const goalStatus = computed(
+  (): GoalStatus => GoalStatusHelper.compute(props.goal.currentAmount, props.goal.targetAmount),
 );
 
 const statusColor = computed((): string => GoalStatusHelper.color(goalStatus.value));
@@ -120,7 +117,9 @@ watch(
       v-if="showConfirm"
       class="absolute inset-0 z-10 rounded-2xl bg-white/95 backdrop-blur-sm flex flex-col items-center justify-center gap-4 px-6 text-center"
     >
-      <div class="w-12 h-12 rounded-full bg-red-100 text-red-500 flex items-center justify-center text-xl">
+      <div
+        class="w-12 h-12 rounded-full bg-red-100 text-red-500 flex items-center justify-center text-xl"
+      >
         <i class="fas fa-trash-alt" />
       </div>
       <div class="space-y-1">
@@ -204,7 +203,9 @@ watch(
     </div>
 
     <!-- Dates + actions -->
-    <footer class="flex items-center justify-between text-xs text-slate-400 pt-1 border-t border-slate-100">
+    <footer
+      class="flex items-center justify-between text-xs text-slate-400 pt-1 border-t border-slate-100"
+    >
       <span>{{ Formatters.formatShortDate(goal.startDate) }}</span>
 
       <div class="flex items-center gap-3">
@@ -222,9 +223,9 @@ watch(
         <button
           type="button"
           class="inline-flex items-center gap-1 text-xs font-medium transition"
-          :class="isCompleted
-            ? 'text-slate-300 cursor-not-allowed'
-            : 'text-red-400 hover:text-red-600'"
+          :class="
+            isCompleted ? 'text-slate-300 cursor-not-allowed' : 'text-red-400 hover:text-red-600'
+          "
           :disabled="isCompleted"
           :title="isCompleted ? 'Completed goals cannot be deleted' : 'Delete goal'"
           @click="requestDelete"

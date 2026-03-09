@@ -103,10 +103,7 @@ const goBack = (): void => {
     </div>
 
     <!-- Edit form -->
-    <div
-      v-else
-      class="rounded-2xl border border-slate-200 bg-white shadow-sm px-8 py-8 space-y-6"
-    >
+    <div v-else class="rounded-2xl border border-slate-200 bg-white shadow-sm px-8 py-8 space-y-6">
       <header class="space-y-1">
         <h2 class="text-xl font-semibold text-[#0B2C3D]">Edit savings goal</h2>
         <p class="text-sm text-slate-500">Update the details of your goal.</p>
