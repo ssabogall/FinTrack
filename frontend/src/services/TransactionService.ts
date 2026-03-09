@@ -1,7 +1,8 @@
 // internal imports
 import type { CreateTransactionDTO } from '@/dtos/transaction/CreateTransactionDTO';
-import type { TransactionInterface } from '@/interfaces/TransactionInterface';
+import type { TransactionFilterDTO } from '@/dtos/transaction/TransactionFilterDTO';
 import type { UpdateTransactionDTO } from '@/dtos/transaction/UpdateTransactionDTO';
+import type { TransactionInterface } from '@/interfaces/TransactionInterface';
 import { useAuthStore } from '@/stores/authstore';
 import { useCategoryStore } from '@/stores/categorystore';
 import { useTransactionStore } from '@/stores/transactionstore';
@@ -17,6 +18,35 @@ export class TransactionService {
 
   public static getByUser(userId: number): TransactionInterface[] {
     return useTransactionStore().transactions.filter((t) => t.userId === userId);
+  }
+
+  public static getFilteredByUser(
+    userId: number,
+    filters: TransactionFilterDTO,
+  ): TransactionInterface[] {
+    const all = TransactionService.getByUser(userId).sort(
+      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
+    );
+
+    let result = all;
+    const { search, type, categoryId } = filters;
+
+    if (search) {
+      const q = search.toLowerCase();
+      result = result.filter((t) => t.description.toLowerCase().includes(q));
+    }
+
+    if (type === 'income') {
+      result = result.filter((t) => t.amount > 0);
+    } else if (type === 'expense') {
+      result = result.filter((t) => t.amount < 0);
+    }
+
+    if (categoryId !== null) {
+      result = result.filter((t) => t.categoryId === categoryId);
+    }
+
+    return result;
   }
 
   public static create(dto: CreateTransactionDTO): void {
@@ -167,5 +197,62 @@ export class TransactionService {
 
   public static getBalance(userId: number): number {
     return TransactionService.getByUser(userId).reduce((sum, t) => sum + t.amount, 0);
+  }
+
+  public static getMovementTrend(
+    userId: number,
+    days = 10,
+  ): { labels: string[]; income: number[]; expenses: number[] } {
+    const transactions = TransactionService.getByUser(userId);
+    const today = new Date();
+
+    const labels: string[] = [];
+    const income: number[] = [];
+    const expenses: number[] = [];
+
+    for (let i = days - 1; i >= 0; i--) {
+      const d = new Date(today);
+      d.setDate(today.getDate() - i);
+      const label = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+      const dayStr = d.toDateString();
+
+      labels.push(label);
+
+      const incomeForDay = transactions
+        .filter((t) => t.amount > 0 && new Date(t.date).toDateString() === dayStr)
+        .reduce((sum, t) => sum + t.amount, 0);
+
+      const expensesForDay = transactions
+        .filter((t) => t.amount < 0 && new Date(t.date).toDateString() === dayStr)
+        .reduce((sum, t) => sum + Math.abs(t.amount), 0);
+
+      income.push(incomeForDay);
+      expenses.push(expensesForDay);
+    }
+
+    return { labels, income, expenses };
+  }
+
+  public static getExpensesByCategory(
+    userId: number,
+  ): { name: string; amount: number; color: string }[] {
+    const transactions = TransactionService.getByUser(userId);
+    const categoryStore = useCategoryStore();
+
+    const map = new Map<number, { name: string; amount: number; color: string }>();
+
+    for (const tx of transactions) {
+      if (tx.amount >= 0 || !tx.categoryId) continue;
+      const cat = categoryStore.categories.find((c) => c.id === tx.categoryId);
+      if (!cat) continue;
+      const existing = map.get(cat.id);
+      if (existing) {
+        existing.amount += Math.abs(tx.amount);
+      } else {
+        map.set(cat.id, { name: cat.name, amount: Math.abs(tx.amount), color: cat.color });
+      }
+    }
+
+    return Array.from(map.values()).sort((a, b) => b.amount - a.amount);
   }
 }

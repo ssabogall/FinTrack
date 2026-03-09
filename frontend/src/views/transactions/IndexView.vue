@@ -9,6 +9,7 @@ import TransactionFormModal from '@/components/transactions/TransactionFormModal
 import TransactionMovementChart from '@/components/transactions/TransactionMovementChart.vue';
 import TransactionSummaryCards from '@/components/transactions/TransactionSummaryCards.vue';
 import TransactionTable from '@/components/transactions/TransactionTable.vue';
+import type { TransactionFilterDTO } from '@/dtos/transaction/TransactionFilterDTO';
 import type { TransactionInterface } from '@/interfaces/TransactionInterface';
 import { AuthService } from '@/services/AuthService';
 import { TransactionService } from '@/services/TransactionService';
@@ -25,43 +26,18 @@ const formError = ref<string | null>(null);
 const formLoading = ref(false);
 const deleteError = ref<string | null>(null);
 
-const filterState = ref<{ search: string; type: string; categoryId: number | null }>({
+const filterState = ref<TransactionFilterDTO>({
   search: '',
   type: 'all',
   categoryId: null,
-});
+} as TransactionFilterDTO);
 
 // computed
 const currentUserId = computed((): number | null => AuthService.getCurrentUser()?.id ?? null);
 
-const userTransactions = computed((): TransactionInterface[] => {
-  if (!currentUserId.value) return [];
-  return TransactionService.getByUser(currentUserId.value).sort(
-    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
-  );
-});
-
 const filteredTransactions = computed((): TransactionInterface[] => {
-  let result = userTransactions.value;
-
-  const { search, type, categoryId } = filterState.value;
-
-  if (search) {
-    const q = search.toLowerCase();
-    result = result.filter((t) => t.description.toLowerCase().includes(q));
-  }
-
-  if (type === 'income') {
-    result = result.filter((t) => t.amount > 0);
-  } else if (type === 'expense') {
-    result = result.filter((t) => t.amount < 0);
-  }
-
-  if (categoryId !== null) {
-    result = result.filter((t) => t.categoryId === categoryId);
-  }
-
-  return result;
+  if (!currentUserId.value) return [];
+  return TransactionService.getFilteredByUser(currentUserId.value, filterState.value);
 });
 
 const totalIncome = computed((): number => {
@@ -80,56 +56,21 @@ const balance = computed((): number => {
 });
 
 // Movement trends chart data (last 10 days)
-const trendLabels = computed((): string[] => {
-  const labels: string[] = [];
-  const today = new Date();
-  for (let i = 9; i >= 0; i--) {
-    const d = new Date(today);
-    d.setDate(today.getDate() - i);
-    labels.push(d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
+const movementTrend = computed(() => {
+  if (!currentUserId.value) {
+    return { labels: [], income: [], expenses: [] };
   }
-  return labels;
+  return TransactionService.getMovementTrend(currentUserId.value, 10);
 });
 
-const trendIncomeData = computed((): number[] => {
-  const today = new Date();
-  return Array.from({ length: 10 }, (_, idx) => {
-    const d = new Date(today);
-    d.setDate(today.getDate() - (9 - idx));
-    const dayStr = d.toDateString();
-    return userTransactions.value
-      .filter((t) => t.amount > 0 && new Date(t.date).toDateString() === dayStr)
-      .reduce((sum, t) => sum + t.amount, 0);
-  });
-});
-
-const trendExpenseData = computed((): number[] => {
-  const today = new Date();
-  return Array.from({ length: 10 }, (_, idx) => {
-    const d = new Date(today);
-    d.setDate(today.getDate() - (9 - idx));
-    const dayStr = d.toDateString();
-    return userTransactions.value
-      .filter((t) => t.amount < 0 && new Date(t.date).toDateString() === dayStr)
-      .reduce((sum, t) => sum + Math.abs(t.amount), 0);
-  });
-});
+const trendLabels = computed((): string[] => movementTrend.value.labels);
+const trendIncomeData = computed((): number[] => movementTrend.value.income);
+const trendExpenseData = computed((): number[] => movementTrend.value.expenses);
 
 // Expenses by category
 const expensesByCategory = computed(() => {
-  const map = new Map<number, { name: string; amount: number; color: string }>();
-  for (const tx of userTransactions.value) {
-    if (tx.amount >= 0 || !tx.categoryId) continue;
-    const cat = categoryStore.categories.find((c) => c.id === tx.categoryId);
-    if (!cat) continue;
-    const existing = map.get(cat.id);
-    if (existing) {
-      existing.amount += Math.abs(tx.amount);
-    } else {
-      map.set(cat.id, { name: cat.name, amount: Math.abs(tx.amount), color: cat.color });
-    }
-  }
-  return Array.from(map.values()).sort((a, b) => b.amount - a.amount);
+  if (!currentUserId.value) return [];
+  return TransactionService.getExpensesByCategory(currentUserId.value);
 });
 
 // Modal initial values for editing
