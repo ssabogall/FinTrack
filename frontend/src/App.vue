@@ -79,17 +79,29 @@ const handleLogout = (): void => {
           </RouterLink>
 
           <RouterLink
-            v-if="AuthService.isAuthenticated()"
-            :to="{ name: 'transaction.index' }"
-            class="flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-medium transition duration-200"
-            :class="{
-              'bg-[#1FA971] text-white shadow-md': $route.path.startsWith('/transactions'),
-              'text-white hover:bg-[#1FA971]': !$route.path.startsWith('/transactions'),
-            }"
-          >
-            <i class="fas fa-exchange-alt"></i>
-            <span>Transactions</span>
-          </RouterLink>
+          v-if="AuthService.isAuthenticated()"
+          :to="{ name: 'category.index' }"
+          class="flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-medium transition duration-200"
+          :class="{
+            'bg-[#1FA971] text-white shadow-md': $route.path.startsWith('/categories'),
+            'text-white hover:bg-[#1FA971]': !$route.path.startsWith('/categories'),
+          }"
+        >
+          <i class="fas fa-tags"></i>
+          <span>Categories</span>
+        </RouterLink>
+        <RouterLink
+          v-if="AuthService.isAuthenticated()"
+          :to="{ name: 'transaction.index' }"
+          class="flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-medium transition duration-200"
+          :class="{
+            'bg-[#1FA971] text-white shadow-md': $route.path.startsWith('/transactions'),
+            'text-white hover:bg-[#1FA971]': !$route.path.startsWith('/transactions'),
+          }"
+        >
+          <i class="fas fa-exchange-alt"></i>
+          <span>Transactions</span>
+        </RouterLink>
 
           <RouterLink
             v-if="AuthService.isAuthenticated()"

@@ -7,6 +7,7 @@ import AdminUsersView from '@/views/admin/AdminUsersView.vue';
 import CreateGoalView from '@/views/goals/CreateView.vue';
 import EditGoalView from '@/views/goals/EditView.vue';
 import HomeView from '@/views/home/HomeView.vue';
+import IndexCategoryView from '@/views/categories/IndexView.vue';
 import IndexGoalView from '@/views/goals/IndexView.vue';
 import IndexTransactionView from '@/views/transactions/IndexView.vue';
 import LoginView from '@/views/auth/LoginView.vue';
@@ -38,6 +39,13 @@ const router = createRouter({
       meta: { title: 'Register', guestOnly: true },
     },
 
+    // Category routes
+    {
+      path: '/categories',
+      name: 'category.index',
+      component: IndexCategoryView,
+      meta: { title: 'Categories', requiresAuth: true },
+    },
     // Transaction routes
     {
       path: '/transactions',

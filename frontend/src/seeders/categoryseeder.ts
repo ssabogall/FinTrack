@@ -3,6 +3,7 @@ import type { CategoryInterface } from '@/interfaces/CategoryInterface';
 const now = new Date();
 
 export const categorySeeder: CategoryInterface[] = [
+  // User 2 (Alex)
   {
     id: 1,
     name: 'Salary',
@@ -10,7 +11,8 @@ export const categorySeeder: CategoryInterface[] = [
     type: 'income',
     createdAt: now,
     updatedAt: now,
-    transactionIds: [1, 5],
+    userId: 2,
+    transactionIds: [1],
   },
   {
     id: 2,
@@ -19,7 +21,8 @@ export const categorySeeder: CategoryInterface[] = [
     type: 'expense',
     createdAt: now,
     updatedAt: now,
-    transactionIds: [2, 6, 9],
+    userId: 2,
+    transactionIds: [2],
   },
   {
     id: 3,
@@ -28,6 +31,7 @@ export const categorySeeder: CategoryInterface[] = [
     type: 'expense',
     createdAt: now,
     updatedAt: now,
+    userId: 2,
     transactionIds: [3],
   },
   {
@@ -37,7 +41,8 @@ export const categorySeeder: CategoryInterface[] = [
     type: 'expense',
     createdAt: now,
     updatedAt: now,
-    transactionIds: [4, 7],
+    userId: 2,
+    transactionIds: [4],
   },
   {
     id: 5,
@@ -46,6 +51,69 @@ export const categorySeeder: CategoryInterface[] = [
     type: 'transfer',
     createdAt: now,
     updatedAt: now,
-    transactionIds: [8, 10, 11, 12],
+    userId: 2,
+    transactionIds: [8, 10],
+  },
+  // User 3 (Maria)
+  {
+    id: 6,
+    name: 'Salary',
+    color: '#16A34A',
+    type: 'income',
+    createdAt: now,
+    updatedAt: now,
+    userId: 3,
+    transactionIds: [5],
+  },
+  {
+    id: 7,
+    name: 'Groceries',
+    color: '#F97316',
+    type: 'expense',
+    createdAt: now,
+    updatedAt: now,
+    userId: 3,
+    transactionIds: [6],
+  },
+  {
+    id: 8,
+    name: 'Subscriptions',
+    color: '#6366F1',
+    type: 'expense',
+    createdAt: now,
+    updatedAt: now,
+    userId: 3,
+    transactionIds: [7],
+  },
+  {
+    id: 9,
+    name: 'Savings',
+    color: '#22C55E',
+    type: 'transfer',
+    createdAt: now,
+    updatedAt: now,
+    userId: 3,
+    transactionIds: [11],
+  },
+  // User 4 (Daniel)
+  {
+    id: 10,
+    name: 'Groceries',
+    color: '#F97316',
+    type: 'expense',
+    createdAt: now,
+    updatedAt: now,
+    userId: 4,
+    transactionIds: [9],
+  },
+  {
+    id: 11,
+    name: 'Savings',
+    color: '#22C55E',
+    type: 'transfer',
+    createdAt: now,
+    updatedAt: now,
+    userId: 4,
+    transactionIds: [12],
   },
 ];

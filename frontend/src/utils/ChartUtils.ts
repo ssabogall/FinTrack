@@ -8,6 +8,7 @@ import {
   LinearScale,
   LineController,
   LineElement,
+  PieController,
   PointElement,
   Tooltip,
   type ChartConfiguration,
@@ -27,6 +28,7 @@ export class ChartUtils {
       LinearScale,
       LineController,
       LineElement,
+      PieController,
       PointElement,
       Tooltip,
     );
@@ -63,6 +65,57 @@ export class ChartUtils {
             },
           },
           legend: { display: false },
+        },
+      },
+    };
+
+    return new Chart(canvas, config);
+  }
+
+  public static buildCategoryDistributionPie(
+    canvas: HTMLCanvasElement,
+    labels: string[],
+    data: number[],
+    colors: string[],
+  ): Chart {
+    ChartUtils.ensureInitialized();
+
+    const config: ChartConfiguration<'pie'> = {
+      type: 'pie',
+      data: {
+        labels,
+        datasets: [
+          {
+            data,
+            backgroundColor: colors,
+            borderColor: '#FFFFFF',
+            borderWidth: 2,
+            hoverOffset: 8,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: {
+              padding: 16,
+              usePointStyle: true,
+              pointStyle: 'circle',
+              font: { size: 12 },
+            },
+          },
+          tooltip: {
+            callbacks: {
+              label: (ctx) => {
+                const total = (ctx.dataset.data as number[]).reduce((a, b) => a + b, 0);
+                const pct = total > 0 ? ((ctx.parsed / total) * 100).toFixed(1) : '0';
+                return ` ${ctx.label}: $${ctx.parsed.toLocaleString('en-US', { minimumFractionDigits: 2 })} (${pct}%)`;
+              },
+            },
+          },
         },
       },
     };

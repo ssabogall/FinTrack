@@ -12,12 +12,11 @@ import TransactionTable from '@/components/transactions/TransactionTable.vue';
 import type { TransactionFilterDTO } from '@/dtos/transaction/TransactionFilterDTO';
 import type { TransactionInterface } from '@/interfaces/TransactionInterface';
 import { AuthService } from '@/services/AuthService';
+import { CategoryService } from '@/services/CategoryService';
 import { TransactionService } from '@/services/TransactionService';
-import { useCategoryStore } from '@/stores/categorystore';
 import { Formatters } from '@/utils/Formatters';
 
-// stores
-const categoryStore = useCategoryStore();
+const userCategories = computed(() => CategoryService.getForCurrentUser(true));
 
 // reactive state
 const showModal = ref(false);
@@ -213,12 +212,12 @@ const handleDelete = (id: number): void => {
     </div>
 
     <!-- Filters -->
-    <TransactionFilters :categories="categoryStore.categories" @filter="handleFilter" />
+    <TransactionFilters :categories="userCategories" @filter="handleFilter" />
 
     <!-- Transaction table -->
     <TransactionTable
       :transactions="filteredTransactions"
-      :categories="categoryStore.categories"
+      :categories="userCategories"
       @edit="openEdit"
       @delete="handleDelete"
     />
@@ -227,7 +226,7 @@ const handleDelete = (id: number): void => {
     <Teleport to="body">
       <TransactionFormModal
         v-if="showModal"
-        :categories="categoryStore.categories"
+        :categories="userCategories"
         :loading="formLoading"
         :error="formError"
         :initial-values="modalInitialValues"
