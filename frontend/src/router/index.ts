@@ -7,8 +7,8 @@ import AdminUsersView from '@/views/admin/AdminUsersView.vue';
 import CreateGoalView from '@/views/goals/CreateView.vue';
 import EditGoalView from '@/views/goals/EditView.vue';
 import HomeView from '@/views/home/HomeView.vue';
+import IndexGoalView from '@/views/goals/IndexView.vue';
 import LoginView from '@/views/auth/LoginView.vue';
-import ListGoalView from '@/views/goals/ListView.vue';
 import ProfileView from '@/views/profile/ProfileView.vue';
 import RegisterView from '@/views/auth/RegisterView.vue';
 
@@ -41,7 +41,7 @@ const router = createRouter({
     {
       path: '/goals',
       name: 'goal.index',
-      component: ListGoalView,
+      component: IndexGoalView,
       meta: { title: 'Savings Goals', requiresAuth: true },
     },
     {
@@ -56,13 +56,6 @@ const router = createRouter({
       component: EditGoalView,
       meta: { title: 'Edit Savings Goal', requiresAuth: true },
     },
-    {
-      path: '/goals/:id/delete',
-      name: 'goal.delete',
-      component: DeleteGoalView,
-      meta: { title: 'Delete Savings Goal', requiresAuth: true },
-    },
-
     // Profile routes
     {
       path: '/profile',
@@ -77,12 +70,6 @@ const router = createRouter({
       name: 'admin.users',
       component: AdminUsersView,
       meta: { title: 'Manage users', requiresAuth: true, requiresAdmin: true },
-    },
-    {
-      path: '/admin/goals',
-      name: 'admin.goals',
-      component: AdminGoalsView,
-      meta: { title: 'Manage goals', requiresAuth: true, requiresAdmin: true },
     },
   ],
 });

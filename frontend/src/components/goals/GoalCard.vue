@@ -1,14 +1,13 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
-import { Chart, ArcElement, DoughnutController, Tooltip } from 'chart.js';
+import type { Chart } from 'chart.js';
 
 import type { GoalInterface } from '@/interfaces/GoalInterface';
 import { Formatters } from '@/utils/Formatters';
 import { GoalStatusHelper } from '@/utils/GoalStatusHelper';
 import type { GoalStatus } from '@/utils/GoalStatusHelper';
-
-Chart.register(ArcElement, DoughnutController, Tooltip);
+import { ChartUtils } from '@/utils/ChartUtils';
 
 interface Props {
   goal: GoalInterface;
@@ -72,31 +71,12 @@ const buildChart = (): void => {
     chartInstance.destroy();
   }
 
-  chartInstance = new Chart(canvasRef.value, {
-    type: 'doughnut',
-    data: {
-      datasets: [
-        {
-          data: [props.goal.currentAmount, remaining.value],
-          backgroundColor: [statusColor.value, '#E2E8F0'],
-          borderWidth: 0,
-          hoverOffset: 4,
-        },
-      ],
-    },
-    options: {
-      cutout: '72%',
-      responsive: false,
-      plugins: {
-        tooltip: {
-          callbacks: {
-            label: (ctx) => ` $${ctx.parsed.toLocaleString()}`,
-          },
-        },
-        legend: { display: false },
-      },
-    },
-  });
+  chartInstance = ChartUtils.buildGoalProgressDoughnut(
+    canvasRef.value,
+    props.goal.currentAmount,
+    remaining.value,
+    statusColor.value,
+  );
 };
 
 onMounted(() => buildChart());

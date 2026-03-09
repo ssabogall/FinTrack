@@ -2,7 +2,7 @@
 import { computed, ref } from 'vue';
 import { useRouter } from 'vue-router';
 
-import GoalCard from '@/componets/goals/GoalCard.vue';
+import GoalCard from '@/components/goals/GoalCard.vue';
 import { AuthService } from '@/services/AuthService';
 import { GoalService } from '@/services/GoalService';
 
