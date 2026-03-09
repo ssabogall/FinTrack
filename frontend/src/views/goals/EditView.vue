@@ -2,7 +2,7 @@
 import { computed, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
-import GoalForm from '@/componets/goals/GoalForm.vue';
+import GoalForm from '@/components/goals/GoalForm.vue';
 import { GoalService } from '@/services/GoalService';
 
 const route = useRoute();

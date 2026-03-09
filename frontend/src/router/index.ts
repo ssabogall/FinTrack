@@ -4,13 +4,13 @@ import { createRouter, createWebHistory } from 'vue-router';
 // internal imports
 import { AuthService } from '@/services/AuthService';
 import AdminUsersView from '@/views/admin/AdminUsersView.vue';
-import LoginView from '@/views/auth/LoginView.vue';
-import RegisterView from '@/views/auth/RegisterView.vue';
 import CreateGoalView from '@/views/goals/CreateView.vue';
 import EditGoalView from '@/views/goals/EditView.vue';
-import ListGoalView from '@/views/goals/ListView.vue';
 import HomeView from '@/views/home/HomeView.vue';
+import LoginView from '@/views/auth/LoginView.vue';
+import ListGoalView from '@/views/goals/ListView.vue';
 import ProfileView from '@/views/profile/ProfileView.vue';
+import RegisterView from '@/views/auth/RegisterView.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -22,6 +22,8 @@ const router = createRouter({
       component: HomeView,
       meta: { title: 'Home', requiresAuth: true },
     },
+
+    // Auth routes
     {
       path: '/login',
       name: 'login',
@@ -34,6 +36,8 @@ const router = createRouter({
       component: RegisterView,
       meta: { title: 'Register', guestOnly: true },
     },
+
+    // Goals routes
     {
       path: '/goals',
       name: 'goal.index',
@@ -53,20 +57,37 @@ const router = createRouter({
       meta: { title: 'Edit Savings Goal', requiresAuth: true },
     },
     {
+      path: '/goals/:id/delete',
+      name: 'goal.delete',
+      component: DeleteGoalView,
+      meta: { title: 'Delete Savings Goal', requiresAuth: true },
+    },
+
+    // Profile routes
+    {
       path: '/profile',
       name: 'profile',
       component: ProfileView,
       meta: { title: 'Profile', requiresAuth: true },
     },
+
+    // Admin routes
     {
       path: '/admin/users',
-      name: 'admin-users',
+      name: 'admin.users',
       component: AdminUsersView,
       meta: { title: 'Manage users', requiresAuth: true, requiresAdmin: true },
+    },
+    {
+      path: '/admin/goals',
+      name: 'admin.goals',
+      component: AdminGoalsView,
+      meta: { title: 'Manage goals', requiresAuth: true, requiresAdmin: true },
     },
   ],
 });
 
+// Navigation guards
 router.beforeEach((to, from, next) => {
   if (to.meta.requiresAuth && !AuthService.isAuthenticated()) {
     next({

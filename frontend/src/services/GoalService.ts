@@ -1,8 +1,8 @@
 // internal imports
 import type { GoalInterface } from '@/interfaces/GoalInterface';
-import type { CreateGoalDTO } from '@/dtos/CreateGoalDTO';
-import type { UpdateGoalDTO } from '@/dtos/UpdateGoalDTO';
-import { useGoalStore } from '@/stores/goalStore';
+import type { CreateGoalDTO } from '@/dtos/goal/CreateGoalDTO';
+import type { UpdateGoalDTO } from '@/dtos/goal/UpdateGoalDTO';
+import { useGoalStore } from '@/stores/goalstore';
 import { useAuthStore } from '@/stores/authstore';
 import { GoalStatusHelper } from '@/utils/GoalStatusHelper';
 

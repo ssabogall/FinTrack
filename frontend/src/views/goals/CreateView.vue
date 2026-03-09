@@ -4,7 +4,7 @@ import { useRouter } from 'vue-router';
 
 import { AuthService } from '@/services/AuthService';
 import { GoalService } from '@/services/GoalService';
-import GoalForm from '@/componets/goals/GoalForm.vue';
+import GoalForm from '@/components/goals/GoalForm.vue';
 
 const router = useRouter();
 

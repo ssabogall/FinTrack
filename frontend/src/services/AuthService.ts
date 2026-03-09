@@ -1,7 +1,7 @@
 // author: Santiago Gómez Ospina
 
 // internal imports
-import type { RegisterUserDto } from '@/dtos/RegisterUserDto';
+import type { RegisterUserDto } from '@/dtos/user/RegisterUserDto';
 import type { UserInterface } from '@/interfaces/UserInterface';
 import { useAuthStore } from '@/stores/authstore';
 import { useUserStore } from '@/stores/userstore';
