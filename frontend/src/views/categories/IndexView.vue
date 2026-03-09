@@ -4,6 +4,7 @@ import { computed, ref } from 'vue';
 
 // internal imports
 import CategoryCard from '@/components/categories/CategoryCard.vue';
+import CategoryDistributionChart from '@/components/categories/CategoryDistributionChart.vue';
 import CategoryFormModal from '@/components/categories/CategoryFormModal.vue';
 import CategorySummaryCards from '@/components/categories/CategorySummaryCards.vue';
 import type { CategoryInterface } from '@/interfaces/CategoryInterface';
@@ -44,6 +45,17 @@ const expenseCount = computed(
 
 const incomeCount = computed(
   (): number => allCategories.value.filter((c) => c.type === 'income').length,
+);
+
+const expenseCategorySlices = computed((): { name: string; amount: number; color: string }[] =>
+  allCategories.value
+    .filter((c) => c.type === 'expense')
+    .map((c) => ({
+      name: c.name,
+      amount: CategoryService.getTotalAmount(c.id),
+      color: c.color,
+    }))
+    .filter((s) => s.amount > 0),
 );
 
 const modalInitialValues = computed(() => {
@@ -139,6 +151,9 @@ const handleDelete = (id: number): void => {
 
     <!-- Summary cards -->
     <CategorySummaryCards :total="totalCount" :expense="expenseCount" :income="incomeCount" />
+
+    <!-- Distribution chart -->
+    <CategoryDistributionChart :categories="expenseCategorySlices" />
 
     <!-- Filters -->
     <div class="rounded-2xl border border-slate-200 bg-white px-6 py-4">
