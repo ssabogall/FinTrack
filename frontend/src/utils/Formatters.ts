@@ -36,7 +36,20 @@ export class Formatters {
     return d.toLocaleDateString(locale);
   }
 
+  public static formatMediumDate(date: Date | string | null | undefined, locale = 'en-US'): string {
+    if (!date) return '—';
+    const d = date instanceof Date ? date : new Date(date);
+    if (Number.isNaN(d.getTime())) return '—';
+
+    return d.toLocaleDateString(locale, { month: 'short', day: 'numeric', year: 'numeric' });
+  }
+
   public static formatCurrency(value: number): string {
     return `$${Math.abs(value).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  }
+
+  public static toDateInputValue(date: Date | string): string {
+    const d = date instanceof Date ? date : new Date(date);
+    return d.toISOString().substring(0, 10);
   }
 }

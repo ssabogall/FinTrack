@@ -9,6 +9,7 @@ import EditGoalView from '@/views/goals/EditView.vue';
 import HomeView from '@/views/home/HomeView.vue';
 import IndexCategoryView from '@/views/categories/IndexView.vue';
 import IndexGoalView from '@/views/goals/IndexView.vue';
+import IndexTransactionView from '@/views/transactions/IndexView.vue';
 import LoginView from '@/views/auth/LoginView.vue';
 import ProfileView from '@/views/profile/ProfileView.vue';
 import RegisterView from '@/views/auth/RegisterView.vue';
@@ -44,6 +45,13 @@ const router = createRouter({
       name: 'category.index',
       component: IndexCategoryView,
       meta: { title: 'Categories', requiresAuth: true },
+    },
+    // Transaction routes
+    {
+      path: '/transactions',
+      name: 'transaction.index',
+      component: IndexTransactionView,
+      meta: { title: 'Transactions', requiresAuth: true },
     },
 
     // Goals routes
