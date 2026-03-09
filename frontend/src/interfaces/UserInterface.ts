@@ -11,6 +11,7 @@ export interface UserInterface {
   updatedAt: Date;
 
   // relations
-  transactionIds: number[] | null;
+  categoryIds: number[] | null;
   goalIds: number[] | null;
+  transactionIds: number[] | null;
 }

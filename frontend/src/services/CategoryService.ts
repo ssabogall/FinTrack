@@ -3,8 +3,10 @@ import type { CreateCategoryDTO } from '@/dtos/category/CreateCategoryDTO';
 import type { UpdateCategoryDTO } from '@/dtos/category/UpdateCategoryDTO';
 import type { CategoryInterface } from '@/interfaces/CategoryInterface';
 import { AuthService } from '@/services/AuthService';
+import { useAuthStore } from '@/stores/authstore';
 import { useCategoryStore } from '@/stores/categorystore';
 import { useTransactionStore } from '@/stores/transactionstore';
+import { useUserStore } from '@/stores/userstore';
 
 export class CategoryService {
   public static getAll(): CategoryInterface[] {
@@ -65,6 +67,25 @@ export class CategoryService {
     };
 
     categoryStore.categories.push(newCategory);
+
+    const authStore = useAuthStore();
+    if (authStore.currentUser && authStore.currentUser.id === currentUser.id) {
+      authStore.currentUser.categoryIds = [
+        ...(authStore.currentUser.categoryIds ?? []),
+        id,
+      ];
+    }
+    const userStore = useUserStore();
+    const userIndex = userStore.users.findIndex((u) => u.id === currentUser.id);
+    if (userIndex !== -1) {
+      const user = userStore.users[userIndex];
+      if (user) {
+        userStore.users[userIndex] = {
+          ...user,
+          categoryIds: [...(user.categoryIds ?? []), id],
+        };
+      }
+    }
   }
 
   public static update(id: number, dto: UpdateCategoryDTO): void {
@@ -111,10 +132,17 @@ export class CategoryService {
   public static delete(id: number): void {
     const categoryStore = useCategoryStore();
     const transactionStore = useTransactionStore();
+    const userStore = useUserStore();
+    const authStore = useAuthStore();
 
     const index = categoryStore.categories.findIndex((c) => c.id === id);
 
     if (index === -1) {
+      throw new Error('Category not found.');
+    }
+
+    const category = categoryStore.categories[index];
+    if (!category) {
       throw new Error('Category not found.');
     }
 
@@ -125,6 +153,23 @@ export class CategoryService {
     }
 
     categoryStore.categories.splice(index, 1);
+
+    const userId = category.userId;
+    const userIndex = userStore.users.findIndex((u) => u.id === userId);
+    if (userIndex !== -1) {
+      const user = userStore.users[userIndex];
+      if (user) {
+        const newCategoryIds = (user.categoryIds ?? []).filter((cid) => cid !== id);
+        userStore.users[userIndex] = {
+          ...user,
+          categoryIds: newCategoryIds.length > 0 ? newCategoryIds : null,
+        };
+      }
+    }
+    if (authStore.currentUser?.id === userId) {
+      const next = (authStore.currentUser.categoryIds ?? []).filter((cid) => cid !== id);
+      authStore.currentUser.categoryIds = next.length > 0 ? next : null;
+    }
   }
 
   public static getTransactionCount(categoryId: number, userId: number): number {

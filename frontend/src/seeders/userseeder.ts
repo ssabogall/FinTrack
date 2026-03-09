@@ -9,8 +9,9 @@ export const userSeeder: UserInterface[] = [
     role: 'admin',
     createdAt: new Date(),
     updatedAt: new Date(),
-    transactionIds: [],
+    categoryIds: null,
     goalIds: null,
+    transactionIds: [],
   },
   {
     id: 2,
@@ -20,8 +21,9 @@ export const userSeeder: UserInterface[] = [
     role: 'user',
     createdAt: new Date(),
     updatedAt: new Date(),
-    transactionIds: [1, 2, 3, 4, 8, 10],
+    categoryIds: [1, 2, 3, 4, 5],
     goalIds: [1],
+    transactionIds: [1, 2, 3, 4, 8, 10],
   },
   {
     id: 3,
@@ -31,8 +33,9 @@ export const userSeeder: UserInterface[] = [
     role: 'user',
     createdAt: new Date(),
     updatedAt: new Date(),
-    transactionIds: [5, 6, 7, 11],
+    categoryIds: [6, 7, 8, 9],
     goalIds: [2],
+    transactionIds: [5, 6, 7, 11],
   },
   {
     id: 4,
@@ -42,7 +45,8 @@ export const userSeeder: UserInterface[] = [
     role: 'user',
     createdAt: new Date(),
     updatedAt: new Date(),
-    transactionIds: [9, 12],
+    categoryIds: [10, 11],
     goalIds: [3],
+    transactionIds: [9, 12],
   },
 ];

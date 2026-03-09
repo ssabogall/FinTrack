@@ -25,8 +25,9 @@ export class UserService {
       role: existing.role,
       createdAt: existing.createdAt,
       updatedAt: new Date(),
-      transactionIds: existing.transactionIds ?? null,
+      categoryIds: existing.categoryIds ?? null,
       goalIds: existing.goalIds ?? null,
+      transactionIds: existing.transactionIds ?? null,
     };
     userStore.users[index] = updated;
     authStore.currentUser = updated;
@@ -82,8 +83,9 @@ export class UserService {
       role: dto.role ?? existing.role,
       createdAt: existing.createdAt,
       updatedAt: new Date(),
-      transactionIds: existing.transactionIds ?? null,
+      categoryIds: existing.categoryIds ?? null,
       goalIds: existing.goalIds ?? null,
+      transactionIds: existing.transactionIds ?? null,
     };
     userStore.users[index] = updated;
     if (authStore.currentUser?.id === id) {

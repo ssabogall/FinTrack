@@ -40,8 +40,9 @@ export class AuthService {
       role: 'user',
       createdAt: now,
       updatedAt: now,
-      transactionIds: [],
+      categoryIds: [],
       goalIds: null,
+      transactionIds: [],
     };
 
     userStore.users.push(newUser);
