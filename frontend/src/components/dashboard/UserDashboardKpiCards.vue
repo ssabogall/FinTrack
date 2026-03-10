@@ -56,9 +56,8 @@ const isPositive = (value: number): boolean => value >= 0;
               : 'bg-red-50 text-red-600'
           "
         >
-          {{ isPositive(monthlyIncomeChangePct) ? '+' : '' }}{{
-            monthlyIncomeChangePct.toFixed(1)
-          }}% vs last month
+          {{ isPositive(monthlyIncomeChangePct) ? '+' : ''
+          }}{{ monthlyIncomeChangePct.toFixed(1) }}% vs last month
         </span>
       </div>
     </div>
@@ -98,12 +97,10 @@ const isPositive = (value: number): boolean => value >= 0;
               : 'bg-red-50 text-red-600'
           "
         >
-          {{ isPositive(monthlySavingsChangePct) ? '+' : '' }}{{
-            monthlySavingsChangePct.toFixed(1)
-          }}% vs last month
+          {{ isPositive(monthlySavingsChangePct) ? '+' : ''
+          }}{{ monthlySavingsChangePct.toFixed(1) }}% vs last month
         </span>
       </div>
     </div>
   </div>
 </template>
-

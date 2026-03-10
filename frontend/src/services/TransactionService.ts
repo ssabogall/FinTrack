@@ -423,11 +423,8 @@ export class TransactionService {
     for (let i = months - 1; i >= 0; i--) {
       const d = new Date(baseYear, baseMonth - i, 1);
       const label = d.toLocaleDateString('en-US', { month: 'short' });
-      const { income: monthIncome, expenses: monthExpenses } = TransactionService.getMonthlyIncomeExpenses(
-        userId,
-        d.getFullYear(),
-        d.getMonth(),
-      );
+      const { income: monthIncome, expenses: monthExpenses } =
+        TransactionService.getMonthlyIncomeExpenses(userId, d.getFullYear(), d.getMonth());
 
       labels.push(label);
       income.push(monthIncome);

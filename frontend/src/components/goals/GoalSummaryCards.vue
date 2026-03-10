@@ -51,4 +51,3 @@ defineProps<Props>();
     </div>
   </div>
 </template>
-

@@ -26,4 +26,3 @@ const props = defineProps<Props>();
     empty-message="No expense data available."
   />
 </template>
-

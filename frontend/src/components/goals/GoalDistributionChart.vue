@@ -22,5 +22,3 @@ const props = defineProps<Props>();
     empty-message="No goals available."
   />
 </template>
-
-
