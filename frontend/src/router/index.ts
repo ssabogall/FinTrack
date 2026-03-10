@@ -3,6 +3,8 @@ import { createRouter, createWebHistory } from 'vue-router';
 
 // internal imports
 import { AuthService } from '@/services/AuthService';
+import AdminDashboardView from '@/views/admin/AdminDashboardView.vue';
+import AdminReportsView from '@/views/admin/AdminReportsView.vue';
 import AdminUsersView from '@/views/admin/AdminUsersView.vue';
 import CreateGoalView from '@/views/goals/CreateView.vue';
 import EditGoalView from '@/views/goals/EditView.vue';
@@ -83,10 +85,22 @@ const router = createRouter({
 
     // Admin routes
     {
+      path: '/admin',
+      name: 'admin.dashboard',
+      component: AdminDashboardView,
+      meta: { title: 'Admin Dashboard', requiresAuth: true, requiresAdmin: true },
+    },
+    {
       path: '/admin/users',
       name: 'admin.users',
       component: AdminUsersView,
-      meta: { title: 'Manage users', requiresAuth: true, requiresAdmin: true },
+      meta: { title: 'Users', requiresAuth: true, requiresAdmin: true },
+    },
+    {
+      path: '/admin/reports',
+      name: 'admin.reports',
+      component: AdminReportsView,
+      meta: { title: 'Reports', requiresAuth: true, requiresAdmin: true },
     },
   ],
 });

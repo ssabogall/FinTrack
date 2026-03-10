@@ -43,9 +43,7 @@ export class CategoryService {
     const categoryStore = useCategoryStore();
 
     const duplicate = categoryStore.categories.find(
-      (c) =>
-        c.userId === currentUser.id &&
-        c.name.toLowerCase() === dto.name.trim().toLowerCase(),
+      (c) => c.userId === currentUser.id && c.name.toLowerCase() === dto.name.trim().toLowerCase(),
     );
 
     if (duplicate) {
@@ -70,10 +68,7 @@ export class CategoryService {
 
     const authStore = useAuthStore();
     if (authStore.currentUser && authStore.currentUser.id === currentUser.id) {
-      authStore.currentUser.categoryIds = [
-        ...(authStore.currentUser.categoryIds ?? []),
-        id,
-      ];
+      authStore.currentUser.categoryIds = [...(authStore.currentUser.categoryIds ?? []), id];
     }
     const userStore = useUserStore();
     const userIndex = userStore.users.findIndex((u) => u.id === currentUser.id);
@@ -186,9 +181,11 @@ export class CategoryService {
       .reduce((sum, t) => sum + Math.abs(t.amount), 0);
   }
 
-  public static getSummary(
-    categories: CategoryInterface[],
-  ): { total: number; expense: number; income: number } {
+  public static getSummary(categories: CategoryInterface[]): {
+    total: number;
+    expense: number;
+    income: number;
+  } {
     const total = categories.length;
     const expense = categories.filter((c) => c.type === 'expense').length;
     const income = categories.filter((c) => c.type === 'income').length;

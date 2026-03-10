@@ -54,11 +54,11 @@ const handleLogout = (): void => {
         <!-- Main navigation -->
         <nav class="px-4 mt-6 space-y-1 flex-1">
           <RouterLink
-            to="/"
+            :to="AuthService.isAdmin() ? '/admin' : '/'"
             class="flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-medium transition duration-200"
             :class="{
-              'bg-[#1FA971] text-white shadow-md': $route.path === '/',
-              'text-white hover:bg-[#1FA971]': $route.path !== '/',
+              'bg-[#1FA971] text-white shadow-md': $route.path === '/' || $route.path === '/admin',
+              'text-white hover:bg-[#1FA971]': $route.path !== '/' && $route.path !== '/admin',
             }"
           >
             <i class="fas fa-th-large"></i>
@@ -79,29 +79,29 @@ const handleLogout = (): void => {
           </RouterLink>
 
           <RouterLink
-          v-if="AuthService.isAuthenticated()"
-          :to="{ name: 'category.index' }"
-          class="flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-medium transition duration-200"
-          :class="{
-            'bg-[#1FA971] text-white shadow-md': $route.path.startsWith('/categories'),
-            'text-white hover:bg-[#1FA971]': !$route.path.startsWith('/categories'),
-          }"
-        >
-          <i class="fas fa-tags"></i>
-          <span>Categories</span>
-        </RouterLink>
-        <RouterLink
-          v-if="AuthService.isAuthenticated()"
-          :to="{ name: 'transaction.index' }"
-          class="flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-medium transition duration-200"
-          :class="{
-            'bg-[#1FA971] text-white shadow-md': $route.path.startsWith('/transactions'),
-            'text-white hover:bg-[#1FA971]': !$route.path.startsWith('/transactions'),
-          }"
-        >
-          <i class="fas fa-exchange-alt"></i>
-          <span>Transactions</span>
-        </RouterLink>
+            v-if="AuthService.isAuthenticated()"
+            :to="{ name: 'category.index' }"
+            class="flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-medium transition duration-200"
+            :class="{
+              'bg-[#1FA971] text-white shadow-md': $route.path.startsWith('/categories'),
+              'text-white hover:bg-[#1FA971]': !$route.path.startsWith('/categories'),
+            }"
+          >
+            <i class="fas fa-tags"></i>
+            <span>Categories</span>
+          </RouterLink>
+          <RouterLink
+            v-if="AuthService.isAuthenticated()"
+            :to="{ name: 'transaction.index' }"
+            class="flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-medium transition duration-200"
+            :class="{
+              'bg-[#1FA971] text-white shadow-md': $route.path.startsWith('/transactions'),
+              'text-white hover:bg-[#1FA971]': !$route.path.startsWith('/transactions'),
+            }"
+          >
+            <i class="fas fa-exchange-alt"></i>
+            <span>Transactions</span>
+          </RouterLink>
 
           <RouterLink
             v-if="AuthService.isAuthenticated()"
@@ -121,12 +121,24 @@ const handleLogout = (): void => {
             to="/admin/users"
             class="flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-medium transition duration-200"
             :class="{
-              'bg-[#1FA971] text-white shadow-md': $route.path === '/admin/users',
-              'text-white hover:bg-[#1FA971]': $route.path !== '/admin/users',
+              'bg-[#1FA971] text-white shadow-md': $route.path.startsWith('/admin/users'),
+              'text-white hover:bg-[#1FA971]': !$route.path.startsWith('/admin/users'),
             }"
           >
-            <i class="fas fa-users-cog"></i>
-            <span>Manage users</span>
+            <i class="fas fa-users"></i>
+            <span>Users</span>
+          </RouterLink>
+          <RouterLink
+            v-if="AuthService.isAdmin()"
+            to="/admin/reports"
+            class="flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-medium transition duration-200"
+            :class="{
+              'bg-[#1FA971] text-white shadow-md': $route.path.startsWith('/admin/reports'),
+              'text-white hover:bg-[#1FA971]': !$route.path.startsWith('/admin/reports'),
+            }"
+          >
+            <i class="fas fa-file-alt"></i>
+            <span>Reports</span>
           </RouterLink>
 
           <RouterLink
