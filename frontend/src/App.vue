@@ -79,7 +79,7 @@ const handleLogout = (): void => {
           </RouterLink>
 
           <RouterLink
-            v-if="AuthService.isAuthenticated()"
+            v-if="AuthService.isAuthenticated() && !AuthService.isAdmin()"
             :to="{ name: 'category.index' }"
             class="flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-medium transition duration-200"
             :class="{
@@ -91,7 +91,7 @@ const handleLogout = (): void => {
             <span>Categories</span>
           </RouterLink>
           <RouterLink
-            v-if="AuthService.isAuthenticated()"
+            v-if="AuthService.isAuthenticated() && !AuthService.isAdmin()"
             :to="{ name: 'transaction.index' }"
             class="flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-medium transition duration-200"
             :class="{
@@ -104,7 +104,7 @@ const handleLogout = (): void => {
           </RouterLink>
 
           <RouterLink
-            v-if="AuthService.isAuthenticated()"
+            v-if="AuthService.isAuthenticated() && !AuthService.isAdmin()"
             :to="{ name: 'goal.index' }"
             class="flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-medium transition duration-200"
             :class="{
