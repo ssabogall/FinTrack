@@ -357,4 +357,74 @@ export class ChartUtils {
 
     return new Chart(canvas, config);
   }
+
+  public static buildGoalsProgressStackedBar(
+    canvas: HTMLCanvasElement,
+    labels: string[],
+    savedData: number[],
+    remainingData: number[],
+  ): Chart {
+    ChartUtils.ensureInitialized();
+
+    const config: ChartConfiguration<'bar'> = {
+      type: 'bar',
+      data: {
+        labels,
+        datasets: [
+          {
+            label: 'Saved',
+            data: savedData,
+            backgroundColor: 'rgba(11,44,61,0.9)',
+            borderColor: '#0B2C3D',
+            borderWidth: 1,
+            borderRadius: 6,
+          },
+          {
+            label: 'Remaining',
+            data: remainingData,
+            backgroundColor: 'rgba(226,232,240,1)',
+            borderColor: '#E2E8F0',
+            borderWidth: 1,
+            borderRadius: 6,
+          },
+        ],
+      },
+      options: {
+        indexAxis: 'y',
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
+        scales: {
+          x: {
+            stacked: true,
+            beginAtZero: true,
+            ticks: {
+              callback: (value) => `$${Number(value).toLocaleString()}`,
+              font: { size: 11 },
+            },
+            grid: { color: '#F1F5F9' },
+          },
+          y: {
+            stacked: true,
+            grid: { display: false },
+            ticks: { font: { size: 11 } },
+          },
+        },
+        plugins: {
+          legend: {
+            position: 'top',
+            labels: { usePointStyle: true, pointStyle: 'circle', font: { size: 12 } },
+          },
+          tooltip: {
+            callbacks: {
+              label: (ctx) =>
+                ` ${ctx.dataset.label}: $${(ctx.parsed.x ?? 0).toLocaleString('en-US', { minimumFractionDigits: 2 })}`,
+            },
+          },
+        },
+      },
+    };
+
+    return new Chart(canvas, config);
+  }
 }

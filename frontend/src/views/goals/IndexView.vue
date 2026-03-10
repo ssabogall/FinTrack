@@ -4,8 +4,10 @@ import { computed, ref } from 'vue';
 import { useRouter } from 'vue-router';
 
 // internal imports
+import GoalDistributionChart from '@/components/goals/GoalDistributionChart.vue';
 import GoalCard from '@/components/goals/GoalCard.vue';
-import { AuthService } from '@/services/AuthService';
+import GoalProgressChart from '@/components/goals/GoalProgressChart.vue';
+import GoalSummaryCards from '@/components/goals/GoalSummaryCards.vue';
 import { GoalService } from '@/services/GoalService';
 
 // variables
@@ -13,13 +15,24 @@ const router = useRouter();
 
 // reactive variables
 const deleteError = ref<string | null>(null);
+const statusFilter = ref<'all' | 'active' | 'completed'>('all');
 
 // selectors
+const allGoals = computed(() => GoalService.getForCurrentUser());
+
 const goals = computed(() => {
-  const currentUser = AuthService.getCurrentUser();
-  if (!currentUser) return [];
-  return GoalService.getAll().filter((goal) => goal.userId === currentUser.id);
+  if (statusFilter.value === 'completed') {
+    return allGoals.value.filter((g) => g.status === 'Completed');
+  }
+  if (statusFilter.value === 'active') {
+    return allGoals.value.filter((g) => g.status !== 'Completed');
+  }
+  return allGoals.value;
 });
+
+const summary = computed(() => GoalService.getSummaryForCurrentUser());
+const progressChart = computed(() => GoalService.getProgressChartForCurrentUser());
+const distributionChart = computed(() => GoalService.getDistributionChartForCurrentUser());
 
 const navigateToCreate = (): void => {
   router.push({ name: 'goal.create' });
@@ -40,18 +53,40 @@ const handleDelete = (id: number): void => {
     <!-- Header -->
     <header class="flex items-center justify-between">
       <div>
-        <h2 class="text-lg font-semibold text-[#0B2C3D]">My savings goals</h2>
-        <p class="text-sm text-slate-500">Track your progress towards each goal.</p>
+        <h2 class="text-lg font-semibold text-[#0B2C3D]">Savings Goals</h2>
+        <p class="text-sm text-slate-500">Set and track your financial objectives</p>
       </div>
       <button
         type="button"
-        class="inline-flex items-center gap-2 rounded-lg bg-[#0B2C3D] text-white text-sm font-medium px-4 py-2 hover:bg-[#0d3a52] transition"
+        class="inline-flex items-center gap-2 rounded-lg bg-[#E5A00D] text-white text-sm font-medium px-4 py-2 hover:bg-[#D49500] transition"
         @click="navigateToCreate"
       >
         <i class="fas fa-plus text-xs" />
         <span>New goal</span>
       </button>
     </header>
+
+    <GoalSummaryCards
+      :total-target="summary.totalTarget"
+      :total-saved="summary.totalSaved"
+      :active-count="summary.activeCount"
+      :completed-count="summary.completedCount"
+    />
+
+    <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+      <div class="xl:col-span-2">
+        <GoalProgressChart
+          :labels="progressChart.labels"
+          :saved="progressChart.saved"
+          :remaining="progressChart.remaining"
+        />
+      </div>
+      <GoalDistributionChart
+        :labels="distributionChart.labels"
+        :amounts="distributionChart.amounts"
+        :colors="distributionChart.colors"
+      />
+    </div>
 
     <!-- Delete error -->
     <p
@@ -60,6 +95,17 @@ const handleDelete = (id: number): void => {
     >
       {{ deleteError }}
     </p>
+
+    <div class="flex items-center justify-end">
+      <select
+        v-model="statusFilter"
+        class="rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0B2C3D] focus:border-transparent"
+      >
+        <option value="all">All goals</option>
+        <option value="active">Active goals</option>
+        <option value="completed">Completed goals</option>
+      </select>
+    </div>
 
     <!-- Empty state -->
     <div

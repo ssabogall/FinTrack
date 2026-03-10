@@ -16,23 +16,8 @@ const goalId = computed((): number => Number(route.params.id));
 
 const goal = computed(() => GoalService.getById(goalId.value));
 
-// variables
-const toDateInput = (date: Date | string): string => {
-  const d = date instanceof Date ? date : new Date(date);
-  return d.toISOString().substring(0, 10);
-};
-
 // selectors
-const initialValues = computed(() => {
-  if (!goal.value) return {};
-  return {
-    name: goal.value.name,
-    description: goal.value.description,
-    targetAmount: goal.value.targetAmount,
-    startDate: toDateInput(goal.value.startDate),
-    endDate: toDateInput(goal.value.endDate),
-  };
-});
+const initialValues = computed(() => GoalService.getInitialValuesForEdit(goalId.value));
 
 // reactive variables
 const loading = ref(false);
@@ -50,13 +35,7 @@ const handleSubmit = (payload: {
   error.value = null;
 
   try {
-    GoalService.update(goalId.value, {
-      name: payload.name,
-      description: payload.description,
-      targetAmount: payload.targetAmount,
-      startDate: new Date(payload.startDate),
-      endDate: new Date(payload.endDate),
-    });
+    GoalService.updateFromForm(goalId.value, payload);
 
     success.value = true;
   } catch (err) {
