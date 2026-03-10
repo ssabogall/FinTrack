@@ -5,9 +5,51 @@ import type { UpdateTransactionDTO } from '@/dtos/transaction/UpdateTransactionD
 import type { TransactionInterface } from '@/interfaces/TransactionInterface';
 import { useAuthStore } from '@/stores/authstore';
 import { useCategoryStore } from '@/stores/categorystore';
+import { useGoalStore } from '@/stores/goalstore';
 import { useTransactionStore } from '@/stores/transactionstore';
+import { GoalStatusHelper } from '@/utils/GoalStatusHelper';
 
 export class TransactionService {
+  private static computeChangePct(current: number, previous: number): number {
+    if (previous === 0) {
+      return current === 0 ? 0 : 100;
+    }
+    return ((current - previous) / Math.abs(previous)) * 100;
+  }
+
+  private static getMonthlyIncomeExpenses(
+    userId: number,
+    year: number,
+    monthIndex: number,
+  ): { income: number; expenses: number } {
+    const transactions = TransactionService.getByUser(userId);
+    const monthStart = new Date(year, monthIndex, 1).getTime();
+    const monthEnd = new Date(year, monthIndex + 1, 0, 23, 59, 59).getTime();
+
+    const income = transactions
+      .filter((t) => {
+        const ts = new Date(t.date).getTime();
+        return t.amount > 0 && ts >= monthStart && ts <= monthEnd;
+      })
+      .reduce((sum, t) => sum + t.amount, 0);
+
+    const expenses = transactions
+      .filter((t) => {
+        const ts = new Date(t.date).getTime();
+        return t.amount < 0 && ts >= monthStart && ts <= monthEnd;
+      })
+      .reduce((sum, t) => sum + Math.abs(t.amount), 0);
+
+    return { income, expenses };
+  }
+
+  private static getBalanceUntil(userId: number, until: Date): number {
+    const ts = until.getTime();
+    return TransactionService.getByUser(userId)
+      .filter((t) => new Date(t.date).getTime() <= ts)
+      .reduce((sum, t) => sum + t.amount, 0);
+  }
+
   public static getAll(): TransactionInterface[] {
     return useTransactionStore().transactions;
   }
@@ -61,6 +103,7 @@ export class TransactionService {
     const transactionStore = useTransactionStore();
     const authStore = useAuthStore();
     const categoryStore = useCategoryStore();
+    const goalStore = useGoalStore();
 
     const now = new Date();
     const id = Date.now();
@@ -91,6 +134,18 @@ export class TransactionService {
         category.transactionIds = [...(category.transactionIds ?? []), id];
       }
     }
+
+    // Update goal's progress
+    if (dto.goalId) {
+      const goal = goalStore.goals.find((g) => g.id === dto.goalId);
+      if (goal) {
+        const contribution = Math.abs(dto.amount);
+        goal.currentAmount += contribution;
+        goal.updatedAt = now;
+        goal.status = GoalStatusHelper.compute(goal.currentAmount, goal.targetAmount);
+        goal.transactionIds = [...(goal.transactionIds ?? []), id];
+      }
+    }
   }
 
   public static update(id: number, dto: UpdateTransactionDTO): void {
@@ -104,6 +159,7 @@ export class TransactionService {
 
     const transactionStore = useTransactionStore();
     const categoryStore = useCategoryStore();
+    const goalStore = useGoalStore();
     const index = transactionStore.transactions.findIndex((t) => t.id === id);
 
     if (index === -1) {
@@ -117,6 +173,12 @@ export class TransactionService {
 
     const oldCategoryId = current.categoryId;
     const newCategoryId = dto.categoryId !== undefined ? dto.categoryId : oldCategoryId;
+
+    const oldGoalId = current.goalId;
+    const newGoalId = dto.goalId !== undefined ? dto.goalId : oldGoalId;
+
+    const oldContribution = Math.abs(current.amount);
+    const newContribution = Math.abs(dto.amount ?? current.amount);
 
     // Update category references if category changed
     if (newCategoryId !== oldCategoryId) {
@@ -136,6 +198,31 @@ export class TransactionService {
       }
     }
 
+    // Update goal references if goal changed or amount changed
+    if (oldGoalId && oldGoalId !== newGoalId) {
+      const oldGoal = goalStore.goals.find((g) => g.id === oldGoalId);
+      if (oldGoal) {
+        oldGoal.currentAmount = Math.max(oldGoal.currentAmount - oldContribution, 0);
+        oldGoal.transactionIds = (oldGoal.transactionIds ?? []).filter((tid) => tid !== id);
+        oldGoal.status = GoalStatusHelper.compute(oldGoal.currentAmount, oldGoal.targetAmount);
+      }
+    } else if (oldGoalId && oldGoalId === newGoalId && dto.amount !== undefined) {
+      const goal = goalStore.goals.find((g) => g.id === oldGoalId);
+      if (goal) {
+        goal.currentAmount = Math.max(goal.currentAmount - oldContribution + newContribution, 0);
+        goal.status = GoalStatusHelper.compute(goal.currentAmount, goal.targetAmount);
+      }
+    }
+
+    if (newGoalId && oldGoalId !== newGoalId) {
+      const newGoal = goalStore.goals.find((g) => g.id === newGoalId);
+      if (newGoal) {
+        newGoal.currentAmount += newContribution;
+        newGoal.transactionIds = [...(newGoal.transactionIds ?? []), id];
+        newGoal.status = GoalStatusHelper.compute(newGoal.currentAmount, newGoal.targetAmount);
+      }
+    }
+
     transactionStore.transactions[index] = {
       id: current.id,
       amount: dto.amount ?? current.amount,
@@ -145,7 +232,7 @@ export class TransactionService {
       updatedAt: new Date(),
       userId: current.userId,
       categoryId: newCategoryId,
-      goalId: dto.goalId !== undefined ? dto.goalId : current.goalId,
+      goalId: newGoalId,
     } as TransactionInterface;
   }
 
@@ -153,6 +240,7 @@ export class TransactionService {
     const transactionStore = useTransactionStore();
     const authStore = useAuthStore();
     const categoryStore = useCategoryStore();
+    const goalStore = useGoalStore();
 
     const index = transactionStore.transactions.findIndex((t) => t.id === id);
 
@@ -181,6 +269,16 @@ export class TransactionService {
         category.transactionIds = (category.transactionIds ?? []).filter((tid) => tid !== id);
       }
     }
+
+    // Remove from goal's progress
+    if (transaction.goalId) {
+      const goal = goalStore.goals.find((g) => g.id === transaction.goalId);
+      if (goal) {
+        goal.currentAmount = Math.max(goal.currentAmount - Math.abs(transaction.amount), 0);
+        goal.transactionIds = (goal.transactionIds ?? []).filter((tid) => tid !== id);
+        goal.status = GoalStatusHelper.compute(goal.currentAmount, goal.targetAmount);
+      }
+    }
   }
 
   public static getTotalIncome(userId: number): number {
@@ -197,6 +295,59 @@ export class TransactionService {
 
   public static getBalance(userId: number): number {
     return TransactionService.getByUser(userId).reduce((sum, t) => sum + t.amount, 0);
+  }
+
+  public static getDashboardKpis(
+    userId: number,
+    referenceDate: Date = new Date(),
+  ): {
+    balance: number;
+    balanceChangePct: number;
+    monthlyIncome: number;
+    monthlyIncomeChangePct: number;
+    monthlyExpenses: number;
+    monthlyExpensesChangePct: number;
+    monthlySavings: number;
+    monthlySavingsChangePct: number;
+  } {
+    const year = referenceDate.getFullYear();
+    const monthIndex = referenceDate.getMonth();
+
+    const currentMonthly = TransactionService.getMonthlyIncomeExpenses(userId, year, monthIndex);
+
+    const prevDate = new Date(year, monthIndex - 1, 1);
+    const prevMonthly = TransactionService.getMonthlyIncomeExpenses(
+      userId,
+      prevDate.getFullYear(),
+      prevDate.getMonth(),
+    );
+
+    const monthlySavings = currentMonthly.income - currentMonthly.expenses;
+    const prevMonthlySavings = prevMonthly.income - prevMonthly.expenses;
+
+    const balance = TransactionService.getBalance(userId);
+    const prevBalanceCutoff = new Date(year, monthIndex, 0, 23, 59, 59);
+    const prevBalance = TransactionService.getBalanceUntil(userId, prevBalanceCutoff);
+
+    return {
+      balance,
+      balanceChangePct: TransactionService.computeChangePct(balance, prevBalance),
+      monthlyIncome: currentMonthly.income,
+      monthlyIncomeChangePct: TransactionService.computeChangePct(
+        currentMonthly.income,
+        prevMonthly.income,
+      ),
+      monthlyExpenses: currentMonthly.expenses,
+      monthlyExpensesChangePct: TransactionService.computeChangePct(
+        currentMonthly.expenses,
+        prevMonthly.expenses,
+      ),
+      monthlySavings,
+      monthlySavingsChangePct: TransactionService.computeChangePct(
+        monthlySavings,
+        prevMonthlySavings,
+      ),
+    };
   }
 
   public static getMovementTrend(
@@ -254,5 +405,34 @@ export class TransactionService {
     }
 
     return Array.from(map.values()).sort((a, b) => b.amount - a.amount);
+  }
+
+  public static getMonthlyFlow(
+    userId: number,
+    months = 6,
+    referenceDate: Date = new Date(),
+  ): { labels: string[]; income: number[]; expenses: number[] } {
+    const labels: string[] = [];
+    const income: number[] = [];
+    const expenses: number[] = [];
+
+    const baseYear = referenceDate.getFullYear();
+    const baseMonth = referenceDate.getMonth();
+
+    for (let i = months - 1; i >= 0; i--) {
+      const d = new Date(baseYear, baseMonth - i, 1);
+      const label = d.toLocaleDateString('en-US', { month: 'short' });
+      const { income: monthIncome, expenses: monthExpenses } = TransactionService.getMonthlyIncomeExpenses(
+        userId,
+        d.getFullYear(),
+        d.getMonth(),
+      );
+
+      labels.push(label);
+      income.push(monthIncome);
+      expenses.push(monthExpenses);
+    }
+
+    return { labels, income, expenses };
   }
 }

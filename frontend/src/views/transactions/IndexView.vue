@@ -14,9 +14,11 @@ import type { TransactionInterface } from '@/interfaces/TransactionInterface';
 import { AuthService } from '@/services/AuthService';
 import { CategoryService } from '@/services/CategoryService';
 import { TransactionService } from '@/services/TransactionService';
+import { GoalService } from '@/services/GoalService';
 import { Formatters } from '@/utils/Formatters';
 
 const userCategories = computed(() => CategoryService.getForCurrentUser(true));
+const userGoals = computed(() => GoalService.getForCurrentUser());
 
 // reactive state
 const showModal = ref(false);
@@ -82,6 +84,7 @@ const modalInitialValues = computed(() => {
     description: tx.description,
     categoryId: tx.categoryId,
     date: Formatters.toDateInputValue(tx.date),
+    goalId: tx.goalId,
   };
 });
 
@@ -118,6 +121,7 @@ const handleFormSubmit = (payload: {
   description: string;
   categoryId: number | null;
   date: string;
+  goalId: number | null;
 }): void => {
   formLoading.value = true;
   formError.value = null;
@@ -133,6 +137,7 @@ const handleFormSubmit = (payload: {
         description: payload.description,
         categoryId: payload.categoryId,
         date: new Date(payload.date),
+        goalId: payload.goalId,
       });
     } else {
       // Create
@@ -144,7 +149,7 @@ const handleFormSubmit = (payload: {
         date: new Date(payload.date),
         userId: currentUserId.value,
         categoryId: payload.categoryId,
-        goalId: null,
+        goalId: payload.goalId,
       });
     }
 
@@ -227,6 +232,7 @@ const handleDelete = (id: number): void => {
       <TransactionFormModal
         v-if="showModal"
         :categories="userCategories"
+        :goals="userGoals"
         :loading="formLoading"
         :error="formError"
         :initial-values="modalInitialValues"

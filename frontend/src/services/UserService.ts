@@ -1,6 +1,7 @@
 // author: Santiago Gómez Ospina
 
 // internal imports
+import type { CreateUserDto } from '@/dtos/user/CreateUserDto';
 import type { UpdateUserDto } from '@/dtos/user/UpdateUserDto';
 import type { UserInterface } from '@/interfaces/UserInterface';
 import { useAuthStore } from '@/stores/authstore';
@@ -58,6 +59,31 @@ export class UserService {
     };
     userStore.users[index] = updated;
     authStore.currentUser = updated;
+  }
+
+  public static createUser(dto: CreateUserDto): UserInterface {
+    const userStore = useUserStore();
+    const existing = userStore.users.find((u) => u.email === dto.email.trim());
+    if (existing) throw new Error('Email already registered.');
+
+    if (dto.password.length < 6) throw new Error('Password must be at least 6 characters.');
+
+    const id = Date.now();
+    const now = new Date();
+    const newUser: UserInterface = {
+      id,
+      name: dto.name.trim(),
+      email: dto.email.trim(),
+      password: dto.password,
+      role: dto.role ?? 'user',
+      createdAt: now,
+      updatedAt: now,
+      categoryIds: [],
+      goalIds: null,
+      transactionIds: [],
+    };
+    userStore.users.push(newUser);
+    return newUser;
   }
 
   public static getAllUsers(): UserInterface[] {

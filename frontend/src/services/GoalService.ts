@@ -7,8 +7,121 @@ import { useAuthStore } from '@/stores/authstore';
 import { GoalStatusHelper } from '@/utils/GoalStatusHelper';
 
 export class GoalService {
+  public static toDateInputValue(date: Date | string): string {
+    const d = date instanceof Date ? date : new Date(date);
+    return d.toISOString().substring(0, 10);
+  }
+
+  public static createForCurrentUser(payload: {
+    name: string;
+    description: string;
+    targetAmount: number;
+    startDate: string;
+    endDate: string;
+  }): void {
+    const authStore = useAuthStore();
+    const currentUserId = authStore.currentUser?.id;
+    if (!currentUserId) throw new Error('Not authenticated.');
+
+    GoalService.create({
+      name: payload.name,
+      description: payload.description,
+      targetAmount: payload.targetAmount,
+      startDate: new Date(payload.startDate),
+      endDate: new Date(payload.endDate),
+      userId: currentUserId,
+    });
+  }
+
+  public static updateFromForm(
+    id: number,
+    payload: {
+      name: string;
+      description: string;
+      targetAmount: number;
+      startDate: string;
+      endDate: string;
+    },
+  ): void {
+    GoalService.update(id, {
+      name: payload.name,
+      description: payload.description,
+      targetAmount: payload.targetAmount,
+      startDate: new Date(payload.startDate),
+      endDate: new Date(payload.endDate),
+    });
+  }
+
+  public static getInitialValuesForEdit(id: number): {
+    name?: string;
+    description?: string;
+    targetAmount?: number;
+    startDate?: string;
+    endDate?: string;
+  } {
+    const goal = GoalService.getById(id);
+    if (!goal) return {};
+    return {
+      name: goal.name,
+      description: goal.description,
+      targetAmount: goal.targetAmount,
+      startDate: GoalService.toDateInputValue(goal.startDate),
+      endDate: GoalService.toDateInputValue(goal.endDate),
+    };
+  }
+
   public static getAll(): GoalInterface[] {
     return useGoalStore().goals;
+  }
+
+  public static getForCurrentUser(): GoalInterface[] {
+    const authStore = useAuthStore();
+    const currentUserId = authStore.currentUser?.id;
+    if (!currentUserId) return [];
+    return useGoalStore().goals.filter((g) => g.userId === currentUserId);
+  }
+
+  public static getSummaryForCurrentUser(): {
+    totalTarget: number;
+    totalSaved: number;
+    activeCount: number;
+    completedCount: number;
+  } {
+    const goals = GoalService.getForCurrentUser();
+    const totalTarget = goals.reduce((sum, g) => sum + g.targetAmount, 0);
+    const totalSaved = goals.reduce((sum, g) => sum + g.currentAmount, 0);
+    const completedCount = goals.filter((g) => g.status === 'Completed').length;
+    const activeCount = goals.length - completedCount;
+    return { totalTarget, totalSaved, activeCount, completedCount };
+  }
+
+  public static getProgressChartForCurrentUser(): {
+    labels: string[];
+    saved: number[];
+    remaining: number[];
+  } {
+    const goals = GoalService.getForCurrentUser();
+    const sorted = [...goals].sort((a, b) => b.targetAmount - a.targetAmount).slice(0, 7);
+    return {
+      labels: sorted.map((g) => g.name),
+      saved: sorted.map((g) => g.currentAmount),
+      remaining: sorted.map((g) => Math.max(g.targetAmount - g.currentAmount, 0)),
+    };
+  }
+
+  public static getDistributionChartForCurrentUser(): {
+    labels: string[];
+    amounts: number[];
+    colors: string[];
+  } {
+    const goals = GoalService.getForCurrentUser();
+    const palette = ['#0B2C3D', '#E5A00D', '#16A34A', '#0EA5E9', '#8B5CF6', '#14B8A6', '#EF4444'];
+    const sorted = [...goals].sort((a, b) => b.currentAmount - a.currentAmount).slice(0, 7);
+    return {
+      labels: sorted.map((g) => g.name),
+      amounts: sorted.map((g) => g.currentAmount),
+      colors: sorted.map((_, idx) => palette[idx % palette.length]!),
+    };
   }
 
   public static getById(id: number): GoalInterface | undefined {

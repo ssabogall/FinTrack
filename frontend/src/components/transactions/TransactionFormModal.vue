@@ -4,9 +4,11 @@ import { ref, watch } from 'vue';
 
 // internal imports
 import type { CategoryInterface } from '@/interfaces/CategoryInterface';
+import type { GoalInterface } from '@/interfaces/GoalInterface';
 
 interface Props {
   categories: CategoryInterface[];
+  goals?: GoalInterface[];
   loading?: boolean;
   error?: string | null;
   initialValues?: {
@@ -15,6 +17,7 @@ interface Props {
     description?: string;
     categoryId?: number | null;
     date?: string;
+    goalId?: number | null;
   };
 }
 
@@ -33,6 +36,7 @@ const emit = defineEmits<{
       description: string;
       categoryId: number | null;
       date: string;
+      goalId: number | null;
     },
   ): void;
   (e: 'cancel'): void;
@@ -43,6 +47,7 @@ const amount = ref<number | ''>(props.initialValues.amount ?? '');
 const description = ref(props.initialValues.description ?? '');
 const categoryId = ref<number | null>(props.initialValues.categoryId ?? null);
 const date = ref(props.initialValues.date ?? new Date().toISOString().substring(0, 10));
+const goalId = ref<number | null>(props.initialValues.goalId ?? null);
 
 watch(
   () => props.initialValues,
@@ -52,12 +57,18 @@ watch(
     description.value = values.description ?? '';
     categoryId.value = values.categoryId ?? null;
     date.value = values.date ?? new Date().toISOString().substring(0, 10);
+    goalId.value = values.goalId ?? null;
   },
 );
 
 const handleCategoryChange = (event: Event): void => {
   const value = (event.target as HTMLSelectElement).value;
   categoryId.value = value ? Number(value) : null;
+};
+
+const handleGoalChange = (event: Event): void => {
+  const value = (event.target as HTMLSelectElement).value;
+  goalId.value = value ? Number(value) : null;
 };
 
 const handleSubmit = (): void => {
@@ -67,6 +78,7 @@ const handleSubmit = (): void => {
     description: description.value,
     categoryId: categoryId.value,
     date: date.value,
+    goalId: goalId.value,
   });
 };
 </script>
@@ -155,6 +167,24 @@ const handleSubmit = (): void => {
             <option value="">Select a category</option>
             <option v-for="cat in props.categories" :key="cat.id" :value="cat.id">
               {{ cat.name }}
+            </option>
+          </select>
+        </div>
+
+        <!-- Goal (optional) -->
+        <div v-if="props.goals && props.goals.length" class="space-y-1">
+          <label for="tx-goal" class="block text-sm font-medium text-slate-700">
+            Goal <span class="text-slate-400 font-normal">(optional)</span>
+          </label>
+          <select
+            id="tx-goal"
+            :value="goalId ?? ''"
+            class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0B2C3D] focus:border-transparent"
+            @change="handleGoalChange"
+          >
+            <option value="">No goal</option>
+            <option v-for="goal in props.goals" :key="goal.id" :value="goal.id">
+              {{ goal.name }}
             </option>
           </select>
         </div>

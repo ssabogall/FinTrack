@@ -3,4 +3,3 @@ export interface TransactionFilterDTO {
   type: string;
   categoryId: number | null;
 }
-

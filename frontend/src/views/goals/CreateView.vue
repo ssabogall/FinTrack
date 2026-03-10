@@ -5,7 +5,6 @@ import { useRouter } from 'vue-router';
 
 // internal imports
 import GoalForm from '@/components/goals/GoalForm.vue';
-import { AuthService } from '@/services/AuthService';
 import { GoalService } from '@/services/GoalService';
 
 // variables
@@ -28,21 +27,7 @@ const handleSubmit = (payload: {
   success.value = false;
 
   try {
-    const currentUser = AuthService.getCurrentUser();
-
-    if (!currentUser) {
-      router.push({ name: 'login' });
-      return;
-    }
-
-    GoalService.create({
-      name: payload.name,
-      description: payload.description,
-      targetAmount: payload.targetAmount,
-      startDate: new Date(payload.startDate),
-      endDate: new Date(payload.endDate),
-      userId: currentUser.id,
-    });
+    GoalService.createForCurrentUser(payload);
 
     success.value = true;
   } catch (err) {

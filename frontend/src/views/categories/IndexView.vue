@@ -4,7 +4,6 @@ import { computed, ref } from 'vue';
 
 // internal imports
 import CategoryCard from '@/components/categories/CategoryCard.vue';
-import CategoryDistributionChart from '@/components/categories/CategoryDistributionChart.vue';
 import CategoryFormModal from '@/components/categories/CategoryFormModal.vue';
 import CategorySummaryCards from '@/components/categories/CategorySummaryCards.vue';
 import type { CategoryInterface } from '@/interfaces/CategoryInterface';
@@ -21,31 +20,22 @@ const searchQuery = ref('');
 const typeFilter = ref('all');
 
 // selectors
-const userCategories = computed((): CategoryInterface[] =>
-  CategoryService.getForCurrentUser(true),
-);
+const userCategories = computed((): CategoryInterface[] => CategoryService.getForCurrentUser(true));
 
 const filteredCategories = computed((): CategoryInterface[] =>
   CategoryService.filter(userCategories.value, searchQuery.value, typeFilter.value),
 );
 
-const categorySummary = computed(() =>
-  CategoryService.getSummary(userCategories.value),
-);
+const categorySummary = computed(() => CategoryService.getSummary(userCategories.value));
 
 const totalCount = computed((): number => categorySummary.value.total);
 const expenseCount = computed((): number => categorySummary.value.expense);
 const incomeCount = computed((): number => categorySummary.value.income);
 
-const currentUserId = computed((): number | null =>
-  AuthService.getCurrentUser()?.id ?? null,
-);
+const currentUserId = computed((): number | null => AuthService.getCurrentUser()?.id ?? null);
 
-const expenseCategorySlices = computed(
-  (): { name: string; amount: number; color: string }[] =>
-    currentUserId.value
-      ? CategoryService.getExpenseDistribution(currentUserId.value)
-      : [],
+const expenseCategorySlices = computed((): { name: string; amount: number; color: string }[] =>
+  currentUserId.value ? CategoryService.getExpenseDistribution(currentUserId.value) : [],
 );
 
 const modalInitialValues = computed(() => {
@@ -141,9 +131,6 @@ const handleDelete = (id: number): void => {
     <!-- Summary cards -->
     <CategorySummaryCards :total="totalCount" :expense="expenseCount" :income="incomeCount" />
 
-    <!-- Distribution chart -->
-    <CategoryDistributionChart :categories="expenseCategorySlices" />
-
     <!-- Filters -->
     <div class="rounded-2xl border border-slate-200 bg-white px-6 py-4">
       <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
@@ -203,13 +190,9 @@ const handleDelete = (id: number): void => {
         :key="cat.id"
         :category="cat"
         :transaction-count="
-          currentUserId
-            ? CategoryService.getTransactionCount(cat.id, currentUserId)
-            : 0
+          currentUserId ? CategoryService.getTransactionCount(cat.id, currentUserId) : 0
         "
-        :total-amount="
-          currentUserId ? CategoryService.getTotalAmount(cat.id, currentUserId) : 0
-        "
+        :total-amount="currentUserId ? CategoryService.getTotalAmount(cat.id, currentUserId) : 0"
         @edit="openEdit"
         @delete="handleDelete"
       />
