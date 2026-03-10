@@ -1,4 +1,3 @@
-// author: Santiago Gómez
 // external imports
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
