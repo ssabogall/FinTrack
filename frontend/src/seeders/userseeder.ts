@@ -24,7 +24,7 @@ export const userSeeder: UserInterface[] = [
     createdAt: new Date(now.getFullYear(), now.getMonth() - 6, 5),
     updatedAt: now,
     categoryIds: [1, 2, 3, 4, 5],
-    goalIds: [1],
+    goalIds: [1, 2, 3],
     transactionIds: [1, 2, 3, 4, 8, 10],
   },
   {
@@ -36,7 +36,7 @@ export const userSeeder: UserInterface[] = [
     createdAt: new Date(now.getFullYear(), now.getMonth() - 4, 12),
     updatedAt: now,
     categoryIds: [6, 7, 8, 9],
-    goalIds: [2],
+    goalIds: [4],
     transactionIds: [5, 6, 7, 11],
   },
   {
@@ -48,7 +48,7 @@ export const userSeeder: UserInterface[] = [
     createdAt: new Date(now.getFullYear(), now.getMonth() - 2, 20),
     updatedAt: now,
     categoryIds: [10, 11],
-    goalIds: [3],
+    goalIds: [5],
     transactionIds: [9, 12],
   },
   {
@@ -59,9 +59,9 @@ export const userSeeder: UserInterface[] = [
     role: 'user',
     createdAt: new Date(now.getFullYear(), now.getMonth() - 1, 14),
     updatedAt: now,
-    categoryIds: [1, 2],
-    goalIds: null,
-    transactionIds: [],
+    categoryIds: [12, 13, 14, 15],
+    goalIds: [7, 8],
+    transactionIds: [13, 14, 15, 16],
   },
   {
     id: 6,
@@ -71,8 +71,8 @@ export const userSeeder: UserInterface[] = [
     role: 'user',
     createdAt: new Date(now.getFullYear(), now.getMonth(), 1),
     updatedAt: now,
-    categoryIds: [],
-    goalIds: null,
-    transactionIds: [],
+    categoryIds: [16, 17, 18],
+    goalIds: [6],
+    transactionIds: [17, 18, 19],
   },
 ];
