@@ -1,13 +1,10 @@
 // author: Santiago Gómez
-// still dont know where to declare this type, but not here
-export type UserRole = 'user' | 'admin';
-
 export interface UserInterface {
   id: number;
   name: string;
   email: string;
   password: string;
-  role: UserRole;
+  role: 'user' | 'admin';
   createdAt: Date;
   updatedAt: Date;
 
