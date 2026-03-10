@@ -10,9 +10,14 @@ interface Props {
   labels: string[];
   incomeData: number[];
   expenseData: number[];
+  title?: string;
+  subtitle?: string;
 }
 
-const props = defineProps<Props>();
+const props = withDefaults(defineProps<Props>(), {
+  title: 'Movement Trends',
+  subtitle: 'Income and expenses for the last 10 days',
+});
 
 const canvasRef = ref<HTMLCanvasElement | null>(null);
 let chartInstance: Chart | null = null;
@@ -43,8 +48,8 @@ watch(
 <template>
   <div class="rounded-2xl border border-slate-200 bg-white p-6 space-y-3">
     <header>
-      <h3 class="text-base font-semibold text-[#0B2C3D]">Movement Trends</h3>
-      <p class="text-xs text-slate-500">Income and expenses for the last 10 days</p>
+      <h3 class="text-base font-semibold text-[#0B2C3D]">{{ props.title }}</h3>
+      <p class="text-xs text-slate-500">{{ props.subtitle }}</p>
     </header>
     <div class="h-72">
       <canvas ref="canvasRef" />
