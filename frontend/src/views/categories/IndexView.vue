@@ -4,7 +4,6 @@ import { computed, ref } from 'vue';
 
 // internal imports
 import CategoryCard from '@/components/categories/CategoryCard.vue';
-import CategoryDistributionChart from '@/components/categories/CategoryDistributionChart.vue';
 import CategoryFormModal from '@/components/categories/CategoryFormModal.vue';
 import CategorySummaryCards from '@/components/categories/CategorySummaryCards.vue';
 import type { CategoryInterface } from '@/interfaces/CategoryInterface';
@@ -131,9 +130,6 @@ const handleDelete = (id: number): void => {
 
     <!-- Summary cards -->
     <CategorySummaryCards :total="totalCount" :expense="expenseCount" :income="incomeCount" />
-
-    <!-- Distribution chart -->
-    <CategoryDistributionChart :categories="expenseCategorySlices" />
 
     <!-- Filters -->
     <div class="rounded-2xl border border-slate-200 bg-white px-6 py-4">

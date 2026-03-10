@@ -63,11 +63,11 @@ watch(
         <canvas ref="canvasRef" />
       </div>
 
-      <ul class="w-full space-y-2">
+      <ul class="w-full lg:w-auto lg:min-w-[260px] lg:max-w-sm space-y-2">
         <li
           v-for="(label, idx) in labels"
           :key="label"
-          class="flex items-center justify-between text-sm"
+          class="grid grid-cols-[1fr_auto] items-center gap-6 text-sm"
         >
           <div class="flex items-center gap-2">
             <span
@@ -78,7 +78,7 @@ watch(
               {{ label }}
             </span>
           </div>
-          <span class="font-medium text-[#0B2C3D]">
+          <span class="font-medium text-[#0B2C3D] text-right tabular-nums">
             {{ Formatters.formatCurrency(values[idx] ?? 0) }}
           </span>
         </li>
