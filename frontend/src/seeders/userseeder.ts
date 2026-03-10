@@ -1,3 +1,4 @@
+// author: Santiago Gómez
 import type { UserInterface } from '@/interfaces/UserInterface';
 
 const now = new Date();

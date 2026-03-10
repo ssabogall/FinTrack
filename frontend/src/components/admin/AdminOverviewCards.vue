@@ -1,3 +1,4 @@
+<!-- author: Santiago Gómez -->
 <script setup lang="ts">
 interface Props {
   totalIncome: number;

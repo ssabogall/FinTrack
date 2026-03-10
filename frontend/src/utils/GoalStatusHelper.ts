@@ -1,3 +1,4 @@
+// author: Santiago Sabogal
 export type GoalStatus = 'Active' | 'In Progress' | 'Completed';
 
 export class GoalStatusHelper {

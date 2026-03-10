@@ -1,3 +1,4 @@
+<!-- author: Santiago Sabogal -->
 <script setup lang="ts">
 // internal imports
 import DonutMetricChart from '@/components/charts/DonutMetricChart.vue';

@@ -1,3 +1,4 @@
+// author: Santiago Gómez
 import type { TransactionInterface } from '@/interfaces/TransactionInterface';
 
 const now = new Date();

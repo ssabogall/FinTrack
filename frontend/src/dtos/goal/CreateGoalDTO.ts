@@ -1,3 +1,4 @@
+// author: Santiago Sabogal
 import type { GoalInterface } from '@/interfaces/GoalInterface';
 
 export type CreateGoalDTO = Omit<

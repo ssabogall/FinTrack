@@ -1,3 +1,4 @@
+// author: Lucas Higuita
 // internal imports
 import type { CreateCategoryDTO } from '@/dtos/category/CreateCategoryDTO';
 import type { UpdateCategoryDTO } from '@/dtos/category/UpdateCategoryDTO';

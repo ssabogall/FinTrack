@@ -1,3 +1,5 @@
+// author: all of us
+
 import {
   ArcElement,
   BarController,

@@ -1,3 +1,4 @@
+// author: Santiago Gómez
 export interface GoalInterface {
   id: number;
   name: string;

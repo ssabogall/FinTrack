@@ -1,3 +1,4 @@
+<!-- author: Santiago Sabogal -->
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';

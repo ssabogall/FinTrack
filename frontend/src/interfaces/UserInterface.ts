@@ -1,3 +1,4 @@
+// author: Santiago Gómez
 // still dont know where to declare this type, but not here
 export type UserRole = 'user' | 'admin';
 

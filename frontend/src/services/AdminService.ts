@@ -1,3 +1,4 @@
+// author: Santiago Gómez
 // internal imports
 import type { CategoryInterface } from '@/interfaces/CategoryInterface';
 import type { TransactionInterface } from '@/interfaces/TransactionInterface';

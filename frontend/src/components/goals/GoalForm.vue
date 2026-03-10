@@ -1,3 +1,4 @@
+<!-- author: Santiago Sabogal -->
 <script setup lang="ts">
 import { ref, watch } from 'vue';
 

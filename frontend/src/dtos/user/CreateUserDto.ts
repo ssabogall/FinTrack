@@ -1,3 +1,4 @@
+// author: Santiago Gómez
 import type { UserRole } from '@/interfaces/UserInterface';
 
 export interface CreateUserDto {

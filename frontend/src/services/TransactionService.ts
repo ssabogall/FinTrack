@@ -1,3 +1,4 @@
+// author: Lucas Higuita
 // internal imports
 import type { CreateTransactionDTO } from '@/dtos/transaction/CreateTransactionDTO';
 import type { TransactionFilterDTO } from '@/dtos/transaction/TransactionFilterDTO';

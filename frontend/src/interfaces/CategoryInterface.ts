@@ -1,3 +1,4 @@
+// author: Santiago Gómez
 export interface CategoryInterface {
   id: number;
   name: string;

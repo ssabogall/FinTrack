@@ -1,3 +1,4 @@
+// author: Lucas Higuita
 export interface TransactionFilterDTO {
   search: string;
   type: string;

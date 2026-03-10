@@ -1,3 +1,4 @@
+<!-- author: Santiago Sabogal -->
 <script setup lang="ts">
 // external imports
 import { ref } from 'vue';

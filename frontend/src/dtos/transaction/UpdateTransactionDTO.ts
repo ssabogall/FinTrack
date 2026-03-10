@@ -1,3 +1,4 @@
+// author: Lucas Higuita
 import type { TransactionInterface } from '@/interfaces/TransactionInterface';
 
 export type UpdateTransactionDTO = Partial<

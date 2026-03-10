@@ -1,3 +1,4 @@
+// author: Santiago Gómez
 import type { CategoryInterface } from '@/interfaces/CategoryInterface';
 
 const now = new Date();

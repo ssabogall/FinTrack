@@ -1,3 +1,4 @@
+<!-- author: Lucas Higuita -->
 <script setup lang="ts">
 interface Props {
   total: number;

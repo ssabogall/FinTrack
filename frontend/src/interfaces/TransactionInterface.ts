@@ -1,3 +1,4 @@
+// author: Santiago Gómez
 export interface TransactionInterface {
   id: number;
   amount: number;

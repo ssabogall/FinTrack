@@ -1,3 +1,4 @@
+<!-- author: Santiago Gómez -->
 <script setup lang="ts">
 import { Formatters } from '@/utils/Formatters';
 

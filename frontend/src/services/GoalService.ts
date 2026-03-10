@@ -1,3 +1,4 @@
+// author: Santiago Sabogal
 // internal imports
 import type { GoalInterface } from '@/interfaces/GoalInterface';
 import type { CreateGoalDTO } from '@/dtos/goal/CreateGoalDTO';

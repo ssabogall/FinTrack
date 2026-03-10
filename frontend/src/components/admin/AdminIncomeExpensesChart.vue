@@ -1,3 +1,4 @@
+<!-- author: Santiago Gómez -->
 <script setup lang="ts">
 // external imports
 import { onMounted, ref, watch } from 'vue';

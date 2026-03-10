@@ -1,3 +1,4 @@
+// author: Santiago Gómez
 import type { GoalInterface } from '@/interfaces/GoalInterface';
 import { GoalStatusHelper } from '@/utils/GoalStatusHelper';
 

@@ -1,3 +1,4 @@
+<!-- author: Lucas Higuita -->
 <script setup lang="ts">
 // external imports
 import { ref, watch } from 'vue';

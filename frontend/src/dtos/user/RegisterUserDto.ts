@@ -1,3 +1,4 @@
+// author: Santiago Gómez
 import type { UserInterface } from '@/interfaces/UserInterface';
 
 export type RegisterUserDto = Omit<
