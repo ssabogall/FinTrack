@@ -5,8 +5,8 @@ import { computed, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
 // internal imports
-import GoalForm from '@/components/goals/GoalForm.vue';
-import { GoalService } from '@/services/GoalService';
+import GoalForm from '@/modules/goal/components/GoalForm.vue';
+import { GoalService } from '@/modules/goal/services/GoalService';
 
 // variables
 const route = useRoute();

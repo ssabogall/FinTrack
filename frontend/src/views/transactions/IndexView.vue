@@ -15,7 +15,7 @@ import type { TransactionInterface } from '@/interfaces/TransactionInterface';
 import { AuthService } from '@/services/AuthService';
 import { CategoryService } from '@/services/CategoryService';
 import { TransactionService } from '@/services/TransactionService';
-import { GoalService } from '@/services/GoalService';
+import { GoalService } from '@/modules/goal/services/GoalService';
 import { Formatters } from '@/utils/Formatters';
 
 const userCategories = computed(() => CategoryService.getForCurrentUser(true));

@@ -1,5 +1,5 @@
 // author: Santiago Sabogal
-import type { GoalInterface } from '@/interfaces/GoalInterface';
+import type { GoalInterface } from '@/modules/goal/interfaces/GoalInterface';
 
 export type CreateGoalDTO = Omit<
   GoalInterface,

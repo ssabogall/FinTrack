@@ -1,6 +1,6 @@
 // author: Santiago Gómez
-import type { GoalInterface } from '@/interfaces/GoalInterface';
-import { GoalStatusHelper } from '@/utils/GoalStatusHelper';
+import type { GoalInterface } from '@/modules/goal/interfaces/GoalInterface';
+import { GoalStatusHelper } from '@/modules/goal/utils/GoalStatusHelper';
 
 const now = new Date();
 

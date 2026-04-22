@@ -5,11 +5,11 @@ import { computed, ref } from 'vue';
 import { useRouter } from 'vue-router';
 
 // internal imports
-import GoalDistributionChart from '@/components/goals/GoalDistributionChart.vue';
-import GoalCard from '@/components/goals/GoalCard.vue';
-import GoalProgressChart from '@/components/goals/GoalProgressChart.vue';
-import GoalSummaryCards from '@/components/goals/GoalSummaryCards.vue';
-import { GoalService } from '@/services/GoalService';
+import GoalDistributionChart from '@/modules/goal/components/GoalDistributionChart.vue';
+import GoalCard from '@/modules/goal/components/GoalCard.vue';
+import GoalProgressChart from '@/modules/goal/components/GoalProgressChart.vue';
+import GoalSummaryCards from '@/modules/goal/components/GoalSummaryCards.vue';
+import { GoalService } from '@/modules/goal/services/GoalService';
 
 // variables
 const router = useRouter();

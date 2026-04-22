@@ -6,9 +6,9 @@ import type { UpdateTransactionDTO } from '@/dtos/transaction/UpdateTransactionD
 import type { TransactionInterface } from '@/interfaces/TransactionInterface';
 import { useAuthStore } from '@/stores/authstore';
 import { useCategoryStore } from '@/stores/categorystore';
-import { useGoalStore } from '@/stores/goalstore';
+import { useGoalStore } from '@/modules/goal/stores/goalstore';
 import { useTransactionStore } from '@/stores/transactionstore';
-import { GoalStatusHelper } from '@/utils/GoalStatusHelper';
+import { GoalStatusHelper } from '@/modules/goal/utils/GoalStatusHelper';
 
 export class TransactionService {
   private static computeChangePct(current: number, previous: number): number {

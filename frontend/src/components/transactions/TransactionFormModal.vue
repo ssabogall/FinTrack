@@ -5,7 +5,7 @@ import { ref, watch } from 'vue';
 
 // internal imports
 import type { CategoryInterface } from '@/interfaces/CategoryInterface';
-import type { GoalInterface } from '@/interfaces/GoalInterface';
+import type { GoalInterface } from '@/modules/goal/interfaces/GoalInterface';
 
 interface Props {
   categories: CategoryInterface[];

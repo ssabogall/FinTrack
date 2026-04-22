@@ -7,7 +7,7 @@ import { watch } from 'vue';
 // internal imports
 import { userSeeder } from '@/seeders/userseeder';
 import { categorySeeder } from '@/seeders/categoryseeder';
-import { goalSeeder } from '@/seeders/goalseeder';
+import { goalSeeder } from '@/modules/goal/seeders/goalseeder';
 import { transactionSeeder } from '@/seeders/transactionseeder.ts';
 
 export default class PiniaConfig {

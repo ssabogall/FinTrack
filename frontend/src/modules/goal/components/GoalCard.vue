@@ -4,10 +4,10 @@ import { computed, onMounted, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import type { Chart } from 'chart.js';
 
-import type { GoalInterface } from '@/interfaces/GoalInterface';
+import type { GoalInterface } from '@/modules/goal/interfaces/GoalInterface';
 import { Formatters } from '@/utils/Formatters';
-import { GoalStatusHelper } from '@/utils/GoalStatusHelper';
-import type { GoalStatus } from '@/utils/GoalStatusHelper';
+import { GoalStatusHelper } from '@/modules/goal/utils/GoalStatusHelper';
+import type { GoalStatus } from '@/modules/goal/utils/GoalStatusHelper';
 import { ChartUtils } from '@/utils/ChartUtils';
 
 interface Props {

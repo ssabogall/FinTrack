@@ -1,11 +1,11 @@
 // author: Santiago Sabogal
 // internal imports
-import type { GoalInterface } from '@/interfaces/GoalInterface';
-import type { CreateGoalDTO } from '@/dtos/goal/CreateGoalDTO';
-import type { UpdateGoalDTO } from '@/dtos/goal/UpdateGoalDTO';
-import { useGoalStore } from '@/stores/goalstore';
+import type { GoalInterface } from '@/modules/goal/interfaces/GoalInterface';
+import type { CreateGoalDTO } from '@/modules/goal/dtos/CreateGoalDTO';
+import type { UpdateGoalDTO } from '@/modules/goal/dtos/UpdateGoalDTO';
+import { useGoalStore } from '@/modules/goal/stores/goalstore';
 import { useAuthStore } from '@/stores/authstore';
-import { GoalStatusHelper } from '@/utils/GoalStatusHelper';
+import { GoalStatusHelper } from '@/modules/goal/utils/GoalStatusHelper';
 
 export class GoalService {
   public static toDateInputValue(date: Date | string): string {
