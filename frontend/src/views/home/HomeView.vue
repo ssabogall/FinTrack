@@ -9,7 +9,7 @@ import TransactionMovementChart from '@/modules/transaction/components/Transacti
 import UserDashboardKpiCards from '@/components/dashboard/UserDashboardKpiCards.vue';
 import { AuthService } from '@/modules/auth/services/AuthService';
 import { TransactionService } from '@/modules/transaction/services/TransactionService';
-import AdminDashboardView from '@/views/admin/AdminDashboardView.vue';
+import AdminDashboardView from '@/modules/admin/views/AdminDashboardView.vue';
 
 const isAdmin = computed(() => AuthService.isAdmin());
 

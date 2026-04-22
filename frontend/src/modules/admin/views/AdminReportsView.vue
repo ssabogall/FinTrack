@@ -4,10 +4,10 @@
 import { computed, ref } from 'vue';
 
 // internal imports
-import AdminIncomeExpensesChart from '@/components/admin/AdminIncomeExpensesChart.vue';
-import AdminOverviewCards from '@/components/admin/AdminOverviewCards.vue';
-import AdminUserGrowthChart from '@/components/admin/AdminUserGrowthChart.vue';
-import { AdminService } from '@/services/AdminService';
+import AdminIncomeExpensesChart from '@/modules/admin/components/AdminIncomeExpensesChart.vue';
+import AdminOverviewCards from '@/modules/admin/components/AdminOverviewCards.vue';
+import AdminUserGrowthChart from '@/modules/admin/components/AdminUserGrowthChart.vue';
+import { AdminService } from '@/modules/admin/services/AdminService';
 import { ReportUtils } from '@/utils/ReportUtils';
 
 const selectedYear = ref(new Date().getFullYear());

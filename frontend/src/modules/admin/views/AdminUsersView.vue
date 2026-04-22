@@ -4,9 +4,9 @@
 import { computed, ref } from 'vue';
 
 // internal imports
-import AdminUserFormModal from '@/components/admin/AdminUserFormModal.vue';
+import AdminUserFormModal from '@/modules/admin/components/AdminUserFormModal.vue';
 import type { UserInterface } from '@/modules/user/interfaces/UserInterface';
-import { AdminService } from '@/services/AdminService';
+import { AdminService } from '@/modules/admin/services/AdminService';
 import { UserService } from '@/modules/user/services/UserService';
 import { Formatters } from '@/utils/Formatters';
 

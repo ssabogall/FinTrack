@@ -5,9 +5,9 @@ import { createRouter, createWebHistory } from 'vue-router';
 
 // internal imports
 import { AuthService } from '@/modules/auth/services/AuthService';
-import AdminDashboardView from '@/views/admin/AdminDashboardView.vue';
-import AdminReportsView from '@/views/admin/AdminReportsView.vue';
-import AdminUsersView from '@/views/admin/AdminUsersView.vue';
+import AdminDashboardView from '@/modules/admin/views/AdminDashboardView.vue';
+import AdminReportsView from '@/modules/admin/views/AdminReportsView.vue';
+import AdminUsersView from '@/modules/admin/views/AdminUsersView.vue';
 import CreateGoalView from '@/modules/goal/views/CreateView.vue';
 import EditGoalView from '@/modules/goal/views/EditView.vue';
 import HomeView from '@/views/home/HomeView.vue';
