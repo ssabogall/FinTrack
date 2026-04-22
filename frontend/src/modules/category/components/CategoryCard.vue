@@ -4,7 +4,7 @@
 import { ref } from 'vue';
 
 // internal imports
-import type { CategoryInterface } from '@/interfaces/CategoryInterface';
+import type { CategoryInterface } from '@/modules/category/interfaces/CategoryInterface';
 import { Formatters } from '@/utils/Formatters';
 
 interface Props {

@@ -1,5 +1,5 @@
 // author: Santiago Gómez
-import type { CategoryInterface } from '@/interfaces/CategoryInterface';
+import type { CategoryInterface } from '@/modules/category/interfaces/CategoryInterface';
 
 const now = new Date();
 

@@ -11,7 +11,7 @@ import AdminUsersView from '@/views/admin/AdminUsersView.vue';
 import CreateGoalView from '@/modules/goal/views/CreateView.vue';
 import EditGoalView from '@/modules/goal/views/EditView.vue';
 import HomeView from '@/views/home/HomeView.vue';
-import IndexCategoryView from '@/views/categories/IndexView.vue';
+import IndexCategoryView from '@/modules/category/views/IndexView.vue';
 import IndexGoalView from '@/modules/goal/views/IndexView.vue';
 import IndexTransactionView from '@/modules/transaction/views/IndexView.vue';
 import LoginView from '@/views/auth/LoginView.vue';

@@ -1,11 +1,11 @@
 // author: Lucas Higuita
 // internal imports
-import type { CreateCategoryDTO } from '@/dtos/category/CreateCategoryDTO';
-import type { UpdateCategoryDTO } from '@/dtos/category/UpdateCategoryDTO';
-import type { CategoryInterface } from '@/interfaces/CategoryInterface';
+import type { CreateCategoryDTO } from '@/modules/category/dtos/CreateCategoryDTO';
+import type { UpdateCategoryDTO } from '@/modules/category/dtos/UpdateCategoryDTO';
+import type { CategoryInterface } from '@/modules/category/interfaces/CategoryInterface';
 import { AuthService } from '@/services/AuthService';
 import { useAuthStore } from '@/stores/authstore';
-import { useCategoryStore } from '@/stores/categorystore';
+import { useCategoryStore } from '@/modules/category/stores/categorystore';
 import { useTransactionStore } from '@/modules/transaction/stores/transactionstore';
 import { useUserStore } from '@/stores/userstore';
 

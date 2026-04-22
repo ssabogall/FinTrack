@@ -13,7 +13,7 @@ import TransactionTable from '@/modules/transaction/components/TransactionTable.
 import type { TransactionFilterDTO } from '@/modules/transaction/dtos/TransactionFilterDTO';
 import type { TransactionInterface } from '@/modules/transaction/interfaces/TransactionInterface';
 import { AuthService } from '@/services/AuthService';
-import { CategoryService } from '@/services/CategoryService';
+import { CategoryService } from '@/modules/category/services/CategoryService';
 import { TransactionService } from '@/modules/transaction/services/TransactionService';
 import { GoalService } from '@/modules/goal/services/GoalService';
 import { Formatters } from '@/utils/Formatters';

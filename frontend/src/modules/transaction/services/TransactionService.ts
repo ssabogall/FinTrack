@@ -5,7 +5,7 @@ import type { TransactionFilterDTO } from '@/modules/transaction/dtos/Transactio
 import type { UpdateTransactionDTO } from '@/modules/transaction/dtos/UpdateTransactionDTO';
 import type { TransactionInterface } from '@/modules/transaction/interfaces/TransactionInterface';
 import { useAuthStore } from '@/stores/authstore';
-import { useCategoryStore } from '@/stores/categorystore';
+import { useCategoryStore } from '@/modules/category/stores/categorystore';
 import { useGoalStore } from '@/modules/goal/stores/goalstore';
 import { useTransactionStore } from '@/modules/transaction/stores/transactionstore';
 import { GoalStatusHelper } from '@/modules/goal/utils/GoalStatusHelper';

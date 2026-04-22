@@ -4,12 +4,12 @@
 import { computed, ref } from 'vue';
 
 // internal imports
-import CategoryCard from '@/components/categories/CategoryCard.vue';
-import CategoryFormModal from '@/components/categories/CategoryFormModal.vue';
-import CategorySummaryCards from '@/components/categories/CategorySummaryCards.vue';
-import type { CategoryInterface } from '@/interfaces/CategoryInterface';
+import CategoryCard from '@/modules/category/components/CategoryCard.vue';
+import CategoryFormModal from '@/modules/category/components/CategoryFormModal.vue';
+import CategorySummaryCards from '@/modules/category/components/CategorySummaryCards.vue';
+import type { CategoryInterface } from '@/modules/category/interfaces/CategoryInterface';
 import { AuthService } from '@/services/AuthService';
-import { CategoryService } from '@/services/CategoryService';
+import { CategoryService } from '@/modules/category/services/CategoryService';
 
 // reactive variables
 const showModal = ref(false);

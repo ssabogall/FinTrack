@@ -1,9 +1,9 @@
 // author: Santiago Gómez
 // internal imports
-import type { CategoryInterface } from '@/interfaces/CategoryInterface';
+import type { CategoryInterface } from '@/modules/category/interfaces/CategoryInterface';
 import type { TransactionInterface } from '@/modules/transaction/interfaces/TransactionInterface';
 import type { UserInterface } from '@/interfaces/UserInterface';
-import { useCategoryStore } from '@/stores/categorystore';
+import { useCategoryStore } from '@/modules/category/stores/categorystore';
 import { useTransactionStore } from '@/modules/transaction/stores/transactionstore';
 import { useUserStore } from '@/stores/userstore';
 

@@ -1,5 +1,5 @@
 // author: Lucas Higuita
-import type { CategoryInterface } from '@/interfaces/CategoryInterface';
+import type { CategoryInterface } from '@/modules/category/interfaces/CategoryInterface';
 
 export type CreateCategoryDTO = Omit<
   CategoryInterface,
