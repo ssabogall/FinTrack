@@ -7,7 +7,7 @@ import { AuthService } from '@/services/AuthService';
 import { useAuthStore } from '@/stores/authstore';
 import { useCategoryStore } from '@/modules/category/stores/categorystore';
 import { useTransactionStore } from '@/modules/transaction/stores/transactionstore';
-import { useUserStore } from '@/stores/userstore';
+import { useUserStore } from '@/modules/user/stores/userstore';
 
 export class CategoryService {
   public static getAll(): CategoryInterface[] {

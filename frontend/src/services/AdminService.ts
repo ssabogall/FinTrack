@@ -2,10 +2,10 @@
 // internal imports
 import type { CategoryInterface } from '@/modules/category/interfaces/CategoryInterface';
 import type { TransactionInterface } from '@/modules/transaction/interfaces/TransactionInterface';
-import type { UserInterface } from '@/interfaces/UserInterface';
+import type { UserInterface } from '@/modules/user/interfaces/UserInterface';
 import { useCategoryStore } from '@/modules/category/stores/categorystore';
 import { useTransactionStore } from '@/modules/transaction/stores/transactionstore';
-import { useUserStore } from '@/stores/userstore';
+import { useUserStore } from '@/modules/user/stores/userstore';
 
 export interface GlobalOverview {
   totalIncome: number;

@@ -4,7 +4,7 @@
 import { ref } from 'vue';
 
 // internal imports
-import type { CreateUserDto } from '@/dtos/user/CreateUserDto';
+import type { CreateUserDto } from '@/modules/user/dtos/CreateUserDto';
 
 interface Props {
   loading?: boolean;

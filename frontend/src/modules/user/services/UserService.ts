@@ -1,11 +1,11 @@
 // author: Santiago Gómez Ospina
 
 // internal imports
-import type { CreateUserDto } from '@/dtos/user/CreateUserDto';
-import type { UpdateUserDto } from '@/dtos/user/UpdateUserDto';
-import type { UserInterface } from '@/interfaces/UserInterface';
+import type { CreateUserDto } from '@/modules/user/dtos/CreateUserDto';
+import type { UpdateUserDto } from '@/modules/user/dtos/UpdateUserDto';
+import type { UserInterface } from '@/modules/user/interfaces/UserInterface';
 import { useAuthStore } from '@/stores/authstore';
-import { useUserStore } from '@/stores/userstore';
+import { useUserStore } from '@/modules/user/stores/userstore';
 
 export class UserService {
   public static updateProfile(name: string, email: string): void {

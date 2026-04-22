@@ -1,5 +1,5 @@
 // author: Santiago Gómez
-import type { UserInterface } from '@/interfaces/UserInterface';
+import type { UserInterface } from '@/modules/user/interfaces/UserInterface';
 
 export type RegisterUserDto = Omit<
   UserInterface,

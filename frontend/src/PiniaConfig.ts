@@ -5,7 +5,7 @@ import { createPinia } from 'pinia';
 import { watch } from 'vue';
 
 // internal imports
-import { userSeeder } from '@/seeders/userseeder';
+import { userSeeder } from '@/modules/user/seeders/userseeder';
 import { categorySeeder } from '@/modules/category/seeders/categoryseeder';
 import { goalSeeder } from '@/modules/goal/seeders/goalseeder';
 import { transactionSeeder } from '@/modules/transaction/seeders/transactionseeder';

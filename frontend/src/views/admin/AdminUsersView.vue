@@ -5,9 +5,9 @@ import { computed, ref } from 'vue';
 
 // internal imports
 import AdminUserFormModal from '@/components/admin/AdminUserFormModal.vue';
-import type { UserInterface } from '@/interfaces/UserInterface';
+import type { UserInterface } from '@/modules/user/interfaces/UserInterface';
 import { AdminService } from '@/services/AdminService';
-import { UserService } from '@/services/UserService';
+import { UserService } from '@/modules/user/services/UserService';
 import { Formatters } from '@/utils/Formatters';
 
 const usersWithStats = computed(() => AdminService.getUsersWithStats());

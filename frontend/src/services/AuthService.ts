@@ -1,10 +1,10 @@
 // author: Santiago Gómez Ospina
 
 // internal imports
-import type { RegisterUserDto } from '@/dtos/user/RegisterUserDto';
-import type { UserInterface } from '@/interfaces/UserInterface';
+import type { RegisterUserDto } from '@/modules/user/dtos/RegisterUserDto';
+import type { UserInterface } from '@/modules/user/interfaces/UserInterface';
 import { useAuthStore } from '@/stores/authstore';
-import { useUserStore } from '@/stores/userstore';
+import { useUserStore } from '@/modules/user/stores/userstore';
 
 export class AuthService {
   public static getCurrentUser(): UserInterface | null {

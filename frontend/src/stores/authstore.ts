@@ -5,7 +5,7 @@ import { defineStore } from 'pinia';
 import { computed, ref } from 'vue';
 
 // internal imports
-import type { UserInterface } from '@/interfaces/UserInterface';
+import type { UserInterface } from '@/modules/user/interfaces/UserInterface';
 
 export const useAuthStore = defineStore('auth', () => {
   const currentUser = ref<UserInterface | null>(null);

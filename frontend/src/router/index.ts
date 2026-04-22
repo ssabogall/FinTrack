@@ -15,7 +15,7 @@ import IndexCategoryView from '@/modules/category/views/IndexView.vue';
 import IndexGoalView from '@/modules/goal/views/IndexView.vue';
 import IndexTransactionView from '@/modules/transaction/views/IndexView.vue';
 import LoginView from '@/views/auth/LoginView.vue';
-import ProfileView from '@/views/profile/ProfileView.vue';
+import ProfileView from '@/modules/user/views/ProfileView.vue';
 import RegisterView from '@/views/auth/RegisterView.vue';
 
 const router = createRouter({
