@@ -5,10 +5,10 @@ import { useRouter } from 'vue-router';
 import type { Chart } from 'chart.js';
 
 import type { GoalInterface } from '@/modules/goal/interfaces/GoalInterface';
-import { Formatters } from '@/utils/Formatters';
+import { Formatters } from '@/shared/utils/Formatters';
 import { GoalStatusHelper } from '@/modules/goal/utils/GoalStatusHelper';
 import type { GoalStatus } from '@/modules/goal/utils/GoalStatusHelper';
-import { ChartUtils } from '@/utils/ChartUtils';
+import { ChartUtils } from '@/shared/utils/ChartUtils';
 
 interface Props {
   goal: GoalInterface;

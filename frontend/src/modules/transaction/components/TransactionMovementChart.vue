@@ -5,7 +5,7 @@ import { onMounted, ref, watch } from 'vue';
 import type { Chart } from 'chart.js';
 
 // internal imports
-import { ChartUtils } from '@/utils/ChartUtils';
+import { ChartUtils } from '@/shared/utils/ChartUtils';
 
 interface Props {
   labels: string[];

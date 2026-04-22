@@ -8,7 +8,7 @@ import AdminUserFormModal from '@/modules/admin/components/AdminUserFormModal.vu
 import type { UserInterface } from '@/modules/user/interfaces/UserInterface';
 import { AdminService } from '@/modules/admin/services/AdminService';
 import { UserService } from '@/modules/user/services/UserService';
-import { Formatters } from '@/utils/Formatters';
+import { Formatters } from '@/shared/utils/Formatters';
 
 const usersWithStats = computed(() => AdminService.getUsersWithStats());
 

@@ -8,7 +8,7 @@ import AdminIncomeExpensesChart from '@/modules/admin/components/AdminIncomeExpe
 import AdminOverviewCards from '@/modules/admin/components/AdminOverviewCards.vue';
 import AdminUserGrowthChart from '@/modules/admin/components/AdminUserGrowthChart.vue';
 import { AdminService } from '@/modules/admin/services/AdminService';
-import { ReportUtils } from '@/utils/ReportUtils';
+import { ReportUtils } from '@/shared/utils/ReportUtils';
 
 const selectedYear = ref(new Date().getFullYear());
 const selectedMonth = ref(new Date().getMonth() + 1);

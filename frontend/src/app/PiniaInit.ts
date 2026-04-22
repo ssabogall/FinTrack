@@ -10,7 +10,7 @@ import { categorySeeder } from '@/modules/category/seeders/categoryseeder';
 import { goalSeeder } from '@/modules/goal/seeders/goalseeder';
 import { transactionSeeder } from '@/modules/transaction/seeders/transactionseeder';
 
-export default class PiniaConfig {
+export default class PiniaInit {
   public static init() {
     const pinia = createPinia();
 

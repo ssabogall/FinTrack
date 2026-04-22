@@ -4,7 +4,7 @@ import { computed } from 'vue';
 import { RouterLink, RouterView, useRouter } from 'vue-router';
 import logo from '@/assets/logo/FinTrack-white.png';
 import { AuthService } from '@/modules/auth/services/AuthService';
-import { Formatters } from '@/utils/Formatters';
+import { Formatters } from '@/shared/utils/Formatters';
 
 const router = useRouter();
 

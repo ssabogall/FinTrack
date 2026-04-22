@@ -6,7 +6,7 @@ import { jsPDF } from 'jspdf';
 import type { CategoryInterface } from '@/modules/category/interfaces/CategoryInterface';
 import type { TransactionInterface } from '@/modules/transaction/interfaces/TransactionInterface';
 import type { UserInterface } from '@/modules/user/interfaces/UserInterface';
-import { Formatters } from '@/utils/Formatters';
+import { Formatters } from '@/shared/utils/Formatters';
 
 export class ReportUtils {
   public static downloadMonthlyFinancialSummary(

@@ -5,8 +5,8 @@ import { onMounted, ref, watch } from 'vue';
 import type { Chart } from 'chart.js';
 
 // internal imports
-import { ChartUtils } from '@/utils/ChartUtils';
-import { Formatters } from '@/utils/Formatters';
+import { ChartUtils } from '@/shared/utils/ChartUtils';
+import { Formatters } from '@/shared/utils/Formatters';
 
 interface Props {
   title: string;

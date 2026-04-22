@@ -16,7 +16,7 @@ import { AuthService } from '@/modules/auth/services/AuthService';
 import { CategoryService } from '@/modules/category/services/CategoryService';
 import { TransactionService } from '@/modules/transaction/services/TransactionService';
 import { GoalService } from '@/modules/goal/services/GoalService';
-import { Formatters } from '@/utils/Formatters';
+import { Formatters } from '@/shared/utils/Formatters';
 
 const userCategories = computed(() => CategoryService.getForCurrentUser(true));
 const userGoals = computed(() => GoalService.getForCurrentUser());

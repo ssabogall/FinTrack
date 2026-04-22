@@ -7,7 +7,7 @@ import { useRouter } from 'vue-router';
 // internal imports
 import { AuthService } from '@/modules/auth/services/AuthService';
 import { UserService } from '@/modules/user/services/UserService';
-import { Formatters } from '@/utils/Formatters';
+import { Formatters } from '@/shared/utils/Formatters';
 
 // variables
 const router = useRouter();

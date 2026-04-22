@@ -1,6 +1,6 @@
 <!-- author: Santiago Sabogal -->
 <script setup lang="ts">
-import { Formatters } from '@/utils/Formatters';
+import { Formatters } from '@/shared/utils/Formatters';
 
 interface Props {
   totalTarget: number;
