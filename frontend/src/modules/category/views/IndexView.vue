@@ -8,7 +8,7 @@ import CategoryCard from '@/modules/category/components/CategoryCard.vue';
 import CategoryFormModal from '@/modules/category/components/CategoryFormModal.vue';
 import CategorySummaryCards from '@/modules/category/components/CategorySummaryCards.vue';
 import type { CategoryInterface } from '@/modules/category/interfaces/CategoryInterface';
-import { AuthService } from '@/services/AuthService';
+import { AuthService } from '@/modules/auth/services/AuthService';
 import { CategoryService } from '@/modules/category/services/CategoryService';
 
 // reactive variables

@@ -3,7 +3,7 @@
 import { computed } from 'vue';
 import { RouterLink, RouterView, useRouter } from 'vue-router';
 import logo from '@/assets/logo/FinTrack-white.png';
-import { AuthService } from '@/services/AuthService';
+import { AuthService } from '@/modules/auth/services/AuthService';
 import { Formatters } from '@/utils/Formatters';
 
 const router = useRouter();

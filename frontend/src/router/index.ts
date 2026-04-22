@@ -4,7 +4,7 @@
 import { createRouter, createWebHistory } from 'vue-router';
 
 // internal imports
-import { AuthService } from '@/services/AuthService';
+import { AuthService } from '@/modules/auth/services/AuthService';
 import AdminDashboardView from '@/views/admin/AdminDashboardView.vue';
 import AdminReportsView from '@/views/admin/AdminReportsView.vue';
 import AdminUsersView from '@/views/admin/AdminUsersView.vue';
@@ -14,9 +14,9 @@ import HomeView from '@/views/home/HomeView.vue';
 import IndexCategoryView from '@/modules/category/views/IndexView.vue';
 import IndexGoalView from '@/modules/goal/views/IndexView.vue';
 import IndexTransactionView from '@/modules/transaction/views/IndexView.vue';
-import LoginView from '@/views/auth/LoginView.vue';
+import LoginView from '@/modules/auth/views/LoginView.vue';
 import ProfileView from '@/modules/user/views/ProfileView.vue';
-import RegisterView from '@/views/auth/RegisterView.vue';
+import RegisterView from '@/modules/auth/views/RegisterView.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),

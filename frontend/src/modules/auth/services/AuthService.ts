@@ -3,7 +3,7 @@
 // internal imports
 import type { RegisterUserDto } from '@/modules/user/dtos/RegisterUserDto';
 import type { UserInterface } from '@/modules/user/interfaces/UserInterface';
-import { useAuthStore } from '@/stores/authstore';
+import { useAuthStore } from '@/modules/auth/stores/authstore';
 import { useUserStore } from '@/modules/user/stores/userstore';
 
 export class AuthService {

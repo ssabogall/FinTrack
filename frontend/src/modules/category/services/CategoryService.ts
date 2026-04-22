@@ -3,8 +3,8 @@
 import type { CreateCategoryDTO } from '@/modules/category/dtos/CreateCategoryDTO';
 import type { UpdateCategoryDTO } from '@/modules/category/dtos/UpdateCategoryDTO';
 import type { CategoryInterface } from '@/modules/category/interfaces/CategoryInterface';
-import { AuthService } from '@/services/AuthService';
-import { useAuthStore } from '@/stores/authstore';
+import { AuthService } from '@/modules/auth/services/AuthService';
+import { useAuthStore } from '@/modules/auth/stores/authstore';
 import { useCategoryStore } from '@/modules/category/stores/categorystore';
 import { useTransactionStore } from '@/modules/transaction/stores/transactionstore';
 import { useUserStore } from '@/modules/user/stores/userstore';

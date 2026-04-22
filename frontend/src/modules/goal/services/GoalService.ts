@@ -4,7 +4,7 @@ import type { GoalInterface } from '@/modules/goal/interfaces/GoalInterface';
 import type { CreateGoalDTO } from '@/modules/goal/dtos/CreateGoalDTO';
 import type { UpdateGoalDTO } from '@/modules/goal/dtos/UpdateGoalDTO';
 import { useGoalStore } from '@/modules/goal/stores/goalstore';
-import { useAuthStore } from '@/stores/authstore';
+import { useAuthStore } from '@/modules/auth/stores/authstore';
 import { GoalStatusHelper } from '@/modules/goal/utils/GoalStatusHelper';
 
 export class GoalService {

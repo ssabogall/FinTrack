@@ -6,7 +6,7 @@ import { useRouter } from 'vue-router';
 
 // internal imports
 import logo from '@/assets/logo/FinTrack-white.png';
-import { AuthService } from '@/services/AuthService';
+import { AuthService } from '@/modules/auth/services/AuthService';
 
 // variables
 const router = useRouter();

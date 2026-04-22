@@ -12,7 +12,7 @@ import TransactionSummaryCards from '@/modules/transaction/components/Transactio
 import TransactionTable from '@/modules/transaction/components/TransactionTable.vue';
 import type { TransactionFilterDTO } from '@/modules/transaction/dtos/TransactionFilterDTO';
 import type { TransactionInterface } from '@/modules/transaction/interfaces/TransactionInterface';
-import { AuthService } from '@/services/AuthService';
+import { AuthService } from '@/modules/auth/services/AuthService';
 import { CategoryService } from '@/modules/category/services/CategoryService';
 import { TransactionService } from '@/modules/transaction/services/TransactionService';
 import { GoalService } from '@/modules/goal/services/GoalService';

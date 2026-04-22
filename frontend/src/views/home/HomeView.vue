@@ -7,7 +7,7 @@ import { computed } from 'vue';
 import TransactionExpenseChart from '@/modules/transaction/components/TransactionExpenseChart.vue';
 import TransactionMovementChart from '@/modules/transaction/components/TransactionMovementChart.vue';
 import UserDashboardKpiCards from '@/components/dashboard/UserDashboardKpiCards.vue';
-import { AuthService } from '@/services/AuthService';
+import { AuthService } from '@/modules/auth/services/AuthService';
 import { TransactionService } from '@/modules/transaction/services/TransactionService';
 import AdminDashboardView from '@/views/admin/AdminDashboardView.vue';
 

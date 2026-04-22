@@ -4,7 +4,7 @@
 import type { CreateUserDto } from '@/modules/user/dtos/CreateUserDto';
 import type { UpdateUserDto } from '@/modules/user/dtos/UpdateUserDto';
 import type { UserInterface } from '@/modules/user/interfaces/UserInterface';
-import { useAuthStore } from '@/stores/authstore';
+import { useAuthStore } from '@/modules/auth/stores/authstore';
 import { useUserStore } from '@/modules/user/stores/userstore';
 
 export class UserService {
