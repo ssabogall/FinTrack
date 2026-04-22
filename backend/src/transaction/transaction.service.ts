@@ -12,5 +12,4 @@ export class TransactionService {
     @InjectRepository(Transaction)
     private transactionRepository: Repository<Transaction>,
   ) {}
-
 }

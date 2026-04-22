@@ -1,6 +1,4 @@
 import { Controller } from '@nestjs/common';
 
 @Controller()
-export class GoalController {
-
-}
+export class GoalController {}

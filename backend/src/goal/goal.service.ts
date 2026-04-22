@@ -12,5 +12,4 @@ export class GoalService {
     @InjectRepository(Goal)
     private goalRepository: Repository<Goal>,
   ) {}
-
 }
