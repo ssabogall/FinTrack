@@ -1,10 +1,29 @@
+// author: Santiago Gómez Ospina
+
+// external imports
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import { TypeOrmModule } from '@nestjs/typeorm';
+
+// internal imports
+import { UserModule } from './user/user.module';
+import { CategoryModule } from './category/category.module';
+import { GoalModule } from './goal/goal.module';
+import { TransactionModule } from './transaction/transaction.module';
 
 @Module({
-  imports: [],
-  controllers: [AppController],
-  providers: [AppService],
+  imports: [
+    TypeOrmModule.forRoot({
+      type: 'sqlite',
+      database: 'database.sqlite',
+      autoLoadEntities: true,
+      synchronize: true,
+    }),
+    UserModule,
+    CategoryModule,
+    GoalModule,
+    TransactionModule,
+  ],
+  controllers: [],
+  providers: [],
 })
 export class AppModule {}
