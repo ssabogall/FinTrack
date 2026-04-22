@@ -10,7 +10,7 @@ import AdminReportsView from '@/modules/admin/views/AdminReportsView.vue';
 import AdminUsersView from '@/modules/admin/views/AdminUsersView.vue';
 import CreateGoalView from '@/modules/goal/views/CreateView.vue';
 import EditGoalView from '@/modules/goal/views/EditView.vue';
-import HomeView from '@/views/home/HomeView.vue';
+import HomeView from '@/modules/dashboard/views/HomeView.vue';
 import IndexCategoryView from '@/modules/category/views/IndexView.vue';
 import IndexGoalView from '@/modules/goal/views/IndexView.vue';
 import IndexTransactionView from '@/modules/transaction/views/IndexView.vue';

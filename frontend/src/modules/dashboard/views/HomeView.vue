@@ -6,7 +6,7 @@ import { computed } from 'vue';
 // internal imports
 import TransactionExpenseChart from '@/modules/transaction/components/TransactionExpenseChart.vue';
 import TransactionMovementChart from '@/modules/transaction/components/TransactionMovementChart.vue';
-import UserDashboardKpiCards from '@/components/dashboard/UserDashboardKpiCards.vue';
+import UserDashboardKpiCards from '@/modules/dashboard/components/UserDashboardKpiCards.vue';
 import { AuthService } from '@/modules/auth/services/AuthService';
 import { TransactionService } from '@/modules/transaction/services/TransactionService';
 import AdminDashboardView from '@/modules/admin/views/AdminDashboardView.vue';

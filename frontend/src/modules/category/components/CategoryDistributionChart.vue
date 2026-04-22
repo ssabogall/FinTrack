@@ -1,7 +1,7 @@
 <!-- author: Lucas Higuita -->
 <script setup lang="ts">
 // internal imports
-import DonutMetricChart from '@/components/charts/DonutMetricChart.vue';
+import DonutMetricChart from '@/shared/components/charts/DonutMetricChart.vue';
 
 interface CategorySlice {
   name: string;
