@@ -1,13 +1,13 @@
 // author: Lucas Higuita
 // internal imports
-import type { CreateTransactionDTO } from '@/dtos/transaction/CreateTransactionDTO';
-import type { TransactionFilterDTO } from '@/dtos/transaction/TransactionFilterDTO';
-import type { UpdateTransactionDTO } from '@/dtos/transaction/UpdateTransactionDTO';
-import type { TransactionInterface } from '@/interfaces/TransactionInterface';
+import type { CreateTransactionDTO } from '@/modules/transaction/dtos/CreateTransactionDTO';
+import type { TransactionFilterDTO } from '@/modules/transaction/dtos/TransactionFilterDTO';
+import type { UpdateTransactionDTO } from '@/modules/transaction/dtos/UpdateTransactionDTO';
+import type { TransactionInterface } from '@/modules/transaction/interfaces/TransactionInterface';
 import { useAuthStore } from '@/stores/authstore';
 import { useCategoryStore } from '@/stores/categorystore';
 import { useGoalStore } from '@/modules/goal/stores/goalstore';
-import { useTransactionStore } from '@/stores/transactionstore';
+import { useTransactionStore } from '@/modules/transaction/stores/transactionstore';
 import { GoalStatusHelper } from '@/modules/goal/utils/GoalStatusHelper';
 
 export class TransactionService {

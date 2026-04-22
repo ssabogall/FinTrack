@@ -8,7 +8,7 @@ import { watch } from 'vue';
 import { userSeeder } from '@/seeders/userseeder';
 import { categorySeeder } from '@/seeders/categoryseeder';
 import { goalSeeder } from '@/modules/goal/seeders/goalseeder';
-import { transactionSeeder } from '@/seeders/transactionseeder.ts';
+import { transactionSeeder } from '@/modules/transaction/seeders/transactionseeder';
 
 export default class PiniaConfig {
   public static init() {

@@ -4,17 +4,17 @@
 import { computed, ref } from 'vue';
 
 // internal imports
-import TransactionExpenseChart from '@/components/transactions/TransactionExpenseChart.vue';
-import TransactionFilters from '@/components/transactions/TransactionFilters.vue';
-import TransactionFormModal from '@/components/transactions/TransactionFormModal.vue';
-import TransactionMovementChart from '@/components/transactions/TransactionMovementChart.vue';
-import TransactionSummaryCards from '@/components/transactions/TransactionSummaryCards.vue';
-import TransactionTable from '@/components/transactions/TransactionTable.vue';
-import type { TransactionFilterDTO } from '@/dtos/transaction/TransactionFilterDTO';
-import type { TransactionInterface } from '@/interfaces/TransactionInterface';
+import TransactionExpenseChart from '@/modules/transaction/components/TransactionExpenseChart.vue';
+import TransactionFilters from '@/modules/transaction/components/TransactionFilters.vue';
+import TransactionFormModal from '@/modules/transaction/components/TransactionFormModal.vue';
+import TransactionMovementChart from '@/modules/transaction/components/TransactionMovementChart.vue';
+import TransactionSummaryCards from '@/modules/transaction/components/TransactionSummaryCards.vue';
+import TransactionTable from '@/modules/transaction/components/TransactionTable.vue';
+import type { TransactionFilterDTO } from '@/modules/transaction/dtos/TransactionFilterDTO';
+import type { TransactionInterface } from '@/modules/transaction/interfaces/TransactionInterface';
 import { AuthService } from '@/services/AuthService';
 import { CategoryService } from '@/services/CategoryService';
-import { TransactionService } from '@/services/TransactionService';
+import { TransactionService } from '@/modules/transaction/services/TransactionService';
 import { GoalService } from '@/modules/goal/services/GoalService';
 import { Formatters } from '@/utils/Formatters';
 

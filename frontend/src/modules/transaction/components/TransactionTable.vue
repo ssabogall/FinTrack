@@ -5,7 +5,7 @@ import { ref } from 'vue';
 
 // internal imports
 import type { CategoryInterface } from '@/interfaces/CategoryInterface';
-import type { TransactionInterface } from '@/interfaces/TransactionInterface';
+import type { TransactionInterface } from '@/modules/transaction/interfaces/TransactionInterface';
 import { Formatters } from '@/utils/Formatters';
 
 interface Props {

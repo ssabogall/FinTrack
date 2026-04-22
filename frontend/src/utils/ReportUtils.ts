@@ -4,7 +4,7 @@ import { jsPDF } from 'jspdf';
 
 // internal imports
 import type { CategoryInterface } from '@/interfaces/CategoryInterface';
-import type { TransactionInterface } from '@/interfaces/TransactionInterface';
+import type { TransactionInterface } from '@/modules/transaction/interfaces/TransactionInterface';
 import type { UserInterface } from '@/interfaces/UserInterface';
 import { Formatters } from '@/utils/Formatters';
 

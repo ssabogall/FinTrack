@@ -4,11 +4,11 @@
 import { computed } from 'vue';
 
 // internal imports
-import TransactionExpenseChart from '@/components/transactions/TransactionExpenseChart.vue';
-import TransactionMovementChart from '@/components/transactions/TransactionMovementChart.vue';
+import TransactionExpenseChart from '@/modules/transaction/components/TransactionExpenseChart.vue';
+import TransactionMovementChart from '@/modules/transaction/components/TransactionMovementChart.vue';
 import UserDashboardKpiCards from '@/components/dashboard/UserDashboardKpiCards.vue';
 import { AuthService } from '@/services/AuthService';
-import { TransactionService } from '@/services/TransactionService';
+import { TransactionService } from '@/modules/transaction/services/TransactionService';
 import AdminDashboardView from '@/views/admin/AdminDashboardView.vue';
 
 const isAdmin = computed(() => AuthService.isAdmin());

@@ -1,5 +1,5 @@
 // author: Santiago Gómez
-import type { TransactionInterface } from '@/interfaces/TransactionInterface';
+import type { TransactionInterface } from '@/modules/transaction/interfaces/TransactionInterface';
 
 const now = new Date();
 

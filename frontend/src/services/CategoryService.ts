@@ -6,7 +6,7 @@ import type { CategoryInterface } from '@/interfaces/CategoryInterface';
 import { AuthService } from '@/services/AuthService';
 import { useAuthStore } from '@/stores/authstore';
 import { useCategoryStore } from '@/stores/categorystore';
-import { useTransactionStore } from '@/stores/transactionstore';
+import { useTransactionStore } from '@/modules/transaction/stores/transactionstore';
 import { useUserStore } from '@/stores/userstore';
 
 export class CategoryService {
