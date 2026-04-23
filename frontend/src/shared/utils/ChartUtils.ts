@@ -15,10 +15,22 @@ import {
   PieController,
   PointElement,
   Tooltip,
+  type ChartDataset,
   type ChartConfiguration,
+  type ChartType,
+  type TooltipItem,
 } from 'chart.js';
 
 export class ChartUtils {
+  private static readonly NEUTRAL_COLORS = {
+    white: '#FFFFFF',
+    gray100: '#F1F5F9',
+    gray200: '#E2E8F0',
+    slate900: '#0B2C3D',
+    green500: '#16A34A',
+    red500: '#EF4444',
+  } as const;
+
   private static initialized = false;
 
   private static ensureInitialized(): void {
@@ -41,6 +53,65 @@ export class ChartUtils {
     ChartUtils.initialized = true;
   }
 
+  private static formatCurrency(value: number, minimumFractionDigits = 0): string {
+    return `$${value.toLocaleString('en-US', { minimumFractionDigits })}`;
+  }
+
+  private static formatCurrencyFromTick(value: string | number): string {
+    return ChartUtils.formatCurrency(Number(value));
+  }
+
+  private static buildMoneyTooltipLabel<TType extends ChartType>(
+    context: TooltipItem<TType>,
+    amount: number,
+    minimumFractionDigits = 0,
+  ): string {
+    const valueLabel = ChartUtils.formatCurrency(amount, minimumFractionDigits);
+    const datasetLabel = (context.dataset as { label?: string }).label;
+    return datasetLabel ? ` ${datasetLabel}: ${valueLabel}` : ` ${valueLabel}`;
+  }
+
+  private static buildLegend(position: 'top' | 'bottom') {
+    return {
+      position,
+      labels: {
+        usePointStyle: true,
+        pointStyle: 'circle' as const,
+        font: { size: 12 },
+      },
+    };
+  }
+
+  private static buildCartesianScales({
+    currency = false,
+    stacked = false,
+    indexAxis = 'x',
+  }: {
+    currency?: boolean;
+    stacked?: boolean;
+    indexAxis?: 'x' | 'y';
+  }) {
+    const valueAxis = indexAxis === 'x' ? 'y' : 'x';
+    const labelAxis = indexAxis === 'x' ? 'x' : 'y';
+
+    return {
+      [labelAxis]: {
+        stacked,
+        grid: { display: false },
+        ticks: { font: { size: 11 } },
+      },
+      [valueAxis]: {
+        stacked,
+        beginAtZero: true,
+        ticks: {
+          ...(currency ? { callback: (value: string | number) => ChartUtils.formatCurrencyFromTick(value) } : {}),
+          font: { size: 11 },
+        },
+        grid: { color: ChartUtils.NEUTRAL_COLORS.gray100 },
+      },
+    };
+  }
+
   public static buildGoalProgressDoughnut(
     canvas: HTMLCanvasElement,
     savedAmount: number,
@@ -48,14 +119,13 @@ export class ChartUtils {
     color: string,
   ): Chart {
     ChartUtils.ensureInitialized();
-
     const config: ChartConfiguration<'doughnut'> = {
       type: 'doughnut',
       data: {
         datasets: [
           {
             data: [savedAmount, remainingAmount],
-            backgroundColor: [color, '#E2E8F0'],
+            backgroundColor: [color, ChartUtils.NEUTRAL_COLORS.gray200],
             borderWidth: 0,
             hoverOffset: 4,
           },
@@ -67,7 +137,7 @@ export class ChartUtils {
         plugins: {
           tooltip: {
             callbacks: {
-              label: (ctx) => ` $${ctx.parsed.toLocaleString()}`,
+              label: (ctx) => ChartUtils.buildMoneyTooltipLabel(ctx, ctx.parsed),
             },
           },
           legend: { display: false },
@@ -75,7 +145,7 @@ export class ChartUtils {
       },
     };
 
-    return new Chart(canvas, config);
+    return new Chart(canvas, config) as unknown as Chart;
   }
 
   public static buildCategoryDistributionPie(
@@ -85,6 +155,8 @@ export class ChartUtils {
     colors: string[],
   ): Chart {
     ChartUtils.ensureInitialized();
+    const total = data.reduce((acc, value) => acc + value, 0);
+    const bottomLegend = ChartUtils.buildLegend('bottom');
 
     const config: ChartConfiguration<'pie'> = {
       type: 'pie',
@@ -94,7 +166,7 @@ export class ChartUtils {
           {
             data,
             backgroundColor: colors,
-            borderColor: '#FFFFFF',
+            borderColor: ChartUtils.NEUTRAL_COLORS.white,
             borderWidth: 2,
             hoverOffset: 8,
           },
@@ -105,20 +177,14 @@ export class ChartUtils {
         maintainAspectRatio: false,
         plugins: {
           legend: {
-            position: 'bottom',
-            labels: {
-              padding: 16,
-              usePointStyle: true,
-              pointStyle: 'circle',
-              font: { size: 12 },
-            },
+            ...bottomLegend,
+            labels: { ...bottomLegend.labels, padding: 16 },
           },
           tooltip: {
             callbacks: {
               label: (ctx) => {
-                const total = (ctx.dataset.data as number[]).reduce((a, b) => a + b, 0);
-                const pct = total > 0 ? ((ctx.parsed / total) * 100).toFixed(1) : '0';
-                return ` ${ctx.label}: $${ctx.parsed.toLocaleString('en-US', { minimumFractionDigits: 2 })} (${pct}%)`;
+                const percentage = total > 0 ? ((ctx.parsed / total) * 100).toFixed(1) : '0';
+                return ` ${ctx.label}: ${ChartUtils.formatCurrency(ctx.parsed, 2)} (${percentage}%)`;
               },
             },
           },
@@ -126,7 +192,7 @@ export class ChartUtils {
       },
     };
 
-    return new Chart(canvas, config);
+    return new Chart(canvas, config) as unknown as Chart;
   }
 
   public static buildMovementTrendsLine(
@@ -136,6 +202,11 @@ export class ChartUtils {
     expenseData: number[],
   ): Chart {
     ChartUtils.ensureInitialized();
+    const datasetDefaults: Pick<ChartDataset<'line', number[]>, 'fill' | 'tension' | 'pointRadius'> = {
+      fill: true,
+      tension: 0.4,
+      pointRadius: 3,
+    };
 
     const config: ChartConfiguration<'line'> = {
       type: 'line',
@@ -145,22 +216,18 @@ export class ChartUtils {
           {
             label: 'Income',
             data: incomeData,
-            borderColor: '#16A34A',
+            borderColor: ChartUtils.NEUTRAL_COLORS.green500,
             backgroundColor: 'rgba(22,163,74,0.15)',
-            fill: true,
-            tension: 0.4,
-            pointRadius: 3,
-            pointBackgroundColor: '#16A34A',
+            pointBackgroundColor: ChartUtils.NEUTRAL_COLORS.green500,
+            ...datasetDefaults,
           },
           {
             label: 'Expenses',
             data: expenseData,
-            borderColor: '#EF4444',
+            borderColor: ChartUtils.NEUTRAL_COLORS.red500,
             backgroundColor: 'rgba(239,68,68,0.10)',
-            fill: true,
-            tension: 0.4,
-            pointRadius: 3,
-            pointBackgroundColor: '#EF4444',
+            pointBackgroundColor: ChartUtils.NEUTRAL_COLORS.red500,
+            ...datasetDefaults,
           },
         ],
       },
@@ -168,35 +235,19 @@ export class ChartUtils {
         responsive: true,
         maintainAspectRatio: false,
         interaction: { mode: 'index', intersect: false },
-        scales: {
-          x: {
-            grid: { display: false },
-            ticks: { font: { size: 11 } },
-          },
-          y: {
-            beginAtZero: true,
-            ticks: {
-              callback: (value) => `$${Number(value).toLocaleString()}`,
-              font: { size: 11 },
-            },
-            grid: { color: '#F1F5F9' },
-          },
-        },
+        scales: ChartUtils.buildCartesianScales({ currency: true }),
         plugins: {
-          legend: {
-            position: 'top',
-            labels: { usePointStyle: true, pointStyle: 'circle', font: { size: 12 } },
-          },
+          legend: ChartUtils.buildLegend('top'),
           tooltip: {
             callbacks: {
-              label: (ctx) => ` ${ctx.dataset.label}: $${(ctx.parsed.y ?? 0).toLocaleString()}`,
+              label: (ctx) => ChartUtils.buildMoneyTooltipLabel(ctx, ctx.parsed.y ?? 0),
             },
           },
         },
       },
     };
 
-    return new Chart(canvas, config);
+    return new Chart(canvas, config) as unknown as Chart;
   }
 
   public static buildExpensesByCategoryDoughnut(
@@ -206,7 +257,6 @@ export class ChartUtils {
     colors: string[],
   ): Chart {
     ChartUtils.ensureInitialized();
-
     const config: ChartConfiguration<'doughnut'> = {
       type: 'doughnut',
       data: {
@@ -216,7 +266,7 @@ export class ChartUtils {
             data,
             backgroundColor: colors,
             borderWidth: 2,
-            borderColor: '#FFFFFF',
+            borderColor: ChartUtils.NEUTRAL_COLORS.white,
             hoverOffset: 6,
           },
         ],
@@ -229,15 +279,14 @@ export class ChartUtils {
           legend: { display: false },
           tooltip: {
             callbacks: {
-              label: (ctx) =>
-                ` ${ctx.label}: $${ctx.parsed.toLocaleString('en-US', { minimumFractionDigits: 2 })}`,
+              label: (ctx) => ` ${ctx.label}: ${ChartUtils.formatCurrency(ctx.parsed, 2)}`,
             },
           },
         },
       },
     };
 
-    return new Chart(canvas, config);
+    return new Chart(canvas, config) as unknown as Chart;
   }
 
   public static buildUserGrowthLine(
@@ -246,7 +295,6 @@ export class ChartUtils {
     counts: number[],
   ): Chart {
     ChartUtils.ensureInitialized();
-
     const config: ChartConfiguration<'line'> = {
       type: 'line',
       data: {
@@ -255,12 +303,12 @@ export class ChartUtils {
           {
             label: 'Users',
             data: counts,
-            borderColor: '#0B2C3D',
+            borderColor: ChartUtils.NEUTRAL_COLORS.slate900,
             backgroundColor: 'rgba(11,44,61,0.1)',
             fill: true,
             tension: 0.4,
             pointRadius: 4,
-            pointBackgroundColor: '#0B2C3D',
+            pointBackgroundColor: ChartUtils.NEUTRAL_COLORS.slate900,
           },
         ],
       },
@@ -268,22 +316,9 @@ export class ChartUtils {
         responsive: true,
         maintainAspectRatio: false,
         interaction: { mode: 'index', intersect: false },
-        scales: {
-          x: {
-            grid: { display: false },
-            ticks: { font: { size: 11 } },
-          },
-          y: {
-            beginAtZero: true,
-            ticks: { font: { size: 11 } },
-            grid: { color: '#F1F5F9' },
-          },
-        },
+        scales: ChartUtils.buildCartesianScales({ currency: false }),
         plugins: {
-          legend: {
-            position: 'top',
-            labels: { usePointStyle: true, pointStyle: 'circle', font: { size: 12 } },
-          },
+          legend: ChartUtils.buildLegend('top'),
           tooltip: {
             callbacks: {
               label: (ctx) => ` Users: ${ctx.parsed.y}`,
@@ -293,7 +328,7 @@ export class ChartUtils {
       },
     };
 
-    return new Chart(canvas, config);
+    return new Chart(canvas, config) as unknown as Chart;
   }
 
   public static buildIncomeVsExpensesBar(
@@ -303,7 +338,6 @@ export class ChartUtils {
     expenseData: number[],
   ): Chart {
     ChartUtils.ensureInitialized();
-
     const config: ChartConfiguration<'bar'> = {
       type: 'bar',
       data: {
@@ -313,14 +347,14 @@ export class ChartUtils {
             label: 'Income',
             data: incomeData,
             backgroundColor: 'rgba(22,163,74,0.8)',
-            borderColor: '#16A34A',
+            borderColor: ChartUtils.NEUTRAL_COLORS.green500,
             borderWidth: 1,
           },
           {
             label: 'Expenses',
             data: expenseData,
             backgroundColor: 'rgba(239,68,68,0.8)',
-            borderColor: '#EF4444',
+            borderColor: ChartUtils.NEUTRAL_COLORS.red500,
             borderWidth: 1,
           },
         ],
@@ -329,35 +363,19 @@ export class ChartUtils {
         responsive: true,
         maintainAspectRatio: false,
         interaction: { mode: 'index', intersect: false },
-        scales: {
-          x: {
-            grid: { display: false },
-            ticks: { font: { size: 11 } },
-          },
-          y: {
-            beginAtZero: true,
-            ticks: {
-              callback: (value) => `$${Number(value).toLocaleString()}`,
-              font: { size: 11 },
-            },
-            grid: { color: '#F1F5F9' },
-          },
-        },
+        scales: ChartUtils.buildCartesianScales({ currency: true }),
         plugins: {
-          legend: {
-            position: 'top',
-            labels: { usePointStyle: true, pointStyle: 'circle', font: { size: 12 } },
-          },
+          legend: ChartUtils.buildLegend('top'),
           tooltip: {
             callbacks: {
-              label: (ctx) => ` ${ctx.dataset.label}: $${(ctx.parsed.y ?? 0).toLocaleString()}`,
+              label: (ctx) => ChartUtils.buildMoneyTooltipLabel(ctx, ctx.parsed.y ?? 0),
             },
           },
         },
       },
     };
 
-    return new Chart(canvas, config);
+    return new Chart(canvas, config) as unknown as Chart;
   }
 
   public static buildGoalsProgressStackedBar(
@@ -367,7 +385,6 @@ export class ChartUtils {
     remainingData: number[],
   ): Chart {
     ChartUtils.ensureInitialized();
-
     const config: ChartConfiguration<'bar'> = {
       type: 'bar',
       data: {
@@ -377,7 +394,7 @@ export class ChartUtils {
             label: 'Saved',
             data: savedData,
             backgroundColor: 'rgba(11,44,61,0.9)',
-            borderColor: '#0B2C3D',
+            borderColor: ChartUtils.NEUTRAL_COLORS.slate900,
             borderWidth: 1,
             borderRadius: 6,
           },
@@ -385,7 +402,7 @@ export class ChartUtils {
             label: 'Remaining',
             data: remainingData,
             backgroundColor: 'rgba(226,232,240,1)',
-            borderColor: '#E2E8F0',
+            borderColor: ChartUtils.NEUTRAL_COLORS.gray200,
             borderWidth: 1,
             borderRadius: 6,
           },
@@ -396,37 +413,18 @@ export class ChartUtils {
         responsive: true,
         maintainAspectRatio: false,
         interaction: { mode: 'index', intersect: false },
-        scales: {
-          x: {
-            stacked: true,
-            beginAtZero: true,
-            ticks: {
-              callback: (value) => `$${Number(value).toLocaleString()}`,
-              font: { size: 11 },
-            },
-            grid: { color: '#F1F5F9' },
-          },
-          y: {
-            stacked: true,
-            grid: { display: false },
-            ticks: { font: { size: 11 } },
-          },
-        },
+        scales: ChartUtils.buildCartesianScales({ currency: true, stacked: true, indexAxis: 'y' }),
         plugins: {
-          legend: {
-            position: 'top',
-            labels: { usePointStyle: true, pointStyle: 'circle', font: { size: 12 } },
-          },
+          legend: ChartUtils.buildLegend('top'),
           tooltip: {
             callbacks: {
-              label: (ctx) =>
-                ` ${ctx.dataset.label}: $${(ctx.parsed.x ?? 0).toLocaleString('en-US', { minimumFractionDigits: 2 })}`,
+              label: (ctx) => ChartUtils.buildMoneyTooltipLabel(ctx, ctx.parsed.x ?? 0, 2),
             },
           },
         },
       },
     };
 
-    return new Chart(canvas, config);
+    return new Chart(canvas, config) as unknown as Chart;
   }
 }

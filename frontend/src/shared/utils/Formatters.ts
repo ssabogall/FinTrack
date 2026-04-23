@@ -1,5 +1,4 @@
 // author: Santiago Gómez Ospina
-
 export class Formatters {
   public static initialsFromName(name: string | null | undefined): string {
     if (!name) return 'FT';
