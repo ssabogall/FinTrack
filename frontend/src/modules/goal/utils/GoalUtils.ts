@@ -1,14 +1,19 @@
 // author: Santiago Sabogal
 export type GoalStatus = 'Active' | 'In Progress' | 'Completed';
 
-export class GoalStatusHelper {
-  public static compute(currentAmount: number, targetAmount: number): GoalStatus {
+export class GoalUtils {
+  public static toDateInputValue(date: Date | string): string {
+    const parsedDate = date instanceof Date ? date : new Date(date);
+    return parsedDate.toISOString().substring(0, 10);
+  }
+
+  public static computeStatus(currentAmount: number, targetAmount: number): GoalStatus {
     if (currentAmount <= 0) return 'Active';
     if (currentAmount >= targetAmount) return 'Completed';
     return 'In Progress';
   }
 
-  public static color(status: GoalStatus): string {
+  public static statusColor(status: GoalStatus): string {
     const colors: Record<GoalStatus, string> = {
       Active: '#64748B',
       'In Progress': '#3B82F6',
@@ -17,7 +22,7 @@ export class GoalStatusHelper {
     return colors[status];
   }
 
-  public static bgColor(status: GoalStatus): string {
+  public static statusBackgroundColor(status: GoalStatus): string {
     const colors: Record<GoalStatus, string> = {
       Active: '#F1F5F9',
       'In Progress': '#EFF6FF',
@@ -26,7 +31,7 @@ export class GoalStatusHelper {
     return colors[status];
   }
 
-  public static icon(status: GoalStatus): string {
+  public static statusIcon(status: GoalStatus): string {
     const icons: Record<GoalStatus, string> = {
       Active: 'fa-circle',
       'In Progress': 'fa-spinner',

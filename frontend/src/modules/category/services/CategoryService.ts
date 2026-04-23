@@ -43,8 +43,9 @@ export class CategoryService {
 
     const categoryStore = useCategoryStore();
 
+    const normalizedName = CategoryService.normalizeCategoryName(dto.name);
     const duplicate = categoryStore.categories.find(
-      (c) => c.userId === currentUser.id && c.name.toLowerCase() === dto.name.trim().toLowerCase(),
+      (c) => c.userId === currentUser.id && c.name.toLowerCase() === normalizedName.toLowerCase(),
     );
 
     if (duplicate) {
@@ -56,7 +57,7 @@ export class CategoryService {
 
     const newCategory: CategoryInterface = {
       id,
-      name: dto.name.trim(),
+      name: normalizedName,
       color: dto.color,
       type: dto.type,
       createdAt: now,
@@ -67,21 +68,7 @@ export class CategoryService {
 
     categoryStore.categories.push(newCategory);
 
-    const authStore = useAuthStore();
-    if (authStore.currentUser && authStore.currentUser.id === currentUser.id) {
-      authStore.currentUser.categoryIds = [...(authStore.currentUser.categoryIds ?? []), id];
-    }
-    const userStore = useUserStore();
-    const userIndex = userStore.users.findIndex((u) => u.id === currentUser.id);
-    if (userIndex !== -1) {
-      const user = userStore.users[userIndex];
-      if (user) {
-        userStore.users[userIndex] = {
-          ...user,
-          categoryIds: [...(user.categoryIds ?? []), id],
-        };
-      }
-    }
+    CategoryService.syncCategoryIdToUsers(currentUser.id, id, 'add');
   }
 
   public static update(id: number, dto: UpdateCategoryDTO): void {
@@ -102,11 +89,12 @@ export class CategoryService {
     }
 
     if (dto.name !== undefined) {
+      const normalizedName = CategoryService.normalizeCategoryName(dto.name);
       const duplicate = categoryStore.categories.find(
         (c) =>
           c.id !== id &&
           c.userId === current.userId &&
-          c.name.toLowerCase() === dto.name!.trim().toLowerCase(),
+          c.name.toLowerCase() === normalizedName.toLowerCase(),
       );
       if (duplicate) {
         throw new Error('A category with this name already exists.');
@@ -115,7 +103,7 @@ export class CategoryService {
 
     categoryStore.categories[index] = {
       id: current.id,
-      name: dto.name?.trim() ?? current.name,
+      name: dto.name !== undefined ? CategoryService.normalizeCategoryName(dto.name) : current.name,
       color: dto.color ?? current.color,
       type: dto.type ?? current.type,
       createdAt: current.createdAt,
@@ -128,7 +116,6 @@ export class CategoryService {
   public static delete(id: number): void {
     const categoryStore = useCategoryStore();
     const transactionStore = useTransactionStore();
-    const userStore = useUserStore();
     const authStore = useAuthStore();
 
     const index = categoryStore.categories.findIndex((c) => c.id === id);
@@ -151,17 +138,7 @@ export class CategoryService {
     categoryStore.categories.splice(index, 1);
 
     const userId = category.userId;
-    const userIndex = userStore.users.findIndex((u) => u.id === userId);
-    if (userIndex !== -1) {
-      const user = userStore.users[userIndex];
-      if (user) {
-        const newCategoryIds = (user.categoryIds ?? []).filter((cid) => cid !== id);
-        userStore.users[userIndex] = {
-          ...user,
-          categoryIds: newCategoryIds.length > 0 ? newCategoryIds : null,
-        };
-      }
-    }
+    CategoryService.syncCategoryIdToUsers(userId, id, 'remove');
     if (authStore.currentUser?.id === userId) {
       const next = (authStore.currentUser.categoryIds ?? []).filter((cid) => cid !== id);
       authStore.currentUser.categoryIds = next.length > 0 ? next : null;
@@ -237,5 +214,36 @@ export class CategoryService {
     }
 
     return Array.from(map.values()).sort((a, b) => b.amount - a.amount);
+  }
+
+  // ---------------------------
+  // Private helpers
+  // ---------------------------
+
+  private static normalizeCategoryName(name: string): string {
+    return name.trim();
+  }
+
+  private static syncCategoryIdToUsers(
+    userId: number,
+    categoryId: number,
+    action: 'add' | 'remove',
+  ): void {
+    const userStore = useUserStore();
+    const userIndex = userStore.users.findIndex((u) => u.id === userId);
+    if (userIndex === -1) return;
+
+    const user = userStore.users[userIndex];
+    if (!user) return;
+
+    const nextCategoryIds =
+      action === 'add'
+        ? [...(user.categoryIds ?? []), categoryId]
+        : (user.categoryIds ?? []).filter((cid) => cid !== categoryId);
+
+    userStore.users[userIndex] = {
+      ...user,
+      categoryIds: nextCategoryIds.length > 0 ? nextCategoryIds : null,
+    };
   }
 }

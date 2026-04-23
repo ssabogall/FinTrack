@@ -6,8 +6,8 @@ import type { Chart } from 'chart.js';
 
 import type { GoalInterface } from '@/modules/goal/interfaces/GoalInterface';
 import { Formatters } from '@/shared/utils/Formatters';
-import { GoalStatusHelper } from '@/modules/goal/utils/GoalStatusHelper';
-import type { GoalStatus } from '@/modules/goal/utils/GoalStatusHelper';
+import { GoalUtils } from '@/modules/goal/utils/GoalUtils';
+import type { GoalStatus } from '@/modules/goal/utils/GoalUtils';
 import { ChartUtils } from '@/shared/utils/ChartUtils';
 
 interface Props {
@@ -52,14 +52,14 @@ const percentage = computed((): number => {
 });
 
 const goalStatus = computed(
-  (): GoalStatus => GoalStatusHelper.compute(props.goal.currentAmount, props.goal.targetAmount),
+  (): GoalStatus => GoalUtils.computeStatus(props.goal.currentAmount, props.goal.targetAmount),
 );
 
-const statusColor = computed((): string => GoalStatusHelper.color(goalStatus.value));
+const statusColor = computed((): string => GoalUtils.statusColor(goalStatus.value));
 
-const statusBgColor = computed((): string => GoalStatusHelper.bgColor(goalStatus.value));
+const statusBgColor = computed((): string => GoalUtils.statusBackgroundColor(goalStatus.value));
 
-const statusIcon = computed((): string => GoalStatusHelper.icon(goalStatus.value));
+const statusIcon = computed((): string => GoalUtils.statusIcon(goalStatus.value));
 
 const remaining = computed((): number => {
   return Math.max(props.goal.targetAmount - props.goal.currentAmount, 0);

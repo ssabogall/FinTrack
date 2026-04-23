@@ -1,6 +1,6 @@
 // author: Santiago Gómez
 import type { GoalInterface } from '@/modules/goal/interfaces/GoalInterface';
-import { GoalStatusHelper } from '@/modules/goal/utils/GoalStatusHelper';
+import { GoalUtils } from '@/modules/goal/utils/GoalUtils';
 
 const now = new Date();
 
@@ -13,7 +13,7 @@ export const goalSeeder: GoalInterface[] = [
     currentAmount: 1200,
     startDate: new Date(now.getFullYear(), now.getMonth() - 5, 1),
     endDate: new Date(now.getFullYear(), now.getMonth() + 1, 1),
-    status: GoalStatusHelper.compute(1200, 3000),
+    status: GoalUtils.computeStatus(1200, 3000),
     createdAt: now,
     updatedAt: now,
     userId: 2,
@@ -27,7 +27,7 @@ export const goalSeeder: GoalInterface[] = [
     currentAmount: 1200,
     startDate: new Date(now.getFullYear(), now.getMonth() - 4, 1),
     endDate: new Date(now.getFullYear(), now.getMonth() + 4, 1),
-    status: GoalStatusHelper.compute(1200, 4000),
+    status: GoalUtils.computeStatus(1200, 4000),
     createdAt: now,
     updatedAt: now,
     userId: 2,
@@ -41,7 +41,7 @@ export const goalSeeder: GoalInterface[] = [
     currentAmount: 8500,
     startDate: new Date(now.getFullYear(), now.getMonth() - 6, 10),
     endDate: new Date(now.getFullYear(), now.getMonth() + 10, 10),
-    status: GoalStatusHelper.compute(8500, 15000),
+    status: GoalUtils.computeStatus(8500, 15000),
     createdAt: now,
     updatedAt: now,
     userId: 2,
@@ -55,7 +55,7 @@ export const goalSeeder: GoalInterface[] = [
     currentAmount: 1500,
     startDate: new Date(now.getFullYear(), now.getMonth() - 3, 15),
     endDate: new Date(now.getFullYear(), now.getMonth() - 1, 15),
-    status: GoalStatusHelper.compute(1500, 1500),
+    status: GoalUtils.computeStatus(1500, 1500),
     createdAt: now,
     updatedAt: now,
     userId: 3,
@@ -69,7 +69,7 @@ export const goalSeeder: GoalInterface[] = [
     currentAmount: 400,
     startDate: new Date(now.getFullYear(), now.getMonth() - 1, 1),
     endDate: new Date(now.getFullYear(), now.getMonth() + 2, 1),
-    status: GoalStatusHelper.compute(400, 800),
+    status: GoalUtils.computeStatus(400, 800),
     createdAt: now,
     updatedAt: now,
     userId: 4,
@@ -83,7 +83,7 @@ export const goalSeeder: GoalInterface[] = [
     currentAmount: 100,
     startDate: new Date(now.getFullYear(), now.getMonth(), 1),
     endDate: new Date(now.getFullYear(), now.getMonth() + 1, 1),
-    status: GoalStatusHelper.compute(100, 500),
+    status: GoalUtils.computeStatus(100, 500),
     createdAt: now,
     updatedAt: now,
     userId: 6,
@@ -99,7 +99,7 @@ export const goalSeeder: GoalInterface[] = [
     currentAmount: 900,
     startDate: new Date(now.getFullYear(), now.getMonth() - 3, 1),
     endDate: new Date(now.getFullYear(), now.getMonth() + 5, 1),
-    status: GoalStatusHelper.compute(900, 5000),
+    status: GoalUtils.computeStatus(900, 5000),
     createdAt: now,
     updatedAt: now,
     userId: 5,
@@ -113,7 +113,7 @@ export const goalSeeder: GoalInterface[] = [
     currentAmount: 300,
     startDate: new Date(now.getFullYear(), now.getMonth() - 1, 10),
     endDate: new Date(now.getFullYear(), now.getMonth() + 3, 10),
-    status: GoalStatusHelper.compute(300, 1200),
+    status: GoalUtils.computeStatus(300, 1200),
     createdAt: now,
     updatedAt: now,
     userId: 5,

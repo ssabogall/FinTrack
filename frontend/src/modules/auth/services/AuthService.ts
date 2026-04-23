@@ -7,15 +7,23 @@ import { useAuthStore } from '@/modules/auth/stores/authstore';
 import { useUserStore } from '@/modules/user/stores/userstore';
 
 export class AuthService {
-  public static getCurrentUser(): UserInterface | null {
-    return useAuthStore().currentUser;
-  }
-
   public static isAuthenticated(): boolean {
     return useAuthStore().isAuthenticated;
   }
 
+  public static getCurrentUser(): UserInterface | null {
+    return useAuthStore().currentUser;
+  }
+
+  public static isAdmin(): boolean {
+    return useAuthStore().currentUser?.role === 'admin';
+  }
+
   public static register(dto: RegisterUserDto): void {
+    if (dto.password !== dto.passwordConfirmation) {
+      throw new Error('Passwords do not match.');
+    }
+
     const authStore = useAuthStore();
     const userStore = useUserStore();
 
@@ -23,10 +31,6 @@ export class AuthService {
 
     if (existingUser) {
       throw new Error('The email is already registered.');
-    }
-
-    if (dto.password !== dto.passwordConfirmation) {
-      throw new Error('Passwords do not match.');
     }
 
     const id = Date.now();
@@ -60,11 +64,6 @@ export class AuthService {
     }
 
     authStore.currentUser = user;
-  }
-
-  public static isAdmin(): boolean {
-    const user = useAuthStore().currentUser;
-    return user?.role === 'admin';
   }
 
   public static logout(): void {
