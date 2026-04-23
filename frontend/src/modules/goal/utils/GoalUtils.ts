@@ -2,11 +2,6 @@
 export type GoalStatus = 'Active' | 'In Progress' | 'Completed';
 
 export class GoalUtils {
-  public static toDateInputValue(date: Date | string): string {
-    const parsedDate = date instanceof Date ? date : new Date(date);
-    return parsedDate.toISOString().substring(0, 10);
-  }
-
   public static computeStatus(currentAmount: number, targetAmount: number): GoalStatus {
     if (currentAmount <= 0) return 'Active';
     if (currentAmount >= targetAmount) return 'Completed';

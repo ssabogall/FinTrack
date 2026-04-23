@@ -3,7 +3,7 @@
 import type { CategoryInterface } from '@/modules/category/interfaces/CategoryInterface';
 import type { TransactionInterface } from '@/modules/transaction/interfaces/TransactionInterface';
 import type { UserInterface } from '@/modules/user/interfaces/UserInterface';
-import { AdminUtils } from '@/modules/admin/utils/AdminUtils';
+import { DateUtils } from '@/shared/utils/DateUtils';
 import { useCategoryStore } from '@/modules/category/stores/categorystore';
 import { useTransactionStore } from '@/modules/transaction/stores/transactionstore';
 import { useUserStore } from '@/modules/user/stores/userstore';
@@ -138,7 +138,7 @@ export class AdminService {
   }
 
   public static getTransactionsForMonth(year: number, month: number): TransactionInterface[] {
-    const { monthStart, monthEnd } = AdminUtils.getMonthRange(year, month);
+    const { monthStart, monthEnd } = DateUtils.getMonthRange(year, month);
 
     return AdminService.getAllTransactions().filter((t) => {
       const ts = new Date(t.date).getTime();

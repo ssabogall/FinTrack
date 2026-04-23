@@ -9,7 +9,7 @@ import { useCategoryStore } from '@/modules/category/stores/categorystore';
 import { useGoalStore } from '@/modules/goal/stores/goalstore';
 import { useTransactionStore } from '@/modules/transaction/stores/transactionstore';
 import { GoalUtils } from '@/modules/goal/utils/GoalUtils';
-import { TransactionUtils } from '@/modules/transaction/utils/TransactionUtils';
+import { MathUtils } from '@/shared/utils/MathUtils';
 
 export class TransactionService {
   public static getAll(): TransactionInterface[] {
@@ -241,19 +241,19 @@ export class TransactionService {
 
     return {
       balance,
-      balanceChangePct: TransactionUtils.calculatePercentageChange(balance, prevBalance),
+      balanceChangePct: MathUtils.calculatePercentageChange(balance, prevBalance),
       monthlyIncome: currentMonthly.income,
-      monthlyIncomeChangePct: TransactionUtils.calculatePercentageChange(
+      monthlyIncomeChangePct: MathUtils.calculatePercentageChange(
         currentMonthly.income,
         prevMonthly.income,
       ),
       monthlyExpenses: currentMonthly.expenses,
-      monthlyExpensesChangePct: TransactionUtils.calculatePercentageChange(
+      monthlyExpensesChangePct: MathUtils.calculatePercentageChange(
         currentMonthly.expenses,
         prevMonthly.expenses,
       ),
       monthlySavings,
-      monthlySavingsChangePct: TransactionUtils.calculatePercentageChange(
+      monthlySavingsChangePct: MathUtils.calculatePercentageChange(
         monthlySavings,
         prevMonthlySavings,
       ),

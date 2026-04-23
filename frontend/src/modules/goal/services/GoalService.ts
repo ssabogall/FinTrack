@@ -6,6 +6,7 @@ import type { UpdateGoalDTO } from '@/modules/goal/dtos/UpdateGoalDTO';
 import { useGoalStore } from '@/modules/goal/stores/goalstore';
 import { useAuthStore } from '@/modules/auth/stores/authstore';
 import { GoalUtils } from '@/modules/goal/utils/GoalUtils';
+import { Formatters } from '@/shared/utils/Formatters';
 
 export class GoalService {
   public static getAll(): GoalInterface[] {
@@ -192,8 +193,8 @@ export class GoalService {
       name: goal.name,
       description: goal.description,
       targetAmount: goal.targetAmount,
-      startDate: GoalUtils.toDateInputValue(goal.startDate),
-      endDate: GoalUtils.toDateInputValue(goal.endDate),
+      startDate: Formatters.toDateInputValue(goal.startDate),
+      endDate: Formatters.toDateInputValue(goal.endDate),
     };
   }
 

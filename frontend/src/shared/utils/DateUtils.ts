@@ -1,4 +1,4 @@
-export class AdminUtils {
+export class DateUtils {
   public static getMonthRange(year: number, month: number): { monthStart: number; monthEnd: number } {
     return {
       monthStart: new Date(year, month - 1, 1).getTime(),
