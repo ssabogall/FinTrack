@@ -1,6 +1,7 @@
 // external imports
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { hash } from 'bcrypt';
 import { Repository } from 'typeorm';
 
 // internal imports
@@ -35,6 +36,12 @@ export class UserService {
   async update(id: number, dto: UpdateUserDto): Promise<User> {
     const user = await this.findOne(id);
     if (!user) throw new NotFoundException('User not found');
-    return this.userRepository.save({ ...user, ...dto });
+
+    const updates: Partial<User> = { ...dto };
+    if (updates.password) {
+      updates.password = await hash(updates.password, 10);
+    }
+
+    return this.userRepository.save({ ...user, ...updates });
   }
 }
