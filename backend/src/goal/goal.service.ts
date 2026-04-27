@@ -1,6 +1,7 @@
 // external imports
 import {
   BadRequestException,
+  ConflictException,
   ForbiddenException,
   Injectable,
   NotFoundException,
@@ -137,5 +138,31 @@ export class GoalService {
     if (currentAmount <= 0) return 'Active';
     if (currentAmount >= targetAmount) return 'Completed';
     return 'In Progress';
+  }
+
+  /**
+   * Permanently deletes a savings goal.
+   *
+   * Business rules enforced here (the frontend disables the button as UX
+   * but the rule lives in the backend, which is the source of truth):
+   *   - The caller must own the goal (temporary userId check until auth).
+   *   - Completed goals are preserved as part of the user's financial
+   *     history and cannot be deleted.
+   */
+  async delete(id: number, userId: number): Promise<void> {
+    const goal = await this.goalRepository.findOneBy({ id });
+    if (!goal) {
+      throw new NotFoundException(`Goal with id ${id} does not exist.`);
+    }
+
+    if (goal.userId !== userId) {
+      throw new ForbiddenException('You do not own this goal.');
+    }
+
+    if (goal.status === 'Completed') {
+      throw new ConflictException('Completed goals cannot be deleted.');
+    }
+
+    await this.goalRepository.remove(goal);
   }
 }

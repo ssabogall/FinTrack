@@ -284,6 +284,37 @@ export class GoalService {
     return updated;
   }
 
+  /**
+   * Permanently deletes the goal identified by `id` via
+   * DELETE /api/goals/:id?userId=N and removes the corresponding entry
+   * from the local store on success.
+   *
+   * Business rules (e.g. completed goals cannot be deleted) are enforced
+   * by the backend; the error message returned by the API is propagated
+   * to the caller so the UI can surface it verbatim.
+   */
+  public static async deleteForCurrentUser(id: number): Promise<void> {
+    const authStore = useAuthStore();
+    const currentUserId = authStore.currentUser?.id;
+    if (!currentUserId) {
+      throw new Error('Not authenticated.');
+    }
+
+    await ApiClient.delete<void>(`/goals/${id}?userId=${currentUserId}`);
+
+    const goalStore = useGoalStore();
+    const index = goalStore.goals.findIndex((g) => g.id === id);
+    if (index !== -1) {
+      goalStore.goals.splice(index, 1);
+    }
+
+    if (authStore.currentUser?.goalIds) {
+      authStore.currentUser.goalIds = authStore.currentUser.goalIds.filter(
+        (goalId) => goalId !== id,
+      );
+    }
+  }
+
   public static getInitialValuesForEdit(id: number): {
     name?: string;
     description?: string;

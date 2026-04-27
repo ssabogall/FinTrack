@@ -41,10 +41,10 @@ const navigateToCreate = (): void => {
   router.push({ name: 'goal.create' });
 };
 
-const handleDelete = (id: number): void => {
+const handleDelete = async (id: number): Promise<void> => {
   deleteError.value = null;
   try {
-    GoalService.delete(id);
+    await GoalService.deleteForCurrentUser(id);
   } catch (err) {
     deleteError.value = err instanceof Error ? err.message : 'Could not delete goal.';
   }
