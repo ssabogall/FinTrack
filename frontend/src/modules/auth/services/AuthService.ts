@@ -1,4 +1,6 @@
 // author: Santiago Gómez Ospina
+// external imports
+import axios from 'axios';
 
 // internal imports
 import type { RegisterUserDto } from '@/modules/user/dtos/RegisterUserDto';
@@ -7,6 +9,9 @@ import { useAuthStore } from '@/modules/auth/stores/authstore';
 import { useUserStore } from '@/modules/user/stores/userstore';
 
 export class AuthService {
+  private static readonly API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
+  private static readonly AUTH_API_URL = `${this.API_BASE_URL}/api/auth`;
+
   public static isAuthenticated(): boolean {
     return useAuthStore().isAuthenticated;
   }
