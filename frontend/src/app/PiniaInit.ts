@@ -21,9 +21,6 @@ export default class PiniaInit {
     } else {
       // initialize the state with the seeders
       pinia.state.value = {
-        auth: {
-          currentUser: null,
-        },
         user: {
           users: userSeeder,
         },
@@ -41,6 +38,9 @@ export default class PiniaInit {
       // save the initial state to localStorage
       localStorage.setItem('piniaState', JSON.stringify(pinia.state.value));
     }
+
+    // auth state is always rehydrated from backend via AuthService.bootstrap()
+    pinia.state.value.auth = { currentUser: null };
 
     // watch for changes and save to localStorage
 

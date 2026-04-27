@@ -244,5 +244,4 @@ export class GoalService {
       colors: sorted.map((_, idx) => palette[idx % palette.length]!),
     };
   }
-
 }

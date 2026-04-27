@@ -18,15 +18,15 @@ const password = ref('');
 const localError = ref<string | null>(null);
 const submitting = ref(false);
 
-const handleSubmit = (): void => {
+const handleSubmit = async (): Promise<void> => {
   submitting.value = true;
   localError.value = null;
 
   try {
-    AuthService.login(email.value, password.value);
+    await AuthService.login(email.value, password.value);
 
     const redirect = (route.query.redirect as string) || '/';
-    router.push(redirect);
+    await router.push(redirect);
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Invalid email or password.';
     localError.value = message;

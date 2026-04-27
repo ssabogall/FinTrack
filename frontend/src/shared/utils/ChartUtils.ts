@@ -104,7 +104,9 @@ export class ChartUtils {
         stacked,
         beginAtZero: true,
         ticks: {
-          ...(currency ? { callback: (value: string | number) => ChartUtils.formatCurrencyFromTick(value) } : {}),
+          ...(currency
+            ? { callback: (value: string | number) => ChartUtils.formatCurrencyFromTick(value) }
+            : {}),
           font: { size: 11 },
         },
         grid: { color: ChartUtils.NEUTRAL_COLORS.gray100 },
@@ -202,7 +204,10 @@ export class ChartUtils {
     expenseData: number[],
   ): Chart {
     ChartUtils.ensureInitialized();
-    const datasetDefaults: Pick<ChartDataset<'line', number[]>, 'fill' | 'tension' | 'pointRadius'> = {
+    const datasetDefaults: Pick<
+      ChartDataset<'line', number[]>,
+      'fill' | 'tension' | 'pointRadius'
+    > = {
       fill: true,
       tension: 0.4,
       pointRadius: 3,
