@@ -47,4 +47,20 @@ export class GoalService {
 
     return this.goalRepository.save(goal);
   }
+
+  /**
+   * Returns every savings goal owned by the given user, ordered with the
+   * most recently created first.
+   *
+   * Returns an empty array if the user has no goals or does not exist.
+   * Distinguishing both cases is intentionally avoided here: it keeps the
+   * client logic simple and does not leak user existence to unauthenticated
+   * callers (relevant once auth lands).
+   */
+  findAllByUser(userId: number): Promise<Goal[]> {
+    return this.goalRepository.find({
+      where: { userId },
+      order: { createdAt: 'DESC' },
+    });
+  }
 }

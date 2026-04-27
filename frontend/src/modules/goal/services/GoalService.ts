@@ -52,6 +52,39 @@ export class GoalService {
     return useGoalStore().goals.filter((g) => g.userId === currentUserId);
   }
 
+  /**
+   * Fetches every savings goal owned by the current user from
+   * GET /api/goals?userId=N and replaces the goals in the local store
+   * with the result.
+   *
+   * The store is the single source of truth for the UI: views and
+   * dashboards already read from it via getForCurrentUser, so refilling
+   * the store is enough to refresh every component reactively.
+   *
+   * Goals belonging to other users are not touched. This matters because
+   * the same store may already hold goals from another logged-in user
+   * during the session (until auth lands and we can reset on logout).
+   */
+  public static async fetchForCurrentUser(): Promise<GoalInterface[]> {
+    const authStore = useAuthStore();
+    const currentUserId = authStore.currentUser?.id;
+    if (!currentUserId) {
+      throw new Error('Not authenticated.');
+    }
+
+    const response = await ApiClient.get<GoalApiResponse[]>(
+      `/goals?userId=${currentUserId}`,
+    );
+
+    const fetched: GoalInterface[] = response.map((item) => GoalService.fromApi(item));
+
+    const goalStore = useGoalStore();
+    const otherUsersGoals = goalStore.goals.filter((g) => g.userId !== currentUserId);
+    goalStore.goals = [...otherUsersGoals, ...fetched];
+
+    return fetched;
+  }
+
   public static update(id: number, dto: UpdateGoalDTO): void {
     if (dto.name !== undefined && !dto.name.trim()) {
       throw new Error('Goal name cannot be empty.');
