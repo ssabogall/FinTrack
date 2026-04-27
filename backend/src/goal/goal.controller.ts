@@ -17,8 +17,8 @@ import {
 
 // internal imports
 import { CreateGoalDto } from './dtos/create-goal.dto';
+import type { GoalResponseDto } from './dtos/goal-response.dto';
 import { UpdateGoalDto } from './dtos/update-goal.dto';
-import { Goal } from './entities/goal.entity';
 import { GoalService } from './goal.service';
 
 @Controller('goals')
@@ -41,7 +41,7 @@ export class GoalController {
    * positive integer.
    */
   @Get()
-  findAll(@Query('userId', new ParseIntPipe()) userId: number): Promise<Goal[]> {
+  findAll(@Query('userId', new ParseIntPipe()) userId: number): Promise<GoalResponseDto[]> {
     return this.goalService.findAllByUser(userId);
   }
 
@@ -53,7 +53,7 @@ export class GoalController {
    */
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  create(@Body() dto: CreateGoalDto): Promise<Goal> {
+  create(@Body() dto: CreateGoalDto): Promise<GoalResponseDto> {
     return this.goalService.create(dto);
   }
 
@@ -68,7 +68,7 @@ export class GoalController {
   update(
     @Param('id', new ParseIntPipe()) id: number,
     @Body() dto: UpdateGoalDto,
-  ): Promise<Goal> {
+  ): Promise<GoalResponseDto> {
     return this.goalService.update(id, dto);
   }
 

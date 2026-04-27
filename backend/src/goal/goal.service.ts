@@ -11,6 +11,8 @@ import { Repository } from 'typeorm';
 
 // internal imports
 import { CreateGoalDto } from './dtos/create-goal.dto';
+import { GoalResponseMapper } from './dtos/goal-response.dto';
+import type { GoalResponseDto } from './dtos/goal-response.dto';
 import { UpdateGoalDto } from './dtos/update-goal.dto';
 import { Goal } from './entities/goal.entity';
 import { User } from '../user/entities/user.entity';
@@ -26,7 +28,7 @@ export class GoalService {
     private readonly userRepository: Repository<User>,
   ) {}
 
-  async create(dto: CreateGoalDto): Promise<Goal> {
+  async create(dto: CreateGoalDto): Promise<GoalResponseDto> {
     const startDate = new Date(dto.startDate);
     const endDate = new Date(dto.endDate);
 
@@ -54,7 +56,8 @@ export class GoalService {
       userId: dto.userId,
     });
 
-    return this.goalRepository.save(goal);
+    const saved = await this.goalRepository.save(goal);
+    return GoalResponseMapper.fromEntity(saved);
   }
 
   /**
@@ -66,11 +69,12 @@ export class GoalService {
    * client logic simple and does not leak user existence to unauthenticated
    * callers (relevant once auth lands).
    */
-  findAllByUser(userId: number): Promise<Goal[]> {
-    return this.goalRepository.find({
+  async findAllByUser(userId: number): Promise<GoalResponseDto[]> {
+    const goals = await this.goalRepository.find({
       where: { userId },
       order: { createdAt: 'DESC' },
     });
+    return GoalResponseMapper.fromEntities(goals);
   }
 
   /**
@@ -82,7 +86,7 @@ export class GoalService {
    * the one supplied in the DTO. This is a temporary measure until auth
    * lands, at which point the userId will come from the JWT payload.
    */
-  async update(id: number, dto: UpdateGoalDto): Promise<Goal> {
+  async update(id: number, dto: UpdateGoalDto): Promise<GoalResponseDto> {
     const goal = await this.goalRepository.findOneBy({ id });
     if (!goal) {
       throw new NotFoundException(`Goal with id ${id} does not exist.`);
@@ -127,7 +131,8 @@ export class GoalService {
       Number(goal.targetAmount),
     );
 
-    return this.goalRepository.save(goal);
+    const saved = await this.goalRepository.save(goal);
+    return GoalResponseMapper.fromEntity(saved);
   }
 
   /**

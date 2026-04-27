@@ -13,6 +13,9 @@ import { ApiClient } from '@/shared/utils/ApiClient';
  * Wire-format of a Goal as returned by the backend.
  * Date fields arrive as ISO strings and `targetAmount` / `currentAmount`
  * may arrive as strings because of the underlying SQLite decimal column.
+ *
+ * `progressPercentage` and `remaining` are derived fields computed on
+ * every backend read (see goal-response.dto.ts on the backend).
  */
 interface GoalApiResponse {
   id: number;
@@ -26,6 +29,8 @@ interface GoalApiResponse {
   createdAt: string;
   updatedAt: string;
   userId: number;
+  progressPercentage: number;
+  remaining: number;
 }
 
 interface CreateGoalPayload {
@@ -399,6 +404,8 @@ export class GoalService {
       updatedAt: new Date(api.updatedAt),
       userId: api.userId,
       transactionIds: [],
+      progressPercentage: api.progressPercentage,
+      remaining: api.remaining,
     };
   }
 }
