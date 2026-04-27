@@ -29,10 +29,10 @@ export class AuthService {
 
   public static async login(email: string, password: string): Promise<void> {
     try {
-      const { data } = await axios.post<{ access_token: string }>(
-        `${this.AUTH_API_URL}/login`,
-        { email, password },
-      );
+      const { data } = await axios.post<{ access_token: string }>(`${this.AUTH_API_URL}/login`, {
+        email,
+        password,
+      });
       AuthService.applyAccessToken(data.access_token);
       await AuthService.loadCurrentUser();
     } catch (error) {
@@ -47,10 +47,11 @@ export class AuthService {
     }
 
     try {
-      const { data } = await axios.post<{ access_token: string }>(
-        `${this.AUTH_API_URL}/register`,
-        { name: dto.name, email: dto.email, password: dto.password },
-      );
+      const { data } = await axios.post<{ access_token: string }>(`${this.AUTH_API_URL}/register`, {
+        name: dto.name,
+        email: dto.email,
+        password: dto.password,
+      });
       AuthService.applyAccessToken(data.access_token);
       await AuthService.loadCurrentUser();
     } catch (error) {

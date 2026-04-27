@@ -8,7 +8,8 @@ import type { UpdateUserDto } from '@/modules/user/dtos/UpdateUserDto';
 import type { UserInterface } from '@/modules/user/interfaces/UserInterface';
 
 export class UserService {
-  private static readonly API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
+  private static readonly API_BASE_URL =
+    import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
   private static readonly API_URL = `${this.API_BASE_URL}/api/users`;
 
   public static async getAllUsers(): Promise<UserInterface[]> {
@@ -31,7 +32,11 @@ export class UserService {
     return data;
   }
 
-  public static async updateProfile(id: number, name: string, email: string): Promise<UserInterface> {
+  public static async updateProfile(
+    id: number,
+    name: string,
+    email: string,
+  ): Promise<UserInterface> {
     return UserService.updateUser(id, { name: name.trim(), email: email.trim() });
   }
 

@@ -19,13 +19,17 @@ export class AuthController {
   }
 
   @Post('register')
-  async register(@Body() registerDto: RegisterDto): Promise<{ access_token: string }> {
+  async register(
+    @Body() registerDto: RegisterDto,
+  ): Promise<{ access_token: string }> {
     return this.authService.register(registerDto);
   }
 
   @UseGuards(AuthGuard)
   @Get('me')
-  async getMe(@Req() request: AuthenticatedRequest): Promise<Omit<User, 'password'>> {
+  async getMe(
+    @Req() request: AuthenticatedRequest,
+  ): Promise<Omit<User, 'password'>> {
     return this.authService.getMe(request.user.sub);
   }
 }
