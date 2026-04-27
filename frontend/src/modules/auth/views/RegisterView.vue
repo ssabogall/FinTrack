@@ -20,19 +20,19 @@ const passwordConfirmation = ref('');
 const errorMessage = ref<string | null>(null);
 const submitting = ref(false);
 
-const handleSubmit = (): void => {
+const handleSubmit = async (): Promise<void> => {
   errorMessage.value = null;
   submitting.value = true;
 
   try {
-    AuthService.register({
+    await AuthService.register({
       name: name.value,
       email: email.value,
       password: password.value,
       passwordConfirmation: passwordConfirmation.value,
     });
 
-    router.push('/');
+    await router.push('/');
   } catch (error) {
     const message =
       error instanceof Error ? error.message : 'There was a problem creating your account.';
