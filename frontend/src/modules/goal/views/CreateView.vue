@@ -16,19 +16,19 @@ const loading = ref(false);
 const error = ref<string | null>(null);
 const success = ref(false);
 
-const handleSubmit = (payload: {
+const handleSubmit = async (payload: {
   name: string;
   description: string;
   targetAmount: number;
   startDate: string;
   endDate: string;
-}): void => {
+}): Promise<void> => {
   loading.value = true;
   error.value = null;
   success.value = false;
 
   try {
-    GoalService.createForCurrentUser(payload);
+    await GoalService.createForCurrentUser(payload);
 
     success.value = true;
   } catch (err) {

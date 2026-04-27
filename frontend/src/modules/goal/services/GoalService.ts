@@ -7,6 +7,34 @@ import { useGoalStore } from '@/modules/goal/stores/goalstore';
 import { useAuthStore } from '@/modules/auth/stores/authstore';
 import { GoalUtils } from '@/modules/goal/utils/GoalUtils';
 import { Formatters } from '@/shared/utils/Formatters';
+import { ApiClient } from '@/shared/utils/ApiClient';
+
+/**
+ * Wire-format of a Goal as returned by the backend.
+ * Date fields arrive as ISO strings and `targetAmount` / `currentAmount`
+ * may arrive as strings because of the underlying SQLite decimal column.
+ */
+interface GoalApiResponse {
+  id: number;
+  name: string;
+  description: string;
+  targetAmount: number | string;
+  currentAmount: number | string;
+  startDate: string;
+  endDate: string;
+  status: string;
+  createdAt: string;
+  updatedAt: string;
+  userId: number;
+}
+
+interface CreateGoalPayload {
+  name: string;
+  description: string;
+  targetAmount: number;
+  startDate: string;
+  endDate: string;
+}
 
 export class GoalService {
   public static getAll(): GoalInterface[] {
@@ -22,47 +50,6 @@ export class GoalService {
     const currentUserId = authStore.currentUser?.id;
     if (!currentUserId) return [];
     return useGoalStore().goals.filter((g) => g.userId === currentUserId);
-  }
-
-  public static create(dto: CreateGoalDTO): void {
-    if (!dto.name.trim()) {
-      throw new Error('Goal name cannot be empty.');
-    }
-
-    if (dto.targetAmount <= 0) {
-      throw new Error('Target amount must be greater than 0.');
-    }
-
-    if (new Date(dto.endDate) <= new Date(dto.startDate)) {
-      throw new Error('End date must be after start date.');
-    }
-
-    const goalStore = useGoalStore();
-    const authStore = useAuthStore();
-
-    const now = new Date();
-    const id = Date.now();
-
-    const newGoal: GoalInterface = {
-      id,
-      name: dto.name,
-      description: dto.description,
-      targetAmount: dto.targetAmount,
-      currentAmount: 0,
-      startDate: new Date(dto.startDate),
-      endDate: new Date(dto.endDate),
-      status: GoalUtils.computeStatus(0, dto.targetAmount),
-      createdAt: now,
-      updatedAt: now,
-      userId: dto.userId,
-      transactionIds: [],
-    };
-
-    goalStore.goals.push(newGoal);
-
-    if (authStore.currentUser) {
-      authStore.currentUser.goalIds = [...(authStore.currentUser.goalIds ?? []), id];
-    }
   }
 
   public static update(id: number, dto: UpdateGoalDTO): void {
@@ -140,25 +127,68 @@ export class GoalService {
     }
   }
 
-  public static createForCurrentUser(payload: {
-    name: string;
-    description: string;
-    targetAmount: number;
-    startDate: string;
-    endDate: string;
-  }): void {
+  /**
+   * Creates a savings goal for the current user via POST /api/goals.
+   *
+   * UX-level validations are performed before hitting the network so the
+   * user gets immediate feedback. The backend re-validates the same rules
+   * for defense in depth.
+   *
+   * On success, the persisted goal returned by the backend is pushed to
+   * the local store. This keeps the dashboard and the listing in sync
+   * until RF-19 (read goals from backend) replaces the local store as
+   * the source of truth.
+   */
+  public static async createForCurrentUser(payload: CreateGoalPayload): Promise<GoalInterface> {
+    if (!payload.name.trim()) {
+      throw new Error('Goal name cannot be empty.');
+    }
+
+    if (payload.targetAmount <= 0) {
+      throw new Error('Target amount must be greater than 0.');
+    }
+
+    if (new Date(payload.endDate) <= new Date(payload.startDate)) {
+      throw new Error('End date must be after start date.');
+    }
+
     const authStore = useAuthStore();
     const currentUserId = authStore.currentUser?.id;
-    if (!currentUserId) throw new Error('Not authenticated.');
+    if (!currentUserId) {
+      throw new Error('Not authenticated.');
+    }
 
-    GoalService.create({
+    const dto: CreateGoalDTO = {
       name: payload.name,
       description: payload.description,
       targetAmount: payload.targetAmount,
       startDate: new Date(payload.startDate),
       endDate: new Date(payload.endDate),
       userId: currentUserId,
+    };
+
+    const response = await ApiClient.post<GoalApiResponse>('/goals', {
+      name: dto.name,
+      description: dto.description,
+      targetAmount: dto.targetAmount,
+      startDate: payload.startDate,
+      endDate: payload.endDate,
+      userId: dto.userId,
     });
+
+    const created: GoalInterface = GoalService.fromApi(response);
+
+    const goalStore = useGoalStore();
+    goalStore.goals.push(created);
+
+    if (authStore.currentUser) {
+      authStore.currentUser.goalIds = [
+        ...(authStore.currentUser.goalIds ?? []),
+        created.id,
+      ];
+    }
+
+    return created;
   }
 
   public static updateFromForm(
@@ -245,4 +275,25 @@ export class GoalService {
     };
   }
 
+  /**
+   * Adapts a goal coming from the backend (with ISO date strings and
+   * possibly stringified decimals) to the wider GoalInterface shape used
+   * across the frontend.
+   */
+  private static fromApi(api: GoalApiResponse): GoalInterface {
+    return {
+      id: api.id,
+      name: api.name,
+      description: api.description,
+      targetAmount: Number(api.targetAmount),
+      currentAmount: Number(api.currentAmount),
+      startDate: new Date(api.startDate),
+      endDate: new Date(api.endDate),
+      status: api.status,
+      createdAt: new Date(api.createdAt),
+      updatedAt: new Date(api.updatedAt),
+      userId: api.userId,
+      transactionIds: [],
+    };
+  }
 }
