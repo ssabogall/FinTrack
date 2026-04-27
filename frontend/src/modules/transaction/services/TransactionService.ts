@@ -1,5 +1,6 @@
 // author: Lucas Higuita
 // internal imports
+import axios from 'axios';
 import type { CreateTransactionDTO } from '@/modules/transaction/dtos/CreateTransactionDTO';
 import type { TransactionFilterDTO } from '@/modules/transaction/dtos/TransactionFilterDTO';
 import type { UpdateTransactionDTO } from '@/modules/transaction/dtos/UpdateTransactionDTO';

@@ -1,7 +1,7 @@
 <!-- author: Lucas Higuita -->
 <script setup lang="ts">
 // external imports
-import { computed, ref } from 'vue';
+import { computed, ref, onMounted } from 'vue';
 
 // internal imports
 import TransactionExpenseChart from '@/modules/transaction/components/TransactionExpenseChart.vue';
@@ -116,24 +116,23 @@ const handleFilter = (payload: {
   filterState.value = payload;
 };
 
-const handleFormSubmit = (payload: {
+const handleFormSubmit = async (payload: {
   type: string;
   amount: number;
   description: string;
   categoryId: number | null;
   date: string;
   goalId: number | null;
-}): void => {
+}): Promise<void> => {
   formLoading.value = true;
   formError.value = null;
 
   try {
-    const signedAmount =
-      payload.type === 'income' ? Math.abs(payload.amount) : -Math.abs(payload.amount);
+    const signedAmount = payload.type === 'income' ? Math.abs(payload.amount) : -Math.abs(payload.amount);
 
     if (editingTransaction.value) {
       // Update
-      TransactionService.update(editingTransaction.value.id, {
+      await TransactionService.update(editingTransaction.value.id, {
         amount: signedAmount,
         description: payload.description,
         categoryId: payload.categoryId,
@@ -144,7 +143,7 @@ const handleFormSubmit = (payload: {
       // Create
       if (!currentUserId.value) return;
 
-      TransactionService.create({
+      await TransactionService.create({
         amount: signedAmount,
         description: payload.description,
         date: new Date(payload.date),
@@ -162,14 +161,20 @@ const handleFormSubmit = (payload: {
   }
 };
 
-const handleDelete = (id: number): void => {
+const handleDelete = async (id: number): Promise<void> => {
   deleteError.value = null;
   try {
-    TransactionService.delete(id);
+    await TransactionService.delete(id);
   } catch (err) {
     deleteError.value = err instanceof Error ? err.message : 'Could not delete transaction.';
   }
 };
+
+onMounted(async () => {
+  if (AuthService.isAuthenticated()) {
+    await TransactionService.loadAll();
+  }
+});
 </script>
 
 <template>
