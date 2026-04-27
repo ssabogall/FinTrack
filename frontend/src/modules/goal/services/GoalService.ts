@@ -224,7 +224,17 @@ export class GoalService {
     return created;
   }
 
-  public static updateFromForm(
+  /**
+   * Updates the goal identified by `id` via PATCH /api/goals/:id and
+   * replaces the corresponding entry in the local store with the
+   * persisted version returned by the backend.
+   *
+   * UX-level validations are performed before hitting the network so the
+   * user gets immediate feedback. The backend re-validates the same rules
+   * for defense in depth, and is the source of truth for the recomputed
+   * status.
+   */
+  public static async updateFromForm(
     id: number,
     payload: {
       name: string;
@@ -233,14 +243,45 @@ export class GoalService {
       startDate: string;
       endDate: string;
     },
-  ): void {
-    GoalService.update(id, {
+  ): Promise<GoalInterface> {
+    if (!payload.name.trim()) {
+      throw new Error('Goal name cannot be empty.');
+    }
+
+    if (payload.targetAmount <= 0) {
+      throw new Error('Target amount must be greater than 0.');
+    }
+
+    if (new Date(payload.endDate) <= new Date(payload.startDate)) {
+      throw new Error('End date must be after start date.');
+    }
+
+    const authStore = useAuthStore();
+    const currentUserId = authStore.currentUser?.id;
+    if (!currentUserId) {
+      throw new Error('Not authenticated.');
+    }
+
+    const response = await ApiClient.patch<GoalApiResponse>(`/goals/${id}`, {
       name: payload.name,
       description: payload.description,
       targetAmount: payload.targetAmount,
-      startDate: new Date(payload.startDate),
-      endDate: new Date(payload.endDate),
+      startDate: payload.startDate,
+      endDate: payload.endDate,
+      userId: currentUserId,
     });
+
+    const updated: GoalInterface = GoalService.fromApi(response);
+
+    const goalStore = useGoalStore();
+    const index = goalStore.goals.findIndex((g) => g.id === id);
+    if (index !== -1) {
+      goalStore.goals[index] = updated;
+    } else {
+      goalStore.goals.push(updated);
+    }
+
+    return updated;
   }
 
   public static getInitialValuesForEdit(id: number): {

@@ -5,7 +5,9 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  Param,
   ParseIntPipe,
+  Patch,
   Post,
   Query,
   UsePipes,
@@ -14,10 +16,18 @@ import {
 
 // internal imports
 import { CreateGoalDto } from './dtos/create-goal.dto';
+import { UpdateGoalDto } from './dtos/update-goal.dto';
 import { Goal } from './entities/goal.entity';
 import { GoalService } from './goal.service';
 
 @Controller('goals')
+@UsePipes(
+  new ValidationPipe({
+    whitelist: true,
+    forbidNonWhitelisted: true,
+    transform: true,
+  }),
+)
 export class GoalController {
   constructor(private readonly goalService: GoalService) {}
 
@@ -42,14 +52,22 @@ export class GoalController {
    */
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  @UsePipes(
-    new ValidationPipe({
-      whitelist: true,
-      forbidNonWhitelisted: true,
-      transform: true,
-    }),
-  )
   create(@Body() dto: CreateGoalDto): Promise<Goal> {
     return this.goalService.create(dto);
+  }
+
+  /**
+   * Updates the savings goal identified by `id`. Ownership is verified
+   * by comparing the persisted goal's userId with the one in the DTO.
+   *
+   * NOTE: `userId` will move to the JWT payload once the auth module is
+   * integrated. See update-goal.dto.ts for the migration note.
+   */
+  @Patch(':id')
+  update(
+    @Param('id', new ParseIntPipe()) id: number,
+    @Body() dto: UpdateGoalDto,
+  ): Promise<Goal> {
+    return this.goalService.update(id, dto);
   }
 }

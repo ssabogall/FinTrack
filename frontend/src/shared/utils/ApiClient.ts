@@ -32,6 +32,10 @@ export class ApiClient {
     return ApiClient.request<T>('PUT', path, body);
   }
 
+  public static patch<T>(path: string, body: unknown): Promise<T> {
+    return ApiClient.request<T>('PATCH', path, body);
+  }
+
   public static delete<T>(path: string): Promise<T> {
     return ApiClient.request<T>('DELETE', path);
   }

@@ -1,7 +1,7 @@
 <!-- author: Santiago Sabogal -->
 <script setup lang="ts">
 // external imports
-import { computed, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
 // internal imports
@@ -17,26 +17,26 @@ const goalId = computed((): number => Number(route.params.id));
 
 const goal = computed(() => GoalService.getById(goalId.value));
 
-// selectors
 const initialValues = computed(() => GoalService.getInitialValuesForEdit(goalId.value));
 
 // reactive variables
-const loading = ref(false);
+const loading = ref<boolean>(false);
 const error = ref<string | null>(null);
-const success = ref(false);
+const success = ref<boolean>(false);
+const hydrating = ref<boolean>(false);
 
-const handleSubmit = (payload: {
+const handleSubmit = async (payload: {
   name: string;
   description: string;
   targetAmount: number;
   startDate: string;
   endDate: string;
-}): void => {
+}): Promise<void> => {
   loading.value = true;
   error.value = null;
 
   try {
-    GoalService.updateFromForm(goalId.value, payload);
+    await GoalService.updateFromForm(goalId.value, payload);
 
     success.value = true;
   } catch (err) {
@@ -49,13 +49,47 @@ const handleSubmit = (payload: {
 const goBack = (): void => {
   router.push({ name: 'goal.index' });
 };
+
+/**
+ * If the user navigates directly to /goals/:id/edit (e.g. via a bookmark
+ * or a refresh) the local store may be empty. In that case, hydrate it
+ * from the backend so getById can find the goal.
+ */
+const hydrateIfNeeded = async (): Promise<void> => {
+  if (goal.value) {
+    return;
+  }
+
+  hydrating.value = true;
+  try {
+    await GoalService.fetchForCurrentUser();
+  } catch {
+    // Silent: the "Goal not found" branch will render and let the user go back.
+  } finally {
+    hydrating.value = false;
+  }
+};
+
+onMounted(hydrateIfNeeded);
 </script>
 
 <template>
   <section class="max-w-xl mx-auto py-6">
+    <!-- Hydrating skeleton (only shown when entering directly with empty store) -->
+    <div
+      v-if="hydrating"
+      class="rounded-2xl border border-slate-200 bg-white shadow-sm px-8 py-8 space-y-4"
+    >
+      <div class="h-5 w-2/3 rounded bg-slate-100 animate-pulse" />
+      <div class="h-4 w-full rounded bg-slate-100 animate-pulse" />
+      <div class="h-10 w-full rounded bg-slate-100 animate-pulse" />
+      <div class="h-10 w-full rounded bg-slate-100 animate-pulse" />
+      <div class="h-10 w-full rounded bg-slate-100 animate-pulse" />
+    </div>
+
     <!-- Goal not found -->
     <div
-      v-if="!goal"
+      v-else-if="!goal"
       class="rounded-2xl border border-red-200 bg-red-50 px-6 py-10 text-center space-y-3"
     >
       <p class="text-sm font-medium text-red-600">Goal not found.</p>

@@ -1,12 +1,20 @@
 // external imports
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
 // internal imports
 import { CreateGoalDto } from './dtos/create-goal.dto';
+import { UpdateGoalDto } from './dtos/update-goal.dto';
 import { Goal } from './entities/goal.entity';
 import { User } from '../user/entities/user.entity';
+
+type GoalStatus = 'Active' | 'In Progress' | 'Completed';
 
 @Injectable()
 export class GoalService {
@@ -62,5 +70,72 @@ export class GoalService {
       where: { userId },
       order: { createdAt: 'DESC' },
     });
+  }
+
+  /**
+   * Updates an existing savings goal. Only the fields provided in the DTO
+   * are modified. `currentAmount` is preserved; `status` is recomputed
+   * from the (possibly new) targetAmount.
+   *
+   * Ownership is verified by comparing the persisted goal's userId with
+   * the one supplied in the DTO. This is a temporary measure until auth
+   * lands, at which point the userId will come from the JWT payload.
+   */
+  async update(id: number, dto: UpdateGoalDto): Promise<Goal> {
+    const goal = await this.goalRepository.findOneBy({ id });
+    if (!goal) {
+      throw new NotFoundException(`Goal with id ${id} does not exist.`);
+    }
+
+    if (goal.userId !== dto.userId) {
+      throw new ForbiddenException('You do not own this goal.');
+    }
+
+    const finalStartDate = dto.startDate !== undefined ? new Date(dto.startDate) : goal.startDate;
+    const finalEndDate = dto.endDate !== undefined ? new Date(dto.endDate) : goal.endDate;
+
+    if (
+      Number.isNaN(finalStartDate.getTime()) ||
+      Number.isNaN(finalEndDate.getTime())
+    ) {
+      throw new BadRequestException('Invalid date format.');
+    }
+
+    if (finalEndDate <= finalStartDate) {
+      throw new BadRequestException('End date must be after start date.');
+    }
+
+    if (dto.name !== undefined) {
+      goal.name = dto.name;
+    }
+    if (dto.description !== undefined) {
+      goal.description = dto.description;
+    }
+    if (dto.targetAmount !== undefined) {
+      goal.targetAmount = dto.targetAmount;
+    }
+    if (dto.startDate !== undefined) {
+      goal.startDate = finalStartDate;
+    }
+    if (dto.endDate !== undefined) {
+      goal.endDate = finalEndDate;
+    }
+
+    goal.status = GoalService.computeStatus(
+      Number(goal.currentAmount),
+      Number(goal.targetAmount),
+    );
+
+    return this.goalRepository.save(goal);
+  }
+
+  /**
+   * Pure status calculation, mirrors the frontend's GoalUtils.computeStatus
+   * so both sides agree on the rule.
+   */
+  private static computeStatus(currentAmount: number, targetAmount: number): GoalStatus {
+    if (currentAmount <= 0) return 'Active';
+    if (currentAmount >= targetAmount) return 'Completed';
+    return 'In Progress';
   }
 }
