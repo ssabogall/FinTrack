@@ -4,6 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
 // internal imports
+import { CreateUserDto } from './dtos/create-user-dto';
 import { User } from './entities/user.entity';
 
 @Injectable()
@@ -25,7 +26,8 @@ export class UserService {
     return this.userRepository.findOneBy({ email });
   }
 
-  create(user: User): Promise<User> {
+  create(dto: CreateUserDto): Promise<User> {
+    const user = this.userRepository.create(dto);
     return this.userRepository.save(user);
   }
 
