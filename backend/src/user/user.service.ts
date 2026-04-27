@@ -1,41 +1,42 @@
 // external imports
-import { Injectable } from '@nestjs/common';
+import { Injectable, OnModuleInit } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { hash } from 'bcrypt';
 import { Repository } from 'typeorm';
 
 // internal imports
 import { User } from './entities/user.entity';
 
 @Injectable()
-export class UserService {
+export class UserService implements OnModuleInit {
   constructor(
     @InjectRepository(User)
     private userRepository: Repository<User>,
   ) {}
 
-  private readonly users = [
-    {
-      id: 1,
-      name: 'Admin User',
-      email: 'admin@fintrack.local',
-      password: 'admin123',
-      role: 'admin',
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      categoryIds: null,
-      goalIds: null,
-      transactionIds: [],
-    },
-    {
-      id: 2,
-      name: 'Alex Johnson',
-      email: 'alex.johnson@fintrack.local',
-      password: 'password123',
-      role: 'user',
-      createdAt: new Date(),
-      updatedAt: new Date(),
+  async onModuleInit(): Promise<void> {
+    const adminEmail: string = (
+      process.env.SEED_ADMIN_EMAIL ?? 'admin@fintrack.local'
+    )
+      .trim()
+      .toLowerCase();
+    const adminPassword: string = process.env.SEED_ADMIN_PASSWORD ?? 'admin123';
+    const adminName: string = process.env.SEED_ADMIN_NAME ?? 'Admin User';
+
+    const existingAdmin: User | null = await this.findByEmail(adminEmail);
+    if (existingAdmin) {
+      return;
     }
-  ]
+
+    const hashedPassword: string = await hash(adminPassword, 10);
+    const adminUser: User = this.userRepository.create({
+      name: adminName,
+      email: adminEmail,
+      password: hashedPassword,
+      role: 'admin',
+    });
+    await this.userRepository.save(adminUser);
+  }
 
   findAll(): Promise<User[]> {
     return this.userRepository.find();
@@ -51,5 +52,9 @@ export class UserService {
 
   create(user: User): Promise<User> {
     return this.userRepository.save(user);
+  }
+
+  async updatePassword(id: number, password: string): Promise<void> {
+    await this.userRepository.update(id, { password });
   }
 }
