@@ -12,8 +12,6 @@ import { Goal } from '../goal/entities/goal.entity';
 import { CreateTransactionDto } from './dtos/create-transaction.dto';
 import { UpdateTransactionDto } from './dtos/update-transaction.dto';
 
-type TransactionListItem = Transaction;
-
 @Injectable()
 export class TransactionService {
   constructor(
@@ -25,7 +23,7 @@ export class TransactionService {
     private goalRepository: Repository<Goal>,
   ) {}
 
-  public async findAllByUser(userId: number): Promise<TransactionListItem[]> {
+  public async findAllByUser(userId: number): Promise<Transaction[]> {
     return this.transactionRepository.find({ where: { userId }, order: { date: 'DESC' } });
   }
 
