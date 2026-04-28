@@ -25,6 +25,14 @@ export class TransactionService {
     private goalRepository: Repository<Goal>,
   ) {}
 
+  public async findAllByUser(userId: number): Promise<TransactionListItem[]> {
+    return this.transactionRepository.find({ where: { userId }, order: { date: 'DESC' } });
+  }
+
+  public async findById(id: number): Promise<Transaction | null> {
+    return this.transactionRepository.findOne({ where: { id } });
+  }
+
   public async create(userId: number, dto: CreateTransactionDto): Promise<Transaction> {
     if (dto.amount === 0) {
       throw new BadRequestException('Amount cannot be zero');
@@ -64,14 +72,6 @@ export class TransactionService {
         goalId: dto.goalId ?? null,
       }),
     );
-  }
-
-  public async findAllByUser(userId: number): Promise<TransactionListItem[]> {
-    return this.transactionRepository.find({ where: { userId }, order: { date: 'DESC' } });
-  }
-
-  public async findById(id: number): Promise<Transaction | null> {
-    return this.transactionRepository.findOne({ where: { id } });
   }
 
   public async update(userId: number, id: number, dto: UpdateTransactionDto): Promise<Transaction> {
