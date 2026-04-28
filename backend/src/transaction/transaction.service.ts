@@ -54,16 +54,16 @@ export class TransactionService {
       }
     }
 
-    const tx = this.transactionRepository.create({
-      amount: dto.amount,
-      description: dto.description,
-      date: dto.date,
-      userId,
-      categoryId: dto.categoryId ?? null,
-      goalId: dto.goalId ?? null,
-    });
-
-    return this.transactionRepository.save(tx);
+    return this.transactionRepository.save(
+      this.transactionRepository.create({
+        amount: dto.amount,
+        description: dto.description,
+        date: dto.date,
+        userId,
+        categoryId: dto.categoryId ?? null,
+        goalId: dto.goalId ?? null,
+      }),
+    );
   }
 
   public async findAllByUser(userId: number): Promise<TransactionListItem[]> {
