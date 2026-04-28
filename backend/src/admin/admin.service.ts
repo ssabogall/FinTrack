@@ -7,13 +7,13 @@ import { Category } from '../category/entities/category.entity';
 import { Transaction } from '../transaction/entities/transaction.entity';
 import { User } from '../user/entities/user.entity';
 
-interface TrendPoint {
+export interface TrendPoint {
   labels: string[];
   income: number[];
   expenses: number[];
 }
 
-interface UserGrowthPoint {
+export interface UserGrowthPoint {
   labels: string[];
   counts: number[];
 }
