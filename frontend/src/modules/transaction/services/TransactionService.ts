@@ -17,6 +17,17 @@ export class TransactionService {
     return useTransactionStore().transactions;
   }
 
+  public static async loadAll(): Promise<void> {
+    const { data } = await axios.get<TransactionInterface[]>('/api/transactions');
+
+    useTransactionStore().transactions = data.map((transaction: TransactionInterface) => ({
+      ...transaction,
+      date: new Date(transaction.date),
+      createdAt: new Date(transaction.createdAt),
+      updatedAt: new Date(transaction.updatedAt),
+    }));
+  }
+
   public static getById(id: number): TransactionInterface | undefined {
     return useTransactionStore().transactions.find((t) => t.id === id);
   }
