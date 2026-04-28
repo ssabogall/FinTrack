@@ -1,43 +1,50 @@
 <!-- author: Santiago Gómez -->
 <script setup lang="ts">
 // external imports
-import { computed, ref } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 
 // internal imports
 import AdminIncomeExpensesChart from '@/modules/admin/components/AdminIncomeExpensesChart.vue';
 import AdminOverviewCards from '@/modules/admin/components/AdminOverviewCards.vue';
 import AdminUserGrowthChart from '@/modules/admin/components/AdminUserGrowthChart.vue';
+import type {
+  GlobalOverview,
+  MonthlyTrend,
+  UserGrowthTrend,
+} from '@/modules/admin/services/AdminService';
 import { AdminService } from '@/modules/admin/services/AdminService';
+import type { CategoryInterface } from '@/modules/category/interfaces/CategoryInterface';
+import type { TransactionInterface } from '@/modules/transaction/interfaces/TransactionInterface';
+import type { UserInterface } from '@/modules/user/interfaces/UserInterface';
 import { ReportUtils } from '@/shared/utils/ReportUtils';
 
 const selectedYear = ref(new Date().getFullYear());
 const selectedMonth = ref(new Date().getMonth() + 1);
+const usersWithStats = ref<
+  (UserInterface & { balance: number; transactionCount: number })[]
+>([]);
+const overview = ref<GlobalOverview>({
+  totalIncome: 0,
+  totalExpenses: 0,
+  netSavings: 0,
+  totalUsers: 0,
+});
+const monthlyTrend = ref<MonthlyTrend>({ labels: [], income: [], expenses: [] });
+const userGrowth = ref<UserGrowthTrend>({ labels: [], counts: [] });
+const monthlySummary = ref({
+  income: 0,
+  expenses: 0,
+  netSavings: 0,
+  transactionCount: 0,
+});
+const transactionsForMonth = ref<TransactionInterface[]>([]);
+const categoryBreakdown = ref<{ category: CategoryInterface; amount: number }[]>([]);
 
 const selectedDateLabel = computed((): string =>
   new Date(selectedYear.value, selectedMonth.value - 1).toLocaleDateString('en-US', {
     month: 'long',
     year: 'numeric',
   }),
-);
-
-const overview = computed(() => AdminService.getGlobalOverview());
-
-const monthlyTrend = computed(() => AdminService.getMonthlyTrend(7));
-
-const userGrowth = computed(() => AdminService.getUserGrowthTrend(7));
-
-const monthlySummary = computed(() =>
-  AdminService.getMonthlySummary(selectedYear.value, selectedMonth.value),
-);
-
-const transactionsForMonth = computed(() =>
-  AdminService.getTransactionsForMonth(selectedYear.value, selectedMonth.value),
-);
-
-const usersWithStats = computed(() => AdminService.getUsersWithStats());
-
-const categoryBreakdown = computed(() =>
-  AdminService.getCategoryBreakdownForMonth(selectedYear.value, selectedMonth.value),
 );
 
 const handleGenerateMonthlySummary = (): void => {
@@ -57,7 +64,7 @@ const handleGenerateTransactionReport = (): void => {
     transactionsForMonth.value,
     selectedYear.value,
     selectedMonth.value,
-    AdminService.getUserName,
+    (userId: number) => AdminService.getUserName(usersWithStats.value, userId),
   );
 };
 
@@ -76,6 +83,37 @@ const handleGenerateCategoryAnalysis = (): void => {
     selectedMonth.value,
   );
 };
+
+const loadStaticAdminData = async (): Promise<void> => {
+  overview.value = await AdminService.getGlobalOverview();
+  monthlyTrend.value = await AdminService.getMonthlyTrend(7);
+  userGrowth.value = await AdminService.getUserGrowthTrend(7);
+  usersWithStats.value = await AdminService.getUsersWithStats();
+};
+
+const loadMonthlyAdminData = async (): Promise<void> => {
+  monthlySummary.value = await AdminService.getMonthlySummary(
+    selectedYear.value,
+    selectedMonth.value,
+  );
+  transactionsForMonth.value = await AdminService.getTransactionsForMonth(
+    selectedYear.value,
+    selectedMonth.value,
+  );
+  categoryBreakdown.value = await AdminService.getCategoryBreakdownForMonth(
+    selectedYear.value,
+    selectedMonth.value,
+  );
+};
+
+watch([selectedYear, selectedMonth], async () => {
+  await loadMonthlyAdminData();
+});
+
+onMounted(async () => {
+  await loadStaticAdminData();
+  await loadMonthlyAdminData();
+});
 </script>
 
 <template>

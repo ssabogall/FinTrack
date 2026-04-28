@@ -1,36 +1,88 @@
 // external imports
-import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  ForbiddenException,
+  Get,
+  Param,
+  ParseIntPipe,
+  Post,
+  Put,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 
 // internal imports
+import { AdminGuard } from '../auth/admin.guard';
+import { AuthGuard } from '../auth/auth.guard';
+import type { AuthenticatedRequest } from '../auth/auth.guard';
 import { CreateUserDto } from './dtos/create-user-dto';
 import { UpdateUserDto } from './dtos/update-user-dto';
 import { User } from './entities/user.entity';
 import { UserService } from './user.service';
 
+@UseGuards(AuthGuard)
 @Controller('users')
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(private userService: UserService) {}
 
+  @UseGuards(AdminGuard)
   @Get()
-  findAll(): Promise<User[]> {
-    return this.userService.findAll();
+  async findAll(): Promise<Omit<User, 'password'>[]> {
+    const users = await this.userService.findAll();
+    return users.map((user) => this.toSafeUser(user));
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string): Promise<User | null> {
-    return this.userService.findOne(Number(id));
+  async findOne(
+    @Param('id', ParseIntPipe) id: number,
+    @Req() request: AuthenticatedRequest,
+  ): Promise<Omit<User, 'password'> | null> {
+    await this.assertAdminOrSelf(request, id);
+    const user = await this.userService.findOne(id);
+    return user ? this.toSafeUser(user) : null;
   }
 
+  @UseGuards(AdminGuard)
   @Post()
-  create(@Body() createUserDto: CreateUserDto): Promise<User> {
-    return this.userService.create(createUserDto);
+  async create(@Body() createUserDto: CreateUserDto): Promise<Omit<User, 'password'>> {
+    const user = await this.userService.create(createUserDto);
+    return this.toSafeUser(user);
   }
 
   @Put(':id')
-  update(
-    @Param('id') id: string,
+  async update(
+    @Param('id', ParseIntPipe) id: number,
     @Body() updateUserDto: UpdateUserDto,
+    @Req() request: AuthenticatedRequest,
+  ): Promise<Omit<User, 'password'>> {
+    const requester = await this.assertAdminOrSelf(request, id);
+    if (updateUserDto.role !== undefined && requester.role !== 'admin') {
+      throw new ForbiddenException('Only admins can change user roles');
+    }
+
+    const user = await this.userService.update(id, updateUserDto);
+    return this.toSafeUser(user);
+  }
+
+  private async assertAdminOrSelf(
+    request: AuthenticatedRequest,
+    resourceUserId: number,
   ): Promise<User> {
-    return this.userService.update(Number(id), updateUserDto);
+    const requesterId = request.user?.sub;
+    if (!requesterId) throw new ForbiddenException('User context not found');
+
+    const requester = await this.userService.findOne(requesterId);
+    if (!requester) throw new ForbiddenException('Authenticated user not found');
+
+    if (requester.role !== 'admin' && requester.id !== resourceUserId) {
+      throw new ForbiddenException('You can only access your own user');
+    }
+    return requester;
+  }
+
+  private toSafeUser(user: User): Omit<User, 'password'> {
+    const { password: _password, ...safeUser } = user;
+    return safeUser;
   }
 }

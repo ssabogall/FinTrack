@@ -2,19 +2,35 @@
 
 <script setup lang="ts">
 // external imports
-import { computed } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 
 // internal imports
 import AdminIncomeExpensesChart from '@/modules/admin/components/AdminIncomeExpensesChart.vue';
 import AdminOverviewCards from '@/modules/admin/components/AdminOverviewCards.vue';
 import AdminUserGrowthChart from '@/modules/admin/components/AdminUserGrowthChart.vue';
+import type {
+  GlobalOverview,
+  MonthlyTrend,
+  UserGrowthTrend,
+} from '@/modules/admin/services/AdminService';
 import { AdminService } from '@/modules/admin/services/AdminService';
 
-const overview = computed(() => AdminService.getGlobalOverview());
+const overview = ref<GlobalOverview>({
+  totalIncome: 0,
+  totalExpenses: 0,
+  netSavings: 0,
+  totalUsers: 0,
+});
+const monthlyTrend = ref<MonthlyTrend>({ labels: [], income: [], expenses: [] });
+const userGrowth = ref<UserGrowthTrend>({ labels: [], counts: [] });
 
-const monthlyTrend = computed(() => AdminService.getMonthlyTrend(7));
+const hasData = computed(() => monthlyTrend.value.labels.length > 0 || userGrowth.value.labels.length > 0);
 
-const userGrowth = computed(() => AdminService.getUserGrowthTrend(7));
+onMounted(async () => {
+  overview.value = await AdminService.getGlobalOverview();
+  monthlyTrend.value = await AdminService.getMonthlyTrend(7);
+  userGrowth.value = await AdminService.getUserGrowthTrend(7);
+});
 </script>
 
 <template>
@@ -31,7 +47,7 @@ const userGrowth = computed(() => AdminService.getUserGrowthTrend(7));
       :total-users="overview.totalUsers"
     />
 
-    <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+    <div v-if="hasData" class="grid grid-cols-1 xl:grid-cols-2 gap-6">
       <AdminIncomeExpensesChart
         :labels="monthlyTrend.labels"
         :income-data="monthlyTrend.income"
