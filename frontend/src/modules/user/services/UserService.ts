@@ -1,133 +1,46 @@
 // author: Santiago Gómez Ospina
+// external imports
+import axios from 'axios';
 
 // internal imports
 import type { CreateUserDto } from '@/modules/user/dtos/CreateUserDto';
 import type { UpdateUserDto } from '@/modules/user/dtos/UpdateUserDto';
 import type { UserInterface } from '@/modules/user/interfaces/UserInterface';
-import { useAuthStore } from '@/modules/auth/stores/authstore';
-import { useUserStore } from '@/modules/user/stores/userstore';
 
 export class UserService {
-  public static getAllUsers(): UserInterface[] {
-    return useUserStore().users;
+  private static readonly API_BASE_URL =
+    import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
+  private static readonly API_URL = `${this.API_BASE_URL}/api/users`;
+
+  public static async getAllUsers(): Promise<UserInterface[]> {
+    const { data } = await axios.get<UserInterface[]>(this.API_URL);
+    return data;
   }
 
-  public static getUserById(id: number): UserInterface | null {
-    return useUserStore().users.find((u) => u.id === id) ?? null;
+  public static async getUserById(id: number): Promise<UserInterface | null> {
+    const { data } = await axios.get<UserInterface>(`${this.API_URL}/${id}`);
+    return data;
   }
 
-  public static createUser(dto: CreateUserDto): UserInterface {
-    const userStore = useUserStore();
-    const normalizedEmail = dto.email.trim();
-    const existing = userStore.users.find((u) => u.email === normalizedEmail);
-    if (existing) throw new Error('Email already registered.');
-
-    if (dto.password.length < 6) throw new Error('Password must be at least 6 characters.');
-
-    const id = Date.now();
-    const now = new Date();
-    const newUser: UserInterface = {
-      id,
-      name: dto.name.trim(),
-      email: normalizedEmail,
-      password: dto.password,
-      role: dto.role ?? 'user',
-      createdAt: now,
-      updatedAt: now,
-      categoryIds: [],
-      goalIds: null,
-      transactionIds: [],
-    };
-    userStore.users.push(newUser);
-    return newUser;
+  public static async createUser(dto: CreateUserDto): Promise<UserInterface> {
+    const { data } = await axios.post<UserInterface>(this.API_URL, dto);
+    return data;
   }
 
-  public static updateUser(id: number, dto: UpdateUserDto): void {
-    const authStore = useAuthStore();
-    const userStore = useUserStore();
-    const index = userStore.users.findIndex((u) => u.id === id);
-    const existing = index !== -1 ? userStore.users[index] : null;
-    if (!existing) throw new Error('User not found.');
-
-    const updated = UserService.buildUpdatedUser(existing, {
-      name: dto.name ?? existing.name,
-      email: dto.email ?? existing.email,
-      password: dto.password ?? existing.password,
-      role: dto.role ?? existing.role,
-    });
-    userStore.users[index] = updated;
-    if (authStore.currentUser?.id === id) {
-      authStore.currentUser = updated;
-    }
+  public static async updateUser(id: number, dto: UpdateUserDto): Promise<UserInterface> {
+    const { data } = await axios.put<UserInterface>(`${this.API_URL}/${id}`, dto);
+    return data;
   }
 
-  public static updateProfile(name: string, email: string): void {
-    const authStore = useAuthStore();
-    const userStore = useUserStore();
-    const currentUser = authStore.currentUser;
-    if (!currentUser) return;
-
-    const index = userStore.users.findIndex((u) => u.id === currentUser.id);
-    const existing = index !== -1 ? userStore.users[index] : null;
-    if (!existing) return;
-
-    const updated = UserService.buildUpdatedUser(existing, {
-      name: name.trim(),
-      email: email.trim(),
-      password: existing.password,
-      role: existing.role,
-    });
-    userStore.users[index] = updated;
-    authStore.currentUser = updated;
+  public static async updateProfile(
+    id: number,
+    name: string,
+    email: string,
+  ): Promise<UserInterface> {
+    return UserService.updateUser(id, { name: name.trim(), email: email.trim() });
   }
 
-  public static changePassword(currentPassword: string, newPassword: string): void {
-    const authStore = useAuthStore();
-    const userStore = useUserStore();
-    const currentUser = authStore.currentUser;
-    if (!currentUser) throw new Error('Not authenticated.');
-
-    if (currentUser.password !== currentPassword) {
-      throw new Error('Current password is incorrect.');
-    }
-
-    if (newPassword.length < 6) {
-      throw new Error('New password must be at least 6 characters.');
-    }
-
-    const index = userStore.users.findIndex((u) => u.id === currentUser.id);
-    const existing = index !== -1 ? userStore.users[index] : null;
-    if (!existing) return;
-
-    const updated = UserService.buildUpdatedUser(existing, {
-      name: existing.name,
-      email: existing.email,
-      password: newPassword,
-      role: existing.role,
-    });
-    userStore.users[index] = updated;
-    authStore.currentUser = updated;
-  }
-
-  // ---------------------------
-  // Private helpers
-  // ---------------------------
-
-  private static buildUpdatedUser(
-    baseUser: UserInterface,
-    nextValues: Pick<UserInterface, 'name' | 'email' | 'password' | 'role'>,
-  ): UserInterface {
-    return {
-      id: baseUser.id,
-      name: nextValues.name,
-      email: nextValues.email,
-      password: nextValues.password,
-      role: nextValues.role,
-      createdAt: baseUser.createdAt,
-      updatedAt: new Date(),
-      categoryIds: baseUser.categoryIds ?? null,
-      goalIds: baseUser.goalIds ?? null,
-      transactionIds: baseUser.transactionIds ?? null,
-    };
+  public static async changePassword(id: number, newPassword: string): Promise<UserInterface> {
+    return UserService.updateUser(id, { password: newPassword });
   }
 }

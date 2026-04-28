@@ -43,10 +43,14 @@ const memberSince = computed(() => Formatters.memberSince(user.value?.createdAt,
 
 const roleLabel = computed(() => Formatters.roleLabel(user.value?.role));
 
-function handleSaveProfile(): void {
+async function handleSaveProfile(): Promise<void> {
   saveMessage.value = null;
+  if (!user.value) {
+    saveMessage.value = 'error';
+    return;
+  }
   try {
-    UserService.updateProfile(fullName.value.trim(), email.value.trim());
+    await UserService.updateProfile(user.value.id, fullName.value.trim(), email.value.trim());
     saveMessage.value = 'success';
     setTimeout(() => (saveMessage.value = null), 3000);
   } catch {
@@ -54,14 +58,18 @@ function handleSaveProfile(): void {
   }
 }
 
-function handleChangePassword(): void {
+async function handleChangePassword(): Promise<void> {
   passwordMessage.value = null;
   if (newPassword.value !== confirmPassword.value) {
     passwordMessage.value = 'error';
     return;
   }
+  if (!user.value) {
+    passwordMessage.value = 'error';
+    return;
+  }
   try {
-    UserService.changePassword(currentPassword.value, newPassword.value);
+    await UserService.changePassword(user.value.id, newPassword.value);
     passwordMessage.value = 'success';
     currentPassword.value = '';
     newPassword.value = '';
