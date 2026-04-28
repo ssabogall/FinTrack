@@ -95,9 +95,8 @@ async function runSeed(): Promise<void> {
 
   // ---------------------------------------------------------------
   // Transactions: idempotent on (userId, description, date)
-  // Categories are looked up under the transaction's owner;
-  // goals can belong to a different user (the original frontend seeder
-  // sometimes references another user's goal, see transaction-seed.data.ts).
+  // Categories and goals are resolved under each transaction owner
+  // to keep the seeded data consistent for ownership checks.
   // ---------------------------------------------------------------
   for (const seedTransaction of TRANSACTION_SEED_DATA) {
     const owner = usersByEmail.get(seedTransaction.userEmail);

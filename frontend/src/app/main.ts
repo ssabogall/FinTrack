@@ -14,7 +14,7 @@ const app = createApp(App);
 const pinia = PiniaInit.init();
 
 app.use(pinia);
-app.use(router);
 
 await AuthService.bootstrap();
+app.use(router);
 app.mount('#app');

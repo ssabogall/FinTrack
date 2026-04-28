@@ -85,19 +85,30 @@ export class TransactionUtils {
 
   public getExpensesByCategory(): { name: string; amount: number; color: string }[] {
     const map = new Map<number, { name: string; amount: number; color: string }>();
+    const UNCATEGORIZED_ID = -1;
+    const categoriesById = new Map(this.categories.map((category) => [Number(category.id), category]));
 
     for (const tx of this.transactions) {
-      if (tx.amount >= 0 || !tx.categoryId) continue;
-      const category = this.categories.find((c) => c.id === tx.categoryId);
-      if (!category) continue;
-      const existing = map.get(category.id);
+      const amount = Number(tx.amount);
+      if (!Number.isFinite(amount)) continue;
+
+      const rawCategoryId = tx.categoryId;
+      const normalizedCategoryId =
+        rawCategoryId === null || rawCategoryId === undefined ? UNCATEGORIZED_ID : Number(rawCategoryId);
+      const category = categoriesById.get(normalizedCategoryId);
+      const categoryType = category?.type?.toLowerCase();
+      const isExpense = amount < 0 || (amount > 0 && categoryType === 'expense');
+      if (!isExpense) continue;
+
+      const bucketId = category ? normalizedCategoryId : UNCATEGORIZED_ID;
+      const existing = map.get(bucketId);
       if (existing) {
-        existing.amount += Math.abs(tx.amount);
+        existing.amount += Math.abs(amount);
       } else {
-        map.set(category.id, {
-          name: category.name,
-          amount: Math.abs(tx.amount),
-          color: category.color,
+        map.set(bucketId, {
+          name: category?.name ?? 'Uncategorized',
+          amount: Math.abs(amount),
+          color: category?.color ?? '#94A3B8',
         });
       }
     }

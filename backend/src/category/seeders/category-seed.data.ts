@@ -37,6 +37,24 @@ export const CATEGORY_SEED_DATA: SeedCategory[] = [
     color: '#22C55E',
     type: 'transfer',
   },
+  {
+    userEmail: 'alex.johnson@fintrack.local',
+    name: 'Transport',
+    color: '#EC4899',
+    type: 'expense',
+  },
+  {
+    userEmail: 'alex.johnson@fintrack.local',
+    name: 'Utilities',
+    color: '#14B8A6',
+    type: 'expense',
+  },
+  {
+    userEmail: 'alex.johnson@fintrack.local',
+    name: 'Dining',
+    color: '#F59E0B',
+    type: 'expense',
+  },
 
   // Maria Lopez
   {
@@ -63,8 +81,26 @@ export const CATEGORY_SEED_DATA: SeedCategory[] = [
     color: '#22C55E',
     type: 'transfer',
   },
+  {
+    userEmail: 'maria.lopez@fintrack.local',
+    name: 'Transport',
+    color: '#EC4899',
+    type: 'expense',
+  },
+  {
+    userEmail: 'maria.lopez@fintrack.local',
+    name: 'Dining',
+    color: '#F59E0B',
+    type: 'expense',
+  },
 
   // Daniel Kim
+  {
+    userEmail: 'daniel.kim@fintrack.local',
+    name: 'Salary',
+    color: '#16A34A',
+    type: 'income',
+  },
   {
     userEmail: 'daniel.kim@fintrack.local',
     name: 'Groceries',
@@ -76,6 +112,12 @@ export const CATEGORY_SEED_DATA: SeedCategory[] = [
     name: 'Savings',
     color: '#22C55E',
     type: 'transfer',
+  },
+  {
+    userEmail: 'daniel.kim@fintrack.local',
+    name: 'Transport',
+    color: '#EC4899',
+    type: 'expense',
   },
 
   // John Doe
@@ -103,6 +145,18 @@ export const CATEGORY_SEED_DATA: SeedCategory[] = [
     color: '#22C55E',
     type: 'transfer',
   },
+  {
+    userEmail: 'john@email.com',
+    name: 'Transport',
+    color: '#EC4899',
+    type: 'expense',
+  },
+  {
+    userEmail: 'john@email.com',
+    name: 'Utilities',
+    color: '#14B8A6',
+    type: 'expense',
+  },
 
   // Jane Smith
   {
@@ -122,5 +176,17 @@ export const CATEGORY_SEED_DATA: SeedCategory[] = [
     name: 'Savings',
     color: '#22C55E',
     type: 'transfer',
+  },
+  {
+    userEmail: 'jane@email.com',
+    name: 'Transport',
+    color: '#EC4899',
+    type: 'expense',
+  },
+  {
+    userEmail: 'jane@email.com',
+    name: 'Dining',
+    color: '#F59E0B',
+    type: 'expense',
   },
 ];

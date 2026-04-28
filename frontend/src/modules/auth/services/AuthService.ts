@@ -74,8 +74,10 @@ export class AuthService {
     AuthService.applyAccessToken(token);
     try {
       await AuthService.loadCurrentUser();
-    } catch {
-      AuthService.clearSession();
+    } catch (error) {
+      if (error instanceof AxiosError && error.response?.status === 401) {
+        AuthService.clearSession();
+      }
     }
   }
 
