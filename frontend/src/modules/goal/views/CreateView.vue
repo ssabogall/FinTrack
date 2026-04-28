@@ -6,6 +6,7 @@ import { useRouter } from 'vue-router';
 
 // internal imports
 import GoalForm from '@/modules/goal/components/GoalForm.vue';
+import { AuthService } from '@/modules/auth/services/AuthService';
 import { GoalService } from '@/modules/goal/services/GoalService';
 
 // variables
@@ -27,8 +28,22 @@ const handleSubmit = async (payload: {
   error.value = null;
   success.value = false;
 
+  const currentUserId = AuthService.getCurrentUser()?.id;
+  if (!currentUserId) {
+    error.value = 'Not authenticated.';
+    loading.value = false;
+    return;
+  }
+
   try {
-    await GoalService.createForCurrentUser(payload);
+    await GoalService.createGoal({
+      name: payload.name,
+      description: payload.description,
+      targetAmount: payload.targetAmount,
+      startDate: payload.startDate,
+      endDate: payload.endDate,
+      userId: currentUserId,
+    });
 
     success.value = true;
   } catch (err) {

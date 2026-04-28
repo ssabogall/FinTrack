@@ -6,7 +6,7 @@ import type { Chart } from 'chart.js';
 
 import type { GoalInterface } from '@/modules/goal/interfaces/GoalInterface';
 import { Formatters } from '@/shared/utils/Formatters';
-import { GoalUtils } from '@/modules/goal/utils/GoalUtils';
+import { GoalStatusUtils } from '@/modules/goal/utils/GoalUtils';
 import type { GoalStatus } from '@/modules/goal/utils/GoalUtils';
 import { ChartUtils } from '@/shared/utils/ChartUtils';
 
@@ -58,15 +58,21 @@ const percentage = computed((): number => {
   return Math.min(Math.round((props.goal.currentAmount / props.goal.targetAmount) * 100), 100);
 });
 
-const goalStatus = computed(
-  (): GoalStatus => GoalUtils.computeStatus(props.goal.currentAmount, props.goal.targetAmount),
+const statusUtils = computed(
+  () =>
+    new GoalStatusUtils({
+      currentAmount: props.goal.currentAmount,
+      targetAmount: props.goal.targetAmount,
+    }),
 );
 
-const statusColor = computed((): string => GoalUtils.statusColor(goalStatus.value));
+const goalStatus = computed((): GoalStatus => statusUtils.value.getStatus());
 
-const statusBgColor = computed((): string => GoalUtils.statusBackgroundColor(goalStatus.value));
+const statusColor = computed((): string => statusUtils.value.getColor());
 
-const statusIcon = computed((): string => GoalUtils.statusIcon(goalStatus.value));
+const statusBgColor = computed((): string => statusUtils.value.getBackgroundColor());
+
+const statusIcon = computed((): string => statusUtils.value.getIcon());
 
 const remaining = computed((): number => {
   // Prefer the backend-computed remaining; fall back defensively.

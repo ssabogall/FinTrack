@@ -1,6 +1,9 @@
 // author: Santiago Sabogal
-import type { GoalInterface } from '@/modules/goal/interfaces/GoalInterface';
-
-export type UpdateGoalDTO = Partial<
-  Pick<GoalInterface, 'name' | 'description' | 'targetAmount' | 'startDate' | 'endDate'>
->;
+export interface UpdateGoalDTO {
+  name?: string;
+  description?: string;
+  targetAmount?: number;
+  startDate?: string;
+  endDate?: string;
+  userId: number;
+}

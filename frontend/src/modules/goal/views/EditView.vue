@@ -6,7 +6,10 @@ import { useRoute, useRouter } from 'vue-router';
 
 // internal imports
 import GoalForm from '@/modules/goal/components/GoalForm.vue';
+import type { GoalInterface } from '@/modules/goal/interfaces/GoalInterface';
+import { AuthService } from '@/modules/auth/services/AuthService';
 import { GoalService } from '@/modules/goal/services/GoalService';
+import { Formatters } from '@/shared/utils/Formatters';
 
 // variables
 const route = useRoute();
@@ -15,15 +18,23 @@ const router = useRouter();
 // selectors
 const goalId = computed((): number => Number(route.params.id));
 
-const goal = computed(() => GoalService.getById(goalId.value));
-
-const initialValues = computed(() => GoalService.getInitialValuesForEdit(goalId.value));
-
 // reactive variables
+const goal = ref<GoalInterface | null>(null);
 const loading = ref<boolean>(false);
 const error = ref<string | null>(null);
 const success = ref<boolean>(false);
-const hydrating = ref<boolean>(false);
+const hydrating = ref<boolean>(true);
+
+const initialValues = computed(() => {
+  if (!goal.value) return {};
+  return {
+    name: goal.value.name,
+    description: goal.value.description,
+    targetAmount: goal.value.targetAmount,
+    startDate: Formatters.toDateInputValue(goal.value.startDate),
+    endDate: Formatters.toDateInputValue(goal.value.endDate),
+  };
+});
 
 const handleSubmit = async (payload: {
   name: string;
@@ -35,8 +46,22 @@ const handleSubmit = async (payload: {
   loading.value = true;
   error.value = null;
 
+  const currentUserId = AuthService.getCurrentUser()?.id;
+  if (!currentUserId) {
+    error.value = 'Not authenticated.';
+    loading.value = false;
+    return;
+  }
+
   try {
-    await GoalService.updateFromForm(goalId.value, payload);
+    await GoalService.updateGoal(goalId.value, {
+      name: payload.name,
+      description: payload.description,
+      targetAmount: payload.targetAmount,
+      startDate: payload.startDate,
+      endDate: payload.endDate,
+      userId: currentUserId,
+    });
 
     success.value = true;
   } catch (err) {
@@ -50,32 +75,30 @@ const goBack = (): void => {
   router.push({ name: 'goal.index' });
 };
 
-/**
- * If the user navigates directly to /goals/:id/edit (e.g. via a bookmark
- * or a refresh) the local store may be empty. In that case, hydrate it
- * from the backend so getById can find the goal.
- */
-const hydrateIfNeeded = async (): Promise<void> => {
-  if (goal.value) {
+const loadGoal = async (): Promise<void> => {
+  hydrating.value = true;
+  const currentUserId = AuthService.getCurrentUser()?.id;
+  if (!currentUserId) {
+    hydrating.value = false;
     return;
   }
 
-  hydrating.value = true;
   try {
-    await GoalService.fetchForCurrentUser();
+    const goals = await GoalService.getGoalsByUser(currentUserId);
+    goal.value = goals.find((g) => g.id === goalId.value) ?? null;
   } catch {
-    // Silent: the "Goal not found" branch will render and let the user go back.
+    goal.value = null;
   } finally {
     hydrating.value = false;
   }
 };
 
-onMounted(hydrateIfNeeded);
+onMounted(loadGoal);
 </script>
 
 <template>
   <section class="max-w-xl mx-auto py-6">
-    <!-- Hydrating skeleton (only shown when entering directly with empty store) -->
+    <!-- Hydrating skeleton -->
     <div
       v-if="hydrating"
       class="rounded-2xl border border-slate-200 bg-white shadow-sm px-8 py-8 space-y-4"

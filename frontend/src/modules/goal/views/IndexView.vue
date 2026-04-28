@@ -9,33 +9,36 @@ import GoalDistributionChart from '@/modules/goal/components/GoalDistributionCha
 import GoalCard from '@/modules/goal/components/GoalCard.vue';
 import GoalProgressChart from '@/modules/goal/components/GoalProgressChart.vue';
 import GoalSummaryCards from '@/modules/goal/components/GoalSummaryCards.vue';
+import type { GoalInterface } from '@/modules/goal/interfaces/GoalInterface';
+import { AuthService } from '@/modules/auth/services/AuthService';
 import { GoalService } from '@/modules/goal/services/GoalService';
+import { GoalUtils } from '@/modules/goal/utils/GoalUtils';
 
 // variables
 const router = useRouter();
 
 // reactive variables
+const goals = ref<GoalInterface[]>([]);
 const deleteError = ref<string | null>(null);
 const statusFilter = ref<'all' | 'active' | 'completed'>('all');
 const loading = ref<boolean>(true);
 const fetchError = ref<string | null>(null);
 
 // selectors
-const allGoals = computed(() => GoalService.getForCurrentUser());
-
-const goals = computed(() => {
+const filteredGoals = computed(() => {
   if (statusFilter.value === 'completed') {
-    return allGoals.value.filter((g) => g.status === 'Completed');
+    return goals.value.filter((g) => g.status === 'Completed');
   }
   if (statusFilter.value === 'active') {
-    return allGoals.value.filter((g) => g.status !== 'Completed');
+    return goals.value.filter((g) => g.status !== 'Completed');
   }
-  return allGoals.value;
+  return goals.value;
 });
 
-const summary = computed(() => GoalService.getSummaryForCurrentUser());
-const progressChart = computed(() => GoalService.getProgressChartForCurrentUser());
-const distributionChart = computed(() => GoalService.getDistributionChartForCurrentUser());
+const goalUtils = computed(() => new GoalUtils({ goals: goals.value }));
+const summary = computed(() => goalUtils.value.getSummary());
+const progressChart = computed(() => goalUtils.value.getProgressChart());
+const distributionChart = computed(() => goalUtils.value.getDistributionChart());
 
 const navigateToCreate = (): void => {
   router.push({ name: 'goal.create' });
@@ -43,8 +46,15 @@ const navigateToCreate = (): void => {
 
 const handleDelete = async (id: number): Promise<void> => {
   deleteError.value = null;
+  const currentUserId = AuthService.getCurrentUser()?.id;
+  if (!currentUserId) {
+    deleteError.value = 'Not authenticated.';
+    return;
+  }
+
   try {
-    await GoalService.deleteForCurrentUser(id);
+    await GoalService.deleteGoal(id, currentUserId);
+    goals.value = goals.value.filter((g) => g.id !== id);
   } catch (err) {
     deleteError.value = err instanceof Error ? err.message : 'Could not delete goal.';
   }
@@ -53,8 +63,15 @@ const handleDelete = async (id: number): Promise<void> => {
 const loadGoals = async (): Promise<void> => {
   loading.value = true;
   fetchError.value = null;
+  const currentUserId = AuthService.getCurrentUser()?.id;
+  if (!currentUserId) {
+    fetchError.value = 'Not authenticated.';
+    loading.value = false;
+    return;
+  }
+
   try {
-    await GoalService.fetchForCurrentUser();
+    goals.value = await GoalService.getGoalsByUser(currentUserId);
   } catch (err) {
     fetchError.value = err instanceof Error ? err.message : 'Could not load goals.';
   } finally {
@@ -168,7 +185,7 @@ onMounted(loadGoals);
 
       <!-- Empty state -->
       <div
-        v-if="goals.length === 0"
+        v-if="filteredGoals.length === 0"
         class="rounded-2xl border border-dashed border-slate-300 bg-slate-50 px-6 py-16 text-center space-y-3"
       >
         <div
@@ -190,7 +207,7 @@ onMounted(loadGoals);
 
       <!-- Goals grid -->
       <div v-else class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
-        <GoalCard v-for="goal in goals" :key="goal.id" :goal="goal" @delete="handleDelete" />
+        <GoalCard v-for="goal in filteredGoals" :key="goal.id" :goal="goal" @delete="handleDelete" />
       </div>
     </template>
   </section>
