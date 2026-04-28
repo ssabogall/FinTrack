@@ -45,3 +45,6 @@ coverage/
 *.tmp
 *.temp
 .cache/
+
+# Cursor rules
+.cursor/rules/

@@ -1,4 +1,3 @@
-// external imports
 import {
   BadRequestException,
   ConflictException,
@@ -11,163 +10,71 @@ import { Repository } from 'typeorm';
 
 // internal imports
 import { CreateGoalDto } from './dtos/create-goal.dto';
-import { GoalResponseMapper } from './dtos/goal-response.dto';
-import type { GoalResponseDto } from './dtos/goal-response.dto';
 import { UpdateGoalDto } from './dtos/update-goal.dto';
-import { Goal } from './entities/goal.entity';
-import { User } from '../user/entities/user.entity';
-
-type GoalStatus = 'Active' | 'In Progress' | 'Completed';
+import { Goal, type GoalStatus } from './entities/goal.entity';
 
 @Injectable()
 export class GoalService {
   constructor(
     @InjectRepository(Goal)
-    private readonly goalRepository: Repository<Goal>,
-    @InjectRepository(User)
-    private readonly userRepository: Repository<User>,
+    private goalRepository: Repository<Goal>,
   ) {}
 
-  async create(dto: CreateGoalDto): Promise<GoalResponseDto> {
-    const startDate = new Date(dto.startDate);
-    const endDate = new Date(dto.endDate);
-
-    if (Number.isNaN(startDate.getTime()) || Number.isNaN(endDate.getTime())) {
-      throw new BadRequestException('Invalid date format.');
-    }
-
-    if (endDate <= startDate) {
-      throw new BadRequestException('End date must be after start date.');
-    }
-
-    const userExists = await this.userRepository.existsBy({ id: dto.userId });
-    if (!userExists) {
-      throw new BadRequestException(`User with id ${dto.userId} does not exist.`);
-    }
-
-    const goal = this.goalRepository.create({
-      name: dto.name,
-      description: dto.description ?? '',
-      targetAmount: dto.targetAmount,
-      currentAmount: 0,
-      startDate,
-      endDate,
-      status: 'In Progress',
-      userId: dto.userId,
-    });
-
-    const saved = await this.goalRepository.save(goal);
-    return GoalResponseMapper.fromEntity(saved);
-  }
-
-  /**
-   * Returns every savings goal owned by the given user, ordered with the
-   * most recently created first.
-   *
-   * Returns an empty array if the user has no goals or does not exist.
-   * Distinguishing both cases is intentionally avoided here: it keeps the
-   * client logic simple and does not leak user existence to unauthenticated
-   * callers (relevant once auth lands).
-   */
-  async findAllByUser(userId: number): Promise<GoalResponseDto[]> {
-    const goals = await this.goalRepository.find({
+  async findAllByUser(userId: number): Promise<Goal[]> {
+    return this.goalRepository.find({
       where: { userId },
       order: { createdAt: 'DESC' },
     });
-    return GoalResponseMapper.fromEntities(goals);
   }
 
-  /**
-   * Updates an existing savings goal. Only the fields provided in the DTO
-   * are modified. `currentAmount` is preserved; `status` is recomputed
-   * from the (possibly new) targetAmount.
-   *
-   * Ownership is verified by comparing the persisted goal's userId with
-   * the one supplied in the DTO. This is a temporary measure until auth
-   * lands, at which point the userId will come from the JWT payload.
-   */
-  async update(id: number, dto: UpdateGoalDto): Promise<GoalResponseDto> {
+  async create(dto: CreateGoalDto): Promise<Goal> {
+    if (dto.targetAmount <= 0) throw new BadRequestException('Target amount must be greater than 0');
+
+    const startDate = new Date(dto.startDate);
+    const endDate = new Date(dto.endDate);
+    if (endDate <= startDate) throw new BadRequestException('End date must be after start date');
+
+    const goal = this.goalRepository.create({
+      ...dto,
+      description: dto.description ?? '',
+      currentAmount: 0,
+      startDate,
+      endDate,
+      status: GoalService.computeStatus(0, dto.targetAmount),
+    });
+    return this.goalRepository.save(goal);
+  }
+
+  async update(id: number, dto: UpdateGoalDto): Promise<Goal> {
     const goal = await this.goalRepository.findOneBy({ id });
-    if (!goal) {
-      throw new NotFoundException(`Goal with id ${id} does not exist.`);
-    }
+    if (!goal) throw new NotFoundException('Goal not found');
+    if (goal.userId !== dto.userId) throw new ForbiddenException('You do not own this goal');
 
-    if (goal.userId !== dto.userId) {
-      throw new ForbiddenException('You do not own this goal.');
-    }
+    const { startDate, endDate, ...rest } = dto;
+    const updates: Partial<Goal> = { ...rest };
+    if (startDate) updates.startDate = new Date(startDate);
+    if (endDate) updates.endDate = new Date(endDate);
 
-    const finalStartDate = dto.startDate !== undefined ? new Date(dto.startDate) : goal.startDate;
-    const finalEndDate = dto.endDate !== undefined ? new Date(dto.endDate) : goal.endDate;
+    const merged: Goal = { ...goal, ...updates };
+    if (merged.targetAmount <= 0) throw new BadRequestException('Target amount must be greater than 0');
+    if (merged.endDate <= merged.startDate) throw new BadRequestException('End date must be after start date');
+    merged.status = GoalService.computeStatus(Number(merged.currentAmount), Number(merged.targetAmount));
 
-    if (
-      Number.isNaN(finalStartDate.getTime()) ||
-      Number.isNaN(finalEndDate.getTime())
-    ) {
-      throw new BadRequestException('Invalid date format.');
-    }
-
-    if (finalEndDate <= finalStartDate) {
-      throw new BadRequestException('End date must be after start date.');
-    }
-
-    if (dto.name !== undefined) {
-      goal.name = dto.name;
-    }
-    if (dto.description !== undefined) {
-      goal.description = dto.description;
-    }
-    if (dto.targetAmount !== undefined) {
-      goal.targetAmount = dto.targetAmount;
-    }
-    if (dto.startDate !== undefined) {
-      goal.startDate = finalStartDate;
-    }
-    if (dto.endDate !== undefined) {
-      goal.endDate = finalEndDate;
-    }
-
-    goal.status = GoalService.computeStatus(
-      Number(goal.currentAmount),
-      Number(goal.targetAmount),
-    );
-
-    const saved = await this.goalRepository.save(goal);
-    return GoalResponseMapper.fromEntity(saved);
+    return this.goalRepository.save(merged);
   }
 
-  /**
-   * Pure status calculation, mirrors the frontend's GoalUtils.computeStatus
-   * so both sides agree on the rule.
-   */
+  async delete(id: number, userId: number): Promise<void> {
+    const goal = await this.goalRepository.findOneBy({ id });
+    if (!goal) throw new NotFoundException('Goal not found');
+    if (goal.userId !== userId) throw new ForbiddenException('You do not own this goal');
+    if (goal.status === 'Completed') throw new ConflictException('Completed goals cannot be deleted');
+
+    await this.goalRepository.remove(goal);
+  }
+
   private static computeStatus(currentAmount: number, targetAmount: number): GoalStatus {
     if (currentAmount <= 0) return 'Active';
     if (currentAmount >= targetAmount) return 'Completed';
     return 'In Progress';
-  }
-
-  /**
-   * Permanently deletes a savings goal.
-   *
-   * Business rules enforced here (the frontend disables the button as UX
-   * but the rule lives in the backend, which is the source of truth):
-   *   - The caller must own the goal (temporary userId check until auth).
-   *   - Completed goals are preserved as part of the user's financial
-   *     history and cannot be deleted.
-   */
-  async delete(id: number, userId: number): Promise<void> {
-    const goal = await this.goalRepository.findOneBy({ id });
-    if (!goal) {
-      throw new NotFoundException(`Goal with id ${id} does not exist.`);
-    }
-
-    if (goal.userId !== userId) {
-      throw new ForbiddenException('You do not own this goal.');
-    }
-
-    if (goal.status === 'Completed') {
-      throw new ConflictException('Completed goals cannot be deleted.');
-    }
-
-    await this.goalRepository.remove(goal);
   }
 }
