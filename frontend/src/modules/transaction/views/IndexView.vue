@@ -1,7 +1,7 @@
 <!-- author: Lucas Higuita -->
 <script setup lang="ts">
 // external imports
-import { computed, ref, onMounted } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 
 // internal imports
 import TransactionExpenseChart from '@/modules/transaction/components/TransactionExpenseChart.vue';
@@ -11,6 +11,7 @@ import TransactionMovementChart from '@/modules/transaction/components/Transacti
 import TransactionSummaryCards from '@/modules/transaction/components/TransactionSummaryCards.vue';
 import TransactionTable from '@/modules/transaction/components/TransactionTable.vue';
 import type { TransactionFilterDTO } from '@/modules/transaction/dtos/TransactionFilterDTO';
+import type { GoalInterface } from '@/modules/goal/interfaces/GoalInterface';
 import type { TransactionInterface } from '@/modules/transaction/interfaces/TransactionInterface';
 import { AuthService } from '@/modules/auth/services/AuthService';
 import { CategoryService } from '@/modules/category/services/CategoryService';
@@ -19,7 +20,17 @@ import { GoalService } from '@/modules/goal/services/GoalService';
 import { Formatters } from '@/shared/utils/Formatters';
 
 const userCategories = computed(() => CategoryService.getForCurrentUser(true));
-const userGoals = computed(() => GoalService.getForCurrentUser());
+const userGoals = ref<GoalInterface[]>([]);
+
+const loadUserGoals = async (): Promise<void> => {
+  try {
+    userGoals.value = await GoalService.getGoals();
+  } catch {
+    userGoals.value = [];
+  }
+};
+
+onMounted(loadUserGoals);
 
 // reactive state
 const showModal = ref(false);

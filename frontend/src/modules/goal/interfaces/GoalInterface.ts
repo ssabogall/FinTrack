@@ -1,4 +1,6 @@
 // author: Santiago Gómez
+export type GoalStatus = 'Active' | 'In Progress' | 'Completed';
+
 export interface GoalInterface {
   id: number;
   name: string;
@@ -7,11 +9,11 @@ export interface GoalInterface {
   currentAmount: number;
   startDate: Date;
   endDate: Date;
-  status: string;
+  status: GoalStatus;
   createdAt: Date;
   updatedAt: Date;
 
   // relations
   userId: number;
-  transactionIds: number[] | null;
+  transactionIds?: number[];
 }

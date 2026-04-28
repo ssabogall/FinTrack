@@ -1,5 +1,4 @@
-// author: Santiago Sabogal
-export interface UpdateGoalDTO {
+export class UpdateGoalDto {
   name?: string;
   description?: string;
   targetAmount?: number;

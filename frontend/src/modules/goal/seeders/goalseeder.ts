@@ -1,122 +1,15 @@
 // author: Santiago Gómez
 import type { GoalInterface } from '@/modules/goal/interfaces/GoalInterface';
-import { GoalUtils } from '@/modules/goal/utils/GoalUtils';
 
-const now = new Date();
-
-export const goalSeeder: GoalInterface[] = [
-  {
-    id: 1,
-    name: 'Emergency fund',
-    description: 'Save 3 months of living expenses.',
-    targetAmount: 3000,
-    currentAmount: 1200,
-    startDate: new Date(now.getFullYear(), now.getMonth() - 5, 1),
-    endDate: new Date(now.getFullYear(), now.getMonth() + 1, 1),
-    status: GoalUtils.computeStatus(1200, 3000),
-    createdAt: now,
-    updatedAt: now,
-    userId: 2,
-    transactionIds: [8, 10],
-  },
-  {
-    id: 2,
-    name: 'Europe Vacation',
-    description: '2-week trip through Spain and Italy.',
-    targetAmount: 4000,
-    currentAmount: 1200,
-    startDate: new Date(now.getFullYear(), now.getMonth() - 4, 1),
-    endDate: new Date(now.getFullYear(), now.getMonth() + 4, 1),
-    status: GoalUtils.computeStatus(1200, 4000),
-    createdAt: now,
-    updatedAt: now,
-    userId: 2,
-    transactionIds: null,
-  },
-  {
-    id: 3,
-    name: 'New Car',
-    description: 'Family SUV',
-    targetAmount: 15000,
-    currentAmount: 8500,
-    startDate: new Date(now.getFullYear(), now.getMonth() - 6, 10),
-    endDate: new Date(now.getFullYear(), now.getMonth() + 10, 10),
-    status: GoalUtils.computeStatus(8500, 15000),
-    createdAt: now,
-    updatedAt: now,
-    userId: 2,
-    transactionIds: null,
-  },
-  {
-    id: 4,
-    name: 'New laptop',
-    description: 'Save for a new work laptop.',
-    targetAmount: 1500,
-    currentAmount: 1500,
-    startDate: new Date(now.getFullYear(), now.getMonth() - 3, 15),
-    endDate: new Date(now.getFullYear(), now.getMonth() - 1, 15),
-    status: GoalUtils.computeStatus(1500, 1500),
-    createdAt: now,
-    updatedAt: now,
-    userId: 3,
-    transactionIds: [11],
-  },
-  {
-    id: 5,
-    name: 'Investment Course',
-    description: 'Advanced personal finance course.',
-    targetAmount: 800,
-    currentAmount: 400,
-    startDate: new Date(now.getFullYear(), now.getMonth() - 1, 1),
-    endDate: new Date(now.getFullYear(), now.getMonth() + 2, 1),
-    status: GoalUtils.computeStatus(400, 800),
-    createdAt: now,
-    updatedAt: now,
-    userId: 4,
-    transactionIds: null,
-  },
-  {
-    id: 6,
-    name: 'Wedding Gift',
-    description: 'Gift for sister’s wedding.',
-    targetAmount: 500,
-    currentAmount: 100,
-    startDate: new Date(now.getFullYear(), now.getMonth(), 1),
-    endDate: new Date(now.getFullYear(), now.getMonth() + 1, 1),
-    status: GoalUtils.computeStatus(100, 500),
-    createdAt: now,
-    updatedAt: now,
-    userId: 6,
-    transactionIds: [19],
-  },
-
-  // User 5 (John)
-  {
-    id: 7,
-    name: 'Emergency fund',
-    description: 'Build a safety net for unexpected expenses.',
-    targetAmount: 5000,
-    currentAmount: 900,
-    startDate: new Date(now.getFullYear(), now.getMonth() - 3, 1),
-    endDate: new Date(now.getFullYear(), now.getMonth() + 5, 1),
-    status: GoalUtils.computeStatus(900, 5000),
-    createdAt: now,
-    updatedAt: now,
-    userId: 5,
-    transactionIds: [16],
-  },
-  {
-    id: 8,
-    name: 'Travel fund',
-    description: 'Weekend trips and experiences.',
-    targetAmount: 1200,
-    currentAmount: 300,
-    startDate: new Date(now.getFullYear(), now.getMonth() - 1, 10),
-    endDate: new Date(now.getFullYear(), now.getMonth() + 3, 10),
-    status: GoalUtils.computeStatus(300, 1200),
-    createdAt: now,
-    updatedAt: now,
-    userId: 5,
-    transactionIds: null,
-  },
-];
+/**
+ * Empty seeder.
+ *
+ * Goals are now hydrated at runtime from the backend via
+ * GoalService.fetchForCurrentUser. The previous mock data was removed to
+ * avoid duplicate IDs and inconsistent state between the local store and
+ * the API.
+ *
+ * The export is kept (instead of deleting the file) so the existing
+ * imports in PiniaInit and any in-progress branches keep compiling.
+ */
+export const goalSeeder: GoalInterface[] = [];

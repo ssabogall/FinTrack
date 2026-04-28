@@ -2,34 +2,38 @@
 <script setup lang="ts">
 // external imports
 import { ref } from 'vue';
-import { useRouter } from 'vue-router';
 
 // internal imports
 import GoalForm from '@/modules/goal/components/GoalForm.vue';
+import { AuthService } from '@/modules/auth/services/AuthService';
 import { GoalService } from '@/modules/goal/services/GoalService';
 
 // variables
-const router = useRouter();
 
 // reactive variables
 const loading = ref(false);
 const error = ref<string | null>(null);
 const success = ref(false);
 
-const handleSubmit = (payload: {
+const handleSubmit = async (payload: {
   name: string;
   description: string;
   targetAmount: number;
   startDate: string;
   endDate: string;
-}): void => {
+}): Promise<void> => {
   loading.value = true;
   error.value = null;
   success.value = false;
 
   try {
-    GoalService.createForCurrentUser(payload);
-
+    await GoalService.createGoal({
+      name: payload.name,
+      description: payload.description,
+      targetAmount: payload.targetAmount,
+      startDate: payload.startDate,
+      endDate: payload.endDate,
+    });
     success.value = true;
   } catch (err) {
     error.value = err instanceof Error ? err.message : 'An unexpected error occurred.';
