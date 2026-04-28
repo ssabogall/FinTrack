@@ -385,7 +385,9 @@ export class TransactionService {
     const category = categoryStore.categories.find((c) => c.id === categoryId);
     if (!category) return;
 
-    category.transactionIds = (category.transactionIds ?? []).filter((tid) => tid !== transactionId);
+    category.transactionIds = (category.transactionIds ?? []).filter(
+      (tid) => tid !== transactionId,
+    );
   }
 
   private static addTransactionToGoal(

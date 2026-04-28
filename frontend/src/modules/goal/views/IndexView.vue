@@ -128,7 +128,9 @@ onMounted(loadGoals);
         />
       </div>
       <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
-        <div class="xl:col-span-2 h-72 rounded-2xl border border-slate-200 bg-slate-100 animate-pulse" />
+        <div
+          class="xl:col-span-2 h-72 rounded-2xl border border-slate-200 bg-slate-100 animate-pulse"
+        />
         <div class="h-72 rounded-2xl border border-slate-200 bg-slate-100 animate-pulse" />
       </div>
       <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
@@ -194,7 +196,9 @@ onMounted(loadGoals);
           <i class="fas fa-bullseye" />
         </div>
         <p class="text-sm font-medium text-slate-600">No savings goals yet</p>
-        <p class="text-xs text-slate-400">Create your first goal to start tracking your progress.</p>
+        <p class="text-xs text-slate-400">
+          Create your first goal to start tracking your progress.
+        </p>
         <button
           type="button"
           class="mt-2 inline-flex items-center gap-2 rounded-lg bg-[#0B2C3D] text-white text-sm font-medium px-4 py-2 hover:bg-[#0d3a52] transition"
@@ -207,7 +211,12 @@ onMounted(loadGoals);
 
       <!-- Goals grid -->
       <div v-else class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
-        <GoalCard v-for="goal in filteredGoals" :key="goal.id" :goal="goal" @delete="handleDelete" />
+        <GoalCard
+          v-for="goal in filteredGoals"
+          :key="goal.id"
+          :goal="goal"
+          @delete="handleDelete"
+        />
       </div>
     </template>
   </section>

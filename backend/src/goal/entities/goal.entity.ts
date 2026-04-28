@@ -48,6 +48,7 @@ export class Goal {
   @UpdateDateColumn()
   updatedAt: Date;
 
+  // relations
   @Column()
   userId: number;
 
