@@ -1,0 +1,180 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.CATEGORY_SEED_DATA = void 0;
+exports.CATEGORY_SEED_DATA = [
+    {
+        userEmail: 'alex.johnson@fintrack.local',
+        name: 'Salary',
+        color: '#16A34A',
+        type: 'income',
+    },
+    {
+        userEmail: 'alex.johnson@fintrack.local',
+        name: 'Groceries',
+        color: '#F97316',
+        type: 'expense',
+    },
+    {
+        userEmail: 'alex.johnson@fintrack.local',
+        name: 'Rent',
+        color: '#0EA5E9',
+        type: 'expense',
+    },
+    {
+        userEmail: 'alex.johnson@fintrack.local',
+        name: 'Subscriptions',
+        color: '#6366F1',
+        type: 'expense',
+    },
+    {
+        userEmail: 'alex.johnson@fintrack.local',
+        name: 'Savings',
+        color: '#22C55E',
+        type: 'transfer',
+    },
+    {
+        userEmail: 'alex.johnson@fintrack.local',
+        name: 'Transport',
+        color: '#EC4899',
+        type: 'expense',
+    },
+    {
+        userEmail: 'alex.johnson@fintrack.local',
+        name: 'Utilities',
+        color: '#14B8A6',
+        type: 'expense',
+    },
+    {
+        userEmail: 'alex.johnson@fintrack.local',
+        name: 'Dining',
+        color: '#F59E0B',
+        type: 'expense',
+    },
+    {
+        userEmail: 'maria.lopez@fintrack.local',
+        name: 'Salary',
+        color: '#16A34A',
+        type: 'income',
+    },
+    {
+        userEmail: 'maria.lopez@fintrack.local',
+        name: 'Groceries',
+        color: '#F97316',
+        type: 'expense',
+    },
+    {
+        userEmail: 'maria.lopez@fintrack.local',
+        name: 'Subscriptions',
+        color: '#6366F1',
+        type: 'expense',
+    },
+    {
+        userEmail: 'maria.lopez@fintrack.local',
+        name: 'Savings',
+        color: '#22C55E',
+        type: 'transfer',
+    },
+    {
+        userEmail: 'maria.lopez@fintrack.local',
+        name: 'Transport',
+        color: '#EC4899',
+        type: 'expense',
+    },
+    {
+        userEmail: 'maria.lopez@fintrack.local',
+        name: 'Dining',
+        color: '#F59E0B',
+        type: 'expense',
+    },
+    {
+        userEmail: 'daniel.kim@fintrack.local',
+        name: 'Salary',
+        color: '#16A34A',
+        type: 'income',
+    },
+    {
+        userEmail: 'daniel.kim@fintrack.local',
+        name: 'Groceries',
+        color: '#F97316',
+        type: 'expense',
+    },
+    {
+        userEmail: 'daniel.kim@fintrack.local',
+        name: 'Savings',
+        color: '#22C55E',
+        type: 'transfer',
+    },
+    {
+        userEmail: 'daniel.kim@fintrack.local',
+        name: 'Transport',
+        color: '#EC4899',
+        type: 'expense',
+    },
+    {
+        userEmail: 'john@email.com',
+        name: 'Salary',
+        color: '#16A34A',
+        type: 'income',
+    },
+    {
+        userEmail: 'john@email.com',
+        name: 'Groceries',
+        color: '#F97316',
+        type: 'expense',
+    },
+    {
+        userEmail: 'john@email.com',
+        name: 'Subscriptions',
+        color: '#6366F1',
+        type: 'expense',
+    },
+    {
+        userEmail: 'john@email.com',
+        name: 'Savings',
+        color: '#22C55E',
+        type: 'transfer',
+    },
+    {
+        userEmail: 'john@email.com',
+        name: 'Transport',
+        color: '#EC4899',
+        type: 'expense',
+    },
+    {
+        userEmail: 'john@email.com',
+        name: 'Utilities',
+        color: '#14B8A6',
+        type: 'expense',
+    },
+    {
+        userEmail: 'jane@email.com',
+        name: 'Salary',
+        color: '#16A34A',
+        type: 'income',
+    },
+    {
+        userEmail: 'jane@email.com',
+        name: 'Groceries',
+        color: '#F97316',
+        type: 'expense',
+    },
+    {
+        userEmail: 'jane@email.com',
+        name: 'Savings',
+        color: '#22C55E',
+        type: 'transfer',
+    },
+    {
+        userEmail: 'jane@email.com',
+        name: 'Transport',
+        color: '#EC4899',
+        type: 'expense',
+    },
+    {
+        userEmail: 'jane@email.com',
+        name: 'Dining',
+        color: '#F59E0B',
+        type: 'expense',
+    },
+];
+//# sourceMappingURL=category-seed.data.js.map
