@@ -1,7 +1,7 @@
 <!-- author: Santiago Gómez -->
 <script setup lang="ts">
 // external imports
-import { computed, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 
 // internal imports
 import AdminUserFormModal from '@/modules/admin/components/AdminUserFormModal.vue';
@@ -10,7 +10,9 @@ import { AdminService } from '@/modules/admin/services/AdminService';
 import { UserService } from '@/modules/user/services/UserService';
 import { Formatters } from '@/shared/utils/Formatters';
 
-const usersWithStats = computed(() => AdminService.getUsersWithStats());
+const usersWithStats = ref<
+  (UserInterface & { balance: number; transactionCount: number })[]
+>([]);
 
 const searchQuery = ref('');
 const statusFilter = ref<'all' | 'active' | 'inactive'>('all');
@@ -63,15 +65,16 @@ function cancelEdit(): void {
   editingId.value = null;
 }
 
-function saveEdit(): void {
+async function saveEdit(): Promise<void> {
   if (editingId.value == null) return;
   editMessage.value = null;
   try {
-    UserService.updateUser(editingId.value, {
+    await UserService.updateUser(editingId.value, {
       name: editName.value.trim(),
       email: editEmail.value.trim(),
       role: editRole.value,
     });
+    usersWithStats.value = await AdminService.getUsersWithStats();
     editMessage.value = 'success';
     setTimeout(() => {
       editingId.value = null;
@@ -82,21 +85,22 @@ function saveEdit(): void {
   }
 }
 
-function handleAddUser(payload: {
+async function handleAddUser(payload: {
   name: string;
   email: string;
   password: string;
   role?: 'user' | 'admin';
-}): void {
+}): Promise<void> {
   addError.value = null;
   addLoading.value = true;
   try {
-    UserService.createUser({
+    await UserService.createUser({
       name: payload.name,
       email: payload.email,
       password: payload.password,
       role: payload.role,
     });
+    usersWithStats.value = await AdminService.getUsersWithStats();
     showAddModal.value = false;
   } catch (e) {
     addError.value = e instanceof Error ? e.message : 'Failed to create user';
@@ -121,6 +125,10 @@ function closeAddModal(): void {
   showAddModal.value = false;
   addError.value = null;
 }
+
+onMounted(async () => {
+  usersWithStats.value = await AdminService.getUsersWithStats();
+});
 </script>
 
 <template>

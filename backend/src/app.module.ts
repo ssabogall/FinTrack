@@ -10,6 +10,7 @@ import { CategoryModule } from './category/category.module';
 import { GoalModule } from './goal/goal.module';
 import { TransactionModule } from './transaction/transaction.module';
 import { AuthModule } from './auth/auth.module';
+import { AdminModule } from './admin/admin.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { AuthModule } from './auth/auth.module';
     GoalModule,
     TransactionModule,
     AuthModule,
+    AdminModule,
   ],
   controllers: [],
   providers: [],
