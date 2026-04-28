@@ -38,6 +38,14 @@ export class TransactionController {
     return this.transactionService.findAllByUser(request.user.sub);
   }
 
+  @Get(':id')
+  findOne(
+    @Param('id', ParseIntPipe) id: number,
+    @Req() request: AuthenticatedRequest,
+  ): Promise<Transaction> {
+    return this.transactionService.findOneByUser(request.user.sub, id);
+  }
+
   @Patch(':id')
   update(
     @Param('id', ParseIntPipe) id: number,

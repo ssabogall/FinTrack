@@ -31,6 +31,14 @@ export class CategoryController {
     return this.categoryService.findAllByUser(request.user.sub);
   }
 
+  @Get(':id')
+  findOne(
+    @Param('id', ParseIntPipe) id: number,
+    @Req() request: AuthenticatedRequest,
+  ): Promise<Category> {
+    return this.categoryService.findOneByUser(id, request.user.sub);
+  }
+
   @Post()
   create(
     @Body() dto: CreateCategoryDto,

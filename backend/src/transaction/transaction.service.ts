@@ -32,6 +32,10 @@ export class TransactionService {
     });
   }
 
+  async findOneByUser(userId: number, id: number): Promise<Transaction> {
+    return this.findOwnedTransaction(userId, id);
+  }
+
   async create(userId: number, dto: CreateTransactionDto): Promise<Transaction> {
     if (!dto.description.trim())
       throw new BadRequestException('Description cannot be empty');
