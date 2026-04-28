@@ -8,7 +8,7 @@ import { useAuthStore } from '@/modules/auth/stores/authstore';
 import { useCategoryStore } from '@/modules/category/stores/categorystore';
 import { useGoalStore } from '@/modules/goal/stores/goalstore';
 import { useTransactionStore } from '@/modules/transaction/stores/transactionstore';
-import { GoalUtils } from '@/modules/goal/utils/GoalUtils';
+import { GoalStatusUtils } from '@/modules/goal/utils/GoalUtils';
 import { MathUtils } from '@/shared/utils/MathUtils';
 
 export class TransactionService {
@@ -405,7 +405,10 @@ export class TransactionService {
     goal.currentAmount += Math.abs(amount);
     goal.updatedAt = updatedAt;
     goal.transactionIds = [...(goal.transactionIds ?? []), transactionId];
-    goal.status = GoalUtils.computeStatus(goal.currentAmount, goal.targetAmount);
+    goal.status = new GoalStatusUtils({
+      currentAmount: goal.currentAmount,
+      targetAmount: goal.targetAmount,
+    }).getStatus();
   }
 
   private static removeTransactionFromGoal(
@@ -421,7 +424,10 @@ export class TransactionService {
 
     goal.currentAmount = Math.max(goal.currentAmount - amountToDiscount, 0);
     goal.transactionIds = (goal.transactionIds ?? []).filter((tid) => tid !== transactionId);
-    goal.status = GoalUtils.computeStatus(goal.currentAmount, goal.targetAmount);
+    goal.status = new GoalStatusUtils({
+      currentAmount: goal.currentAmount,
+      targetAmount: goal.targetAmount,
+    }).getStatus();
   }
 
   private static recalculateGoalContribution(
@@ -434,7 +440,10 @@ export class TransactionService {
     if (!goal) return;
 
     goal.currentAmount = Math.max(goal.currentAmount - oldContribution + newContribution, 0);
-    goal.status = GoalUtils.computeStatus(goal.currentAmount, goal.targetAmount);
+    goal.status = new GoalStatusUtils({
+      currentAmount: goal.currentAmount,
+      targetAmount: goal.targetAmount,
+    }).getStatus();
   }
 
   private static getMonthlyIncomeAndExpenses(

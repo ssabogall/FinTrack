@@ -1,12 +1,15 @@
 <!-- author: Santiago Sabogal -->
 <script setup lang="ts">
 // external imports
-import { computed, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
 // internal imports
 import GoalForm from '@/modules/goal/components/GoalForm.vue';
+import type { GoalInterface } from '@/modules/goal/interfaces/GoalInterface';
+import { AuthService } from '@/modules/auth/services/AuthService';
 import { GoalService } from '@/modules/goal/services/GoalService';
+import { Formatters } from '@/shared/utils/Formatters';
 
 // variables
 const route = useRoute();
@@ -15,28 +18,50 @@ const router = useRouter();
 // selectors
 const goalId = computed((): number => Number(route.params.id));
 
-const goal = computed(() => GoalService.getById(goalId.value));
-
-// selectors
-const initialValues = computed(() => GoalService.getInitialValuesForEdit(goalId.value));
-
 // reactive variables
-const loading = ref(false);
+const goal = ref<GoalInterface | null>(null);
+const loading = ref<boolean>(false);
 const error = ref<string | null>(null);
-const success = ref(false);
+const success = ref<boolean>(false);
+const hydrating = ref<boolean>(true);
 
-const handleSubmit = (payload: {
+const initialValues = computed(() => {
+  if (!goal.value) return {};
+  return {
+    name: goal.value.name,
+    description: goal.value.description,
+    targetAmount: goal.value.targetAmount,
+    startDate: Formatters.toDateInputValue(goal.value.startDate),
+    endDate: Formatters.toDateInputValue(goal.value.endDate),
+  };
+});
+
+const handleSubmit = async (payload: {
   name: string;
   description: string;
   targetAmount: number;
   startDate: string;
   endDate: string;
-}): void => {
+}): Promise<void> => {
   loading.value = true;
   error.value = null;
 
+  const currentUserId = AuthService.getCurrentUser()?.id;
+  if (!currentUserId) {
+    error.value = 'Not authenticated.';
+    loading.value = false;
+    return;
+  }
+
   try {
-    GoalService.updateFromForm(goalId.value, payload);
+    await GoalService.updateGoal(goalId.value, {
+      name: payload.name,
+      description: payload.description,
+      targetAmount: payload.targetAmount,
+      startDate: payload.startDate,
+      endDate: payload.endDate,
+      userId: currentUserId,
+    });
 
     success.value = true;
   } catch (err) {
@@ -49,13 +74,45 @@ const handleSubmit = (payload: {
 const goBack = (): void => {
   router.push({ name: 'goal.index' });
 };
+
+const loadGoal = async (): Promise<void> => {
+  hydrating.value = true;
+  const currentUserId = AuthService.getCurrentUser()?.id;
+  if (!currentUserId) {
+    hydrating.value = false;
+    return;
+  }
+
+  try {
+    const goals = await GoalService.getGoalsByUser(currentUserId);
+    goal.value = goals.find((g) => g.id === goalId.value) ?? null;
+  } catch {
+    goal.value = null;
+  } finally {
+    hydrating.value = false;
+  }
+};
+
+onMounted(loadGoal);
 </script>
 
 <template>
   <section class="max-w-xl mx-auto py-6">
+    <!-- Hydrating skeleton -->
+    <div
+      v-if="hydrating"
+      class="rounded-2xl border border-slate-200 bg-white shadow-sm px-8 py-8 space-y-4"
+    >
+      <div class="h-5 w-2/3 rounded bg-slate-100 animate-pulse" />
+      <div class="h-4 w-full rounded bg-slate-100 animate-pulse" />
+      <div class="h-10 w-full rounded bg-slate-100 animate-pulse" />
+      <div class="h-10 w-full rounded bg-slate-100 animate-pulse" />
+      <div class="h-10 w-full rounded bg-slate-100 animate-pulse" />
+    </div>
+
     <!-- Goal not found -->
     <div
-      v-if="!goal"
+      v-else-if="!goal"
       class="rounded-2xl border border-red-200 bg-red-50 px-6 py-10 text-center space-y-3"
     >
       <p class="text-sm font-medium text-red-600">Goal not found.</p>

@@ -1,18 +1,20 @@
 // external imports
 import {
-  Entity,
   Column,
-  PrimaryGeneratedColumn,
   CreateDateColumn,
-  UpdateDateColumn,
+  Entity,
+  JoinColumn,
   ManyToOne,
   OneToMany,
-  JoinColumn,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 
 // internal imports
-import { User } from '../../user/entities/user.entity';
 import { Transaction } from '../../transaction/entities/transaction.entity';
+import { User } from '../../user/entities/user.entity';
+
+export type GoalStatus = 'Active' | 'In Progress' | 'Completed';
 
 @Entity()
 export class Goal {
@@ -38,7 +40,7 @@ export class Goal {
   endDate: Date;
 
   @Column()
-  status: string;
+  status: GoalStatus;
 
   @CreateDateColumn()
   createdAt: Date;
