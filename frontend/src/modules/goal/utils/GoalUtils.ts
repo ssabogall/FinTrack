@@ -1,8 +1,6 @@
 // author: Santiago Sabogal
 // internal imports
-import type { GoalInterface } from '@/modules/goal/interfaces/GoalInterface';
-
-export type GoalStatus = 'Active' | 'In Progress' | 'Completed';
+import type { GoalInterface, GoalStatus } from '@/modules/goal/interfaces/GoalInterface';
 
 export class GoalUtils {
   private readonly goals: GoalInterface[];

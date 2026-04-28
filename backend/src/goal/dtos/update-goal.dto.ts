@@ -4,5 +4,4 @@ export class UpdateGoalDto {
   targetAmount?: number;
   startDate?: string;
   endDate?: string;
-  userId!: number;
 }

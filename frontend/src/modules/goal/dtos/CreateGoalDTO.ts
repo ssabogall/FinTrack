@@ -5,5 +5,4 @@ export interface CreateGoalDTO {
   targetAmount: number;
   startDate: string;
   endDate: string;
-  userId: number;
 }
