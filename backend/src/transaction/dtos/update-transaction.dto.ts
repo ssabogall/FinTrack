@@ -1,5 +1,8 @@
-// External imports
-import { PartialType } from '@nestjs/mapped-types';
-import { CreateTransactionDto } from './create-transaction.dto';
-
-export class UpdateTransactionDto extends PartialType(CreateTransactionDto) {}
+export class UpdateTransactionDto {
+	amount?: number;
+	description?: string;
+	date?: Date;
+	type?: 'income' | 'expense';
+	categoryId?: number | null;
+	goalId?: number | null;
+}
