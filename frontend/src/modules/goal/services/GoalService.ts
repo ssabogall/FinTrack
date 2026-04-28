@@ -1,248 +1,38 @@
 // author: Santiago Sabogal
+// external imports
+import axios from 'axios';
+
 // internal imports
-import type { GoalInterface } from '@/modules/goal/interfaces/GoalInterface';
 import type { CreateGoalDTO } from '@/modules/goal/dtos/CreateGoalDTO';
 import type { UpdateGoalDTO } from '@/modules/goal/dtos/UpdateGoalDTO';
-import { useGoalStore } from '@/modules/goal/stores/goalstore';
-import { useAuthStore } from '@/modules/auth/stores/authstore';
-import { GoalUtils } from '@/modules/goal/utils/GoalUtils';
-import { Formatters } from '@/shared/utils/Formatters';
+import type { GoalInterface } from '@/modules/goal/interfaces/GoalInterface';
 
 export class GoalService {
-  public static getAll(): GoalInterface[] {
-    return useGoalStore().goals;
+  private static readonly API_BASE_URL =
+    import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
+  private static readonly API_URL = `${this.API_BASE_URL}/api/goals`;
+
+  public static async getGoals(): Promise<GoalInterface[]> {
+    const { data } = await axios.get<GoalInterface[]>(this.API_URL);
+    return data;
   }
 
-  public static getById(id: number): GoalInterface | undefined {
-    return useGoalStore().goals.find((goal) => goal.id === id);
+  public static async getGoalById(id: number): Promise<GoalInterface> {
+    const { data } = await axios.get<GoalInterface>(`${this.API_URL}/${id}`);
+    return data;
   }
 
-  public static getForCurrentUser(): GoalInterface[] {
-    const authStore = useAuthStore();
-    const currentUserId = authStore.currentUser?.id;
-    if (!currentUserId) return [];
-    return useGoalStore().goals.filter((g) => g.userId === currentUserId);
+  public static async createGoal(dto: CreateGoalDTO): Promise<GoalInterface> {
+    const { data } = await axios.post<GoalInterface>(this.API_URL, dto);
+    return data;
   }
 
-  public static create(dto: CreateGoalDTO): void {
-    if (!dto.name.trim()) {
-      throw new Error('Goal name cannot be empty.');
-    }
-
-    if (dto.targetAmount <= 0) {
-      throw new Error('Target amount must be greater than 0.');
-    }
-
-    if (new Date(dto.endDate) <= new Date(dto.startDate)) {
-      throw new Error('End date must be after start date.');
-    }
-
-    const goalStore = useGoalStore();
-    const authStore = useAuthStore();
-
-    const now = new Date();
-    const id = Date.now();
-
-    const newGoal: GoalInterface = {
-      id,
-      name: dto.name,
-      description: dto.description,
-      targetAmount: dto.targetAmount,
-      currentAmount: 0,
-      startDate: new Date(dto.startDate),
-      endDate: new Date(dto.endDate),
-      status: GoalUtils.computeStatus(0, dto.targetAmount),
-      createdAt: now,
-      updatedAt: now,
-      userId: dto.userId,
-      transactionIds: [],
-    };
-
-    goalStore.goals.push(newGoal);
-
-    if (authStore.currentUser) {
-      authStore.currentUser.goalIds = [...(authStore.currentUser.goalIds ?? []), id];
-    }
+  public static async updateGoal(id: number, dto: UpdateGoalDTO): Promise<GoalInterface> {
+    const { data } = await axios.patch<GoalInterface>(`${this.API_URL}/${id}`, dto);
+    return data;
   }
 
-  public static update(id: number, dto: UpdateGoalDTO): void {
-    if (dto.name !== undefined && !dto.name.trim()) {
-      throw new Error('Goal name cannot be empty.');
-    }
-
-    if (dto.targetAmount !== undefined && dto.targetAmount <= 0) {
-      throw new Error('Target amount must be greater than 0.');
-    }
-
-    const goalStore = useGoalStore();
-    const index = goalStore.goals.findIndex((goal) => goal.id === id);
-
-    if (index === -1) {
-      throw new Error('Goal not found.');
-    }
-
-    const current = goalStore.goals[index];
-    if (!current) {
-      throw new Error('Goal not found.');
-    }
-
-    const startDate = dto.startDate ? new Date(dto.startDate) : current.startDate;
-    const endDate = dto.endDate ? new Date(dto.endDate) : current.endDate;
-
-    if (endDate <= startDate) {
-      throw new Error('End date must be after start date.');
-    }
-
-    const updatedTargetAmount = dto.targetAmount ?? current.targetAmount;
-
-    goalStore.goals[index] = {
-      id: current.id,
-      name: dto.name ?? current.name,
-      description: dto.description ?? current.description,
-      targetAmount: updatedTargetAmount,
-      currentAmount: current.currentAmount,
-      startDate,
-      endDate,
-      status: GoalUtils.computeStatus(current.currentAmount, updatedTargetAmount),
-      createdAt: current.createdAt,
-      updatedAt: new Date(),
-      userId: current.userId,
-      transactionIds: current.transactionIds,
-    } as GoalInterface;
+  public static async deleteGoal(id: number): Promise<void> {
+    await axios.delete(`${this.API_URL}/${id}`);
   }
-
-  public static delete(id: number): void {
-    const goalStore = useGoalStore();
-    const authStore = useAuthStore();
-
-    const index = goalStore.goals.findIndex((goal) => goal.id === id);
-
-    if (index === -1) {
-      throw new Error('Goal not found.');
-    }
-
-    const goal = goalStore.goals[index];
-
-    if (!goal) {
-      throw new Error('Goal not found.');
-    }
-
-    if (goal.status === 'Completed') {
-      throw new Error('Completed goals cannot be deleted.');
-    }
-
-    goalStore.goals.splice(index, 1);
-
-    if (authStore.currentUser?.goalIds) {
-      authStore.currentUser.goalIds = authStore.currentUser.goalIds.filter(
-        (goalId) => goalId !== id,
-      );
-    }
-  }
-
-  public static createForCurrentUser(payload: {
-    name: string;
-    description: string;
-    targetAmount: number;
-    startDate: string;
-    endDate: string;
-  }): void {
-    const authStore = useAuthStore();
-    const currentUserId = authStore.currentUser?.id;
-    if (!currentUserId) throw new Error('Not authenticated.');
-
-    GoalService.create({
-      name: payload.name,
-      description: payload.description,
-      targetAmount: payload.targetAmount,
-      startDate: new Date(payload.startDate),
-      endDate: new Date(payload.endDate),
-      userId: currentUserId,
-    });
-  }
-
-  public static updateFromForm(
-    id: number,
-    payload: {
-      name: string;
-      description: string;
-      targetAmount: number;
-      startDate: string;
-      endDate: string;
-    },
-  ): void {
-    GoalService.update(id, {
-      name: payload.name,
-      description: payload.description,
-      targetAmount: payload.targetAmount,
-      startDate: new Date(payload.startDate),
-      endDate: new Date(payload.endDate),
-    });
-  }
-
-  public static getInitialValuesForEdit(id: number): {
-    name?: string;
-    description?: string;
-    targetAmount?: number;
-    startDate?: string;
-    endDate?: string;
-  } {
-    const goal = GoalService.getById(id);
-    if (!goal) return {};
-    return {
-      name: goal.name,
-      description: goal.description,
-      targetAmount: goal.targetAmount,
-      startDate: Formatters.toDateInputValue(goal.startDate),
-      endDate: Formatters.toDateInputValue(goal.endDate),
-    };
-  }
-
-  // ---------------------------
-  // Dashboards
-  // ---------------------------
-
-  public static getSummaryForCurrentUser(): {
-    totalTarget: number;
-    totalSaved: number;
-    activeCount: number;
-    completedCount: number;
-  } {
-    const goals = GoalService.getForCurrentUser();
-    const totalTarget = goals.reduce((sum, g) => sum + g.targetAmount, 0);
-    const totalSaved = goals.reduce((sum, g) => sum + g.currentAmount, 0);
-    const completedCount = goals.filter((g) => g.status === 'Completed').length;
-    const activeCount = goals.length - completedCount;
-    return { totalTarget, totalSaved, activeCount, completedCount };
-  }
-
-  public static getProgressChartForCurrentUser(): {
-    labels: string[];
-    saved: number[];
-    remaining: number[];
-  } {
-    const goals = GoalService.getForCurrentUser();
-    const sorted = [...goals].sort((a, b) => b.targetAmount - a.targetAmount).slice(0, 7);
-    return {
-      labels: sorted.map((g) => g.name),
-      saved: sorted.map((g) => g.currentAmount),
-      remaining: sorted.map((g) => Math.max(g.targetAmount - g.currentAmount, 0)),
-    };
-  }
-
-  public static getDistributionChartForCurrentUser(): {
-    labels: string[];
-    amounts: number[];
-    colors: string[];
-  } {
-    const goals = GoalService.getForCurrentUser();
-    const palette = ['#0B2C3D', '#E5A00D', '#16A34A', '#0EA5E9', '#8B5CF6', '#14B8A6', '#EF4444'];
-    const sorted = [...goals].sort((a, b) => b.currentAmount - a.currentAmount).slice(0, 7);
-    return {
-      labels: sorted.map((g) => g.name),
-      amounts: sorted.map((g) => g.currentAmount),
-      colors: sorted.map((_, idx) => palette[idx % palette.length]!),
-    };
-  }
-
 }

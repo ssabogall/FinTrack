@@ -7,12 +7,14 @@ import App from './App.vue';
 import router from './router';
 
 // internal imports
+import { AuthService } from '@/modules/auth/services/AuthService';
 import PiniaInit from './PiniaInit';
 
 const app = createApp(App);
 const pinia = PiniaInit.init();
 
 app.use(pinia);
-app.use(router);
 
+await AuthService.bootstrap();
+app.use(router);
 app.mount('#app');

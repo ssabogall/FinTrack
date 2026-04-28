@@ -1,12 +1,11 @@
 // author: Santiago Gómez
+// external imports
+import axios from 'axios';
+
 // internal imports
 import type { CategoryInterface } from '@/modules/category/interfaces/CategoryInterface';
 import type { TransactionInterface } from '@/modules/transaction/interfaces/TransactionInterface';
 import type { UserInterface } from '@/modules/user/interfaces/UserInterface';
-import { DateUtils } from '@/shared/utils/DateUtils';
-import { useCategoryStore } from '@/modules/category/stores/categorystore';
-import { useTransactionStore } from '@/modules/transaction/stores/transactionstore';
-import { useUserStore } from '@/modules/user/stores/userstore';
 
 export interface GlobalOverview {
   totalIncome: number;
@@ -27,177 +26,233 @@ export interface UserGrowthTrend {
 }
 
 export class AdminService {
-  public static getGlobalOverview(): GlobalOverview {
-    const transactions = useTransactionStore().transactions;
-    const users = useUserStore().users.filter((u) => u.role === 'user');
+  private static readonly API_BASE_URL =
+    import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
+  private static readonly API_URL = `${this.API_BASE_URL}/api/admin`;
 
-    const totalIncome = transactions
-      .filter((t) => t.amount > 0)
-      .reduce((sum, t) => sum + t.amount, 0);
+  public static async getGlobalOverview(): Promise<GlobalOverview> {
+    const { data } = await axios.get<GlobalOverview>(`${this.API_URL}/overview`);
+    return data;
+  }
 
-    const totalExpenses = transactions
-      .filter((t) => t.amount < 0)
-      .reduce((sum, t) => sum + Math.abs(t.amount), 0);
+  public static async getMonthlyTrend(months = 7): Promise<MonthlyTrend> {
+    try {
+      const { data } = await axios.get<unknown>(`${this.API_URL}/monthly-trend`, {
+        params: { months },
+      });
+      const normalized = this.normalizeMonthlyTrend(data);
+      if (normalized.labels.length > 0) return normalized;
+    } catch {
+      // Fallback below.
+    }
 
-    const netSavings = totalIncome - totalExpenses;
+    return this.buildMonthlyTrendFromSummaries(months);
+  }
 
+  public static async getUserGrowthTrend(months = 7): Promise<UserGrowthTrend> {
+    try {
+      const { data } = await axios.get<unknown>(`${this.API_URL}/user-growth`, {
+        params: { months },
+      });
+      const normalized = this.normalizeUserGrowthTrend(data);
+      if (normalized.labels.length > 0) return normalized;
+    } catch {
+      // Fallback below.
+    }
+
+    return this.buildUserGrowthFromUsers(months);
+  }
+
+  public static async getUsersWithStats(): Promise<
+    (UserInterface & {
+      balance: number;
+      transactionCount: number;
+    })[]
+  > {
+    const { data } = await axios.get<
+      (UserInterface & { balance: number; transactionCount: number })[]
+    >(`${this.API_URL}/users-with-stats`);
+    return data.map((user) => ({
+      ...user,
+      createdAt: new Date(user.createdAt),
+      updatedAt: new Date(user.updatedAt),
+      balance: Number(user.balance),
+    }));
+  }
+
+  public static async getTransactionsForMonth(
+    year: number,
+    month: number,
+  ): Promise<TransactionInterface[]> {
+    const { data } = await axios.get<TransactionInterface[]>(`${this.API_URL}/transactions`, {
+      params: { year, month },
+    });
+    return data.map((tx) => ({
+      ...tx,
+      amount: Number(tx.amount),
+      date: new Date(tx.date),
+      createdAt: new Date(tx.createdAt),
+      updatedAt: new Date(tx.updatedAt),
+    }));
+  }
+
+  public static async getMonthlySummary(
+    year: number,
+    month: number,
+  ): Promise<{
+    income: number;
+    expenses: number;
+    netSavings: number;
+    transactionCount: number;
+  }> {
+    const { data } = await axios.get<{
+      income: number;
+      expenses: number;
+      netSavings: number;
+      transactionCount: number;
+    }>(`${this.API_URL}/monthly-summary`, {
+      params: { year, month },
+    });
     return {
-      totalIncome,
-      totalExpenses,
-      netSavings,
-      totalUsers: users.length,
+      ...data,
+      income: Number(data.income),
+      expenses: Number(data.expenses),
+      netSavings: Number(data.netSavings),
     };
   }
 
-  public static getMonthlyTrend(months = 7): MonthlyTrend {
-    const transactions = useTransactionStore().transactions;
-    const today = new Date();
+  public static async getCategoryBreakdownForMonth(
+    year: number,
+    month: number,
+  ): Promise<{ category: CategoryInterface; amount: number }[]> {
+    const { data } = await axios.get<{ category: CategoryInterface; amount: number }[]>(
+      `${this.API_URL}/category-breakdown`,
+      {
+        params: { year, month },
+      },
+    );
+    return data.map((item) => ({
+      category: {
+        ...item.category,
+        createdAt: new Date(item.category.createdAt),
+        updatedAt: new Date(item.category.updatedAt),
+      },
+      amount: Number(item.amount),
+    }));
+  }
 
+  public static getUserName(users: UserInterface[], userId: number): string {
+    const user = users.find((u) => u.id === userId);
+    return user?.name ?? `User #${userId}`;
+  }
+
+  private static normalizeMonthlyTrend(data: unknown): MonthlyTrend {
+    if (
+      data &&
+      typeof data === 'object' &&
+      'labels' in data &&
+      'income' in data &&
+      'expenses' in data
+    ) {
+      const raw = data as { labels?: unknown; income?: unknown; expenses?: unknown };
+      const labels = Array.isArray(raw.labels) ? raw.labels.map((x) => String(x)) : [];
+      const income = Array.isArray(raw.income)
+        ? raw.income.map((x) => Number(x)).map((x) => (Number.isFinite(x) ? x : 0))
+        : [];
+      const expenses = Array.isArray(raw.expenses)
+        ? raw.expenses.map((x) => Number(x)).map((x) => (Number.isFinite(x) ? x : 0))
+        : [];
+      const size = Math.min(labels.length, income.length, expenses.length);
+      return {
+        labels: labels.slice(0, size),
+        income: income.slice(0, size),
+        expenses: expenses.slice(0, size),
+      };
+    }
+
+    if (Array.isArray(data)) {
+      const rows = data as Array<{ label?: unknown; income?: unknown; expenses?: unknown }>;
+      const labels: string[] = [];
+      const income: number[] = [];
+      const expenses: number[] = [];
+      for (const row of rows) {
+        labels.push(String(row.label ?? ''));
+        const incomeValue = Number(row.income);
+        const expenseValue = Number(row.expenses);
+        income.push(Number.isFinite(incomeValue) ? incomeValue : 0);
+        expenses.push(Number.isFinite(expenseValue) ? expenseValue : 0);
+      }
+      return { labels, income, expenses };
+    }
+
+    return { labels: [], income: [], expenses: [] };
+  }
+
+  private static normalizeUserGrowthTrend(data: unknown): UserGrowthTrend {
+    if (data && typeof data === 'object' && 'labels' in data && 'counts' in data) {
+      const raw = data as { labels?: unknown; counts?: unknown };
+      const labels = Array.isArray(raw.labels) ? raw.labels.map((x) => String(x)) : [];
+      const counts = Array.isArray(raw.counts)
+        ? raw.counts.map((x) => Number(x)).map((x) => (Number.isFinite(x) ? x : 0))
+        : [];
+      const size = Math.min(labels.length, counts.length);
+      return {
+        labels: labels.slice(0, size),
+        counts: counts.slice(0, size),
+      };
+    }
+
+    if (Array.isArray(data)) {
+      const rows = data as Array<{ label?: unknown; count?: unknown; counts?: unknown }>;
+      const labels: string[] = [];
+      const counts: number[] = [];
+      for (const row of rows) {
+        labels.push(String(row.label ?? ''));
+        const countValue = Number(row.counts ?? row.count);
+        counts.push(Number.isFinite(countValue) ? countValue : 0);
+      }
+      return { labels, counts };
+    }
+
+    return { labels: [], counts: [] };
+  }
+
+  private static async buildMonthlyTrendFromSummaries(months: number): Promise<MonthlyTrend> {
     const labels: string[] = [];
     const income: number[] = [];
     const expenses: number[] = [];
+    const today = new Date();
 
     for (let i = months - 1; i >= 0; i--) {
       const d = new Date(today.getFullYear(), today.getMonth() - i, 1);
-      const label = d.toLocaleDateString('en-US', { month: 'short', year: '2-digit' });
-      const monthStart = new Date(d.getFullYear(), d.getMonth(), 1).getTime();
-      const monthEnd = new Date(d.getFullYear(), d.getMonth() + 1, 0, 23, 59, 59).getTime();
-
-      labels.push(label);
-
-      const incomeForMonth = transactions
-        .filter((t) => {
-          const ts = new Date(t.date).getTime();
-          return t.amount > 0 && ts >= monthStart && ts <= monthEnd;
-        })
-        .reduce((sum, t) => sum + t.amount, 0);
-
-      const expensesForMonth = transactions
-        .filter((t) => {
-          const ts = new Date(t.date).getTime();
-          return t.amount < 0 && ts >= monthStart && ts <= monthEnd;
-        })
-        .reduce((sum, t) => sum + Math.abs(t.amount), 0);
-
-      income.push(incomeForMonth);
-      expenses.push(expensesForMonth);
+      labels.push(d.toLocaleDateString('en-US', { month: 'short', year: '2-digit' }));
+      try {
+        const summary = await this.getMonthlySummary(d.getFullYear(), d.getMonth() + 1);
+        income.push(Number.isFinite(summary.income) ? summary.income : 0);
+        expenses.push(Number.isFinite(summary.expenses) ? summary.expenses : 0);
+      } catch {
+        income.push(0);
+        expenses.push(0);
+      }
     }
 
     return { labels, income, expenses };
   }
 
-  public static getUserGrowthTrend(months = 7): UserGrowthTrend {
-    const users = useUserStore().users.filter((u) => u.role === 'user');
-    const today = new Date();
-
+  private static async buildUserGrowthFromUsers(months: number): Promise<UserGrowthTrend> {
     const labels: string[] = [];
     const counts: number[] = [];
+    const today = new Date();
+    const users = await this.getUsersWithStats();
 
     for (let i = months - 1; i >= 0; i--) {
       const d = new Date(today.getFullYear(), today.getMonth() - i, 1);
-      const label = d.toLocaleDateString('en-US', { month: 'short', year: '2-digit' });
       const monthEnd = new Date(d.getFullYear(), d.getMonth() + 1, 0, 23, 59, 59).getTime();
-
-      const count = users.filter((u) => {
-        const created = new Date(u.createdAt).getTime();
-        return created <= monthEnd;
-      }).length;
-
-      labels.push(label);
+      const count = users.filter((u) => new Date(u.createdAt).getTime() <= monthEnd).length;
+      labels.push(d.toLocaleDateString('en-US', { month: 'short', year: '2-digit' }));
       counts.push(count);
     }
 
     return { labels, counts };
-  }
-
-  public static getUsersWithStats(): (UserInterface & {
-    balance: number;
-    transactionCount: number;
-  })[] {
-    const userStore = useUserStore();
-    const transactionStore = useTransactionStore();
-
-    return userStore.users
-      .filter((u) => u.role === 'user')
-      .map((user) => {
-        const userTransactions = transactionStore.transactions.filter((t) => t.userId === user.id);
-        const balance = userTransactions.reduce((sum, t) => sum + t.amount, 0);
-        return {
-          ...user,
-          balance,
-          transactionCount: userTransactions.length,
-        };
-      })
-      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-  }
-
-  public static getAllTransactions(): TransactionInterface[] {
-    return useTransactionStore().transactions.sort(
-      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
-    );
-  }
-
-  public static getTransactionsForMonth(year: number, month: number): TransactionInterface[] {
-    const { monthStart, monthEnd } = DateUtils.getMonthRange(year, month);
-
-    return AdminService.getAllTransactions().filter((t) => {
-      const ts = new Date(t.date).getTime();
-      return ts >= monthStart && ts <= monthEnd;
-    });
-  }
-
-  public static getMonthlySummary(
-    year: number,
-    month: number,
-  ): {
-    income: number;
-    expenses: number;
-    netSavings: number;
-    transactionCount: number;
-  } {
-    const transactions = AdminService.getTransactionsForMonth(year, month);
-
-    const income = transactions.filter((t) => t.amount > 0).reduce((sum, t) => sum + t.amount, 0);
-
-    const expenses = transactions
-      .filter((t) => t.amount < 0)
-      .reduce((sum, t) => sum + Math.abs(t.amount), 0);
-
-    return {
-      income,
-      expenses,
-      netSavings: income - expenses,
-      transactionCount: transactions.length,
-    };
-  }
-
-  public static getCategoryBreakdownForMonth(
-    year: number,
-    month: number,
-  ): { category: CategoryInterface; amount: number }[] {
-    const transactions = AdminService.getTransactionsForMonth(year, month);
-    const categories = useCategoryStore().categories;
-
-    const expenseByCategory = new Map<number, number>();
-
-    for (const t of transactions) {
-      if (t.amount < 0 && t.categoryId != null) {
-        const current = expenseByCategory.get(t.categoryId) ?? 0;
-        expenseByCategory.set(t.categoryId, current + Math.abs(t.amount));
-      }
-    }
-
-    return Array.from(expenseByCategory.entries())
-      .map(([categoryId, amount]) => {
-        const category = categories.find((c) => c.id === categoryId);
-        return category ? { category, amount } : null;
-      })
-      .filter((x): x is { category: CategoryInterface; amount: number } => x != null)
-      .sort((a, b) => b.amount - a.amount);
-  }
-
-  public static getUserName(userId: number): string {
-    const user = useUserStore().users.find((u) => u.id === userId);
-    return user?.name ?? `User #${userId}`;
   }
 }

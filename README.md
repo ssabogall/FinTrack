@@ -6,12 +6,14 @@ The system provides features for managing custom categories, tracking savings go
 
 ## Tech Stack
 
-- **Frontend**: Vue 3, TypeScript, Vite, Pinia, Vue Router, Tailwind CSS
+- **Backend**: NestJS, TypeScript, TypeORM, SQLite, JWT, bcrypt
+- **Frontend**: Vue 3, TypeScript, Vite, Pinia, Vue Router, Tailwind CSS, Chart.js, Axios
 - **Package manager**: npm
 
 ## Project Structure
 
-- `frontend/`: Vue 3 + Vite frontend application (main dashboard UI)
+- `backend/`: NestJS REST API, auth, modules (`users`, `auth`, `categories`, `transactions`, `goals`, `admin`), seed scripts
+- `frontend/`: Vue 3 + Vite application (dashboard, admin panel, reports, charts)
 
 ## Prerequisites
 
@@ -25,7 +27,7 @@ node -v
 npm -v
 ```
 
-## How to Run the Project
+## How to Run the Project (Development)
 
 1. **Clone the repository**
 
@@ -34,22 +36,82 @@ npm -v
    cd FinTrack
    ```
 
-2. **Install frontend dependencies**
+2. **Install dependencies**
 
    ```sh
-   cd frontend
+   cd backend
+   npm install
+   cd ../frontend
    npm install
    ```
 
-3. **Run the frontend in development mode**
+3. **Run backend API**
+
+   In one terminal:
 
    ```sh
+   cd backend
+   npm run start:dev
+   ```
+
+4. **Seed the database (recommended on fresh DB)**
+
+   In another terminal:
+
+   ```sh
+   cd backend
+   npm run seed
+   ```
+
+5. **Run frontend**
+
+   In a separate terminal:
+
+   ```sh
+   cd frontend
    npm run dev
    ```
 
-4. **Open the app**
+6. **Open the app**
 
-   The dev server URL will be shown in the terminal (by default something like `http://localhost:5173`). Open it in your browser to access FinTrack.
+   - Frontend: `http://localhost:5173`
+   - Backend API base: `http://localhost:3000/api`
+
+## Environment Configuration
+
+Frontend uses `VITE_API_BASE_URL` to connect to backend.
+
+Create `frontend/.env` (optional if backend runs on default `http://localhost:3000`):
+
+```env
+VITE_API_BASE_URL=http://localhost:3000
+```
+
+## Authentication Notes
+
+- Login uses backend JWT (`/api/auth/login`).
+- Session token is stored in browser local storage.
+- On app bootstrap, user session is restored from token.
+- Protected routes are enforced in frontend and backend guards.
+
+## Seeded Demo Users
+
+- Admin:
+  - `admin@fintrack.local` / `admin123`
+- Regular users:
+  - `alex.johnson@fintrack.local` / `password123`
+  - `maria.lopez@fintrack.local` / `password123`
+  - `daniel.kim@fintrack.local` / `password123`
+  - `john@email.com` / `password123`
+  - `jane@email.com` / `password123`
+
+## Implemented Modules
+
+- **User/Auth**: register, login, profile, role-based access
+- **Category**: CRUD with ownership validation
+- **Transaction**: CRUD, category/goal linkage, dashboard metrics
+- **Goal**: CRUD, progress/status tracking
+- **Admin**: global overview, trends, user stats, monthly reports
 
 
 ## Authors

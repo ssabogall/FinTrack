@@ -45,3 +45,6 @@ coverage/
 *.tmp
 *.temp
 .cache/
+
+# IDE Rules
+.cursor/rules/

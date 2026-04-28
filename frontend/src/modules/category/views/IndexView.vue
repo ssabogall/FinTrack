@@ -1,15 +1,17 @@
 <!-- author: Lucas Higuita -->
 <script setup lang="ts">
 // external imports
-import { computed, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 
 // internal imports
 import CategoryCard from '@/modules/category/components/CategoryCard.vue';
 import CategoryFormModal from '@/modules/category/components/CategoryFormModal.vue';
 import CategorySummaryCards from '@/modules/category/components/CategorySummaryCards.vue';
 import type { CategoryInterface } from '@/modules/category/interfaces/CategoryInterface';
-import { AuthService } from '@/modules/auth/services/AuthService';
 import { CategoryService } from '@/modules/category/services/CategoryService';
+import { CategoryUtils } from '@/modules/category/utils/CategoryUtils';
+import type { TransactionInterface } from '@/modules/transaction/interfaces/TransactionInterface';
+import { TransactionService } from '@/modules/transaction/services/TransactionService';
 
 // reactive variables
 const showModal = ref(false);
@@ -19,24 +21,26 @@ const formLoading = ref(false);
 const deleteError = ref<string | null>(null);
 const searchQuery = ref('');
 const typeFilter = ref('all');
+const loading = ref(false);
+const categories = ref<CategoryInterface[]>([]);
+const transactions = ref<TransactionInterface[]>([]);
 
-// selectors
-const userCategories = computed((): CategoryInterface[] => CategoryService.getForCurrentUser(true));
-
-const filteredCategories = computed((): CategoryInterface[] =>
-  CategoryService.filter(userCategories.value, searchQuery.value, typeFilter.value),
+const categoryUtils = computed(
+  () => new CategoryUtils({ categories: categories.value, transactions: transactions.value }),
 );
 
-const categorySummary = computed(() => CategoryService.getSummary(userCategories.value));
+const filteredCategories = computed((): CategoryInterface[] =>
+  categoryUtils.value.filter(searchQuery.value, typeFilter.value),
+);
+
+const categorySummary = computed(() => categoryUtils.value.getSummary());
 
 const totalCount = computed((): number => categorySummary.value.total);
 const expenseCount = computed((): number => categorySummary.value.expense);
 const incomeCount = computed((): number => categorySummary.value.income);
 
-const currentUserId = computed((): number | null => AuthService.getCurrentUser()?.id ?? null);
-
 const expenseCategorySlices = computed((): { name: string; amount: number; color: string }[] =>
-  currentUserId.value ? CategoryService.getExpenseDistribution(currentUserId.value) : [],
+  categoryUtils.value.getExpenseDistribution(),
 );
 
 const modalInitialValues = computed(() => {
@@ -66,25 +70,40 @@ const closeModal = (): void => {
   formError.value = null;
 };
 
-const handleFormSubmit = (payload: { name: string; type: string; color: string }): void => {
+const loadData = async (): Promise<void> => {
+  loading.value = true;
+  try {
+    categories.value = await CategoryService.getAll();
+    transactions.value = await TransactionService.getTransactions();
+  } finally {
+    loading.value = false;
+  }
+};
+
+const handleFormSubmit = async (payload: {
+  name: string;
+  type: string;
+  color: string;
+}): Promise<void> => {
   formLoading.value = true;
   formError.value = null;
 
   try {
     if (editingCategory.value) {
-      CategoryService.update(editingCategory.value.id, {
+      await CategoryService.update(editingCategory.value.id, {
         name: payload.name,
         color: payload.color,
         type: payload.type,
       });
     } else {
-      CategoryService.create({
+      await CategoryService.create({
         name: payload.name,
         color: payload.color,
         type: payload.type,
       });
     }
 
+    await loadData();
     closeModal();
   } catch (err) {
     formError.value = err instanceof Error ? err.message : 'An unexpected error occurred.';
@@ -93,14 +112,17 @@ const handleFormSubmit = (payload: { name: string; type: string; color: string }
   }
 };
 
-const handleDelete = (id: number): void => {
+const handleDelete = async (id: number): Promise<void> => {
   deleteError.value = null;
   try {
-    CategoryService.delete(id);
+    await CategoryService.delete(id);
+    await loadData();
   } catch (err) {
     deleteError.value = err instanceof Error ? err.message : 'Could not delete category.';
   }
 };
+
+onMounted(loadData);
 </script>
 
 <template>
@@ -190,10 +212,8 @@ const handleDelete = (id: number): void => {
         v-for="cat in filteredCategories"
         :key="cat.id"
         :category="cat"
-        :transaction-count="
-          currentUserId ? CategoryService.getTransactionCount(cat.id, currentUserId) : 0
-        "
-        :total-amount="currentUserId ? CategoryService.getTotalAmount(cat.id, currentUserId) : 0"
+        :transaction-count="categoryUtils.getTransactionCount(cat.id)"
+        :total-amount="categoryUtils.getTotalAmount(cat.id)"
         @edit="openEdit"
         @delete="handleDelete"
       />

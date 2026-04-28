@@ -1,7 +1,7 @@
 <!-- author: Santiago Gómez -->
 <script setup lang="ts">
 // external imports
-import { onMounted, ref, watch } from 'vue';
+import { nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import type { Chart } from 'chart.js';
 
 // internal imports
@@ -17,7 +17,8 @@ const props = defineProps<Props>();
 const canvasRef = ref<HTMLCanvasElement | null>(null);
 let chartInstance: Chart | null = null;
 
-const buildChart = (): void => {
+const buildChart = async (): Promise<void> => {
+  await nextTick();
   if (!canvasRef.value) return;
   if (chartInstance) chartInstance.destroy();
 
@@ -26,11 +27,14 @@ const buildChart = (): void => {
   chartInstance = ChartUtils.buildUserGrowthLine(canvasRef.value, props.labels, props.counts);
 };
 
-onMounted(() => buildChart());
+onMounted(async () => buildChart());
+onBeforeUnmount(() => {
+  if (chartInstance) chartInstance.destroy();
+});
 
 watch(
   () => [props.labels, props.counts],
-  () => buildChart(),
+  async () => buildChart(),
   { deep: true },
 );
 </script>
@@ -47,7 +51,7 @@ watch(
     </div>
 
     <div v-else class="h-64">
-      <canvas ref="canvasRef" />
+      <canvas ref="canvasRef" width="900" height="320" />
     </div>
   </div>
 </template>

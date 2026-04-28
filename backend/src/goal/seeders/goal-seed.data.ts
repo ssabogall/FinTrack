@@ -1,122 +1,97 @@
-// author: Santiago Gómez
-import type { GoalInterface } from '@/modules/goal/interfaces/GoalInterface';
-import { GoalUtils } from '@/modules/goal/utils/GoalUtils';
+export type SeedGoalStatus = 'Active' | 'In Progress' | 'Completed';
+
+export type SeedGoal = {
+  userEmail: string;
+  name: string;
+  description: string;
+  targetAmount: number;
+  currentAmount: number;
+  startDate: Date;
+  endDate: Date;
+  status: SeedGoalStatus;
+};
 
 const now = new Date();
 
-export const goalSeeder: GoalInterface[] = [
+export const GOAL_SEED_DATA: SeedGoal[] = [
   {
-    id: 1,
+    userEmail: 'alex.johnson@fintrack.local',
     name: 'Emergency fund',
     description: 'Save 3 months of living expenses.',
     targetAmount: 3000,
     currentAmount: 1200,
     startDate: new Date(now.getFullYear(), now.getMonth() - 5, 1),
     endDate: new Date(now.getFullYear(), now.getMonth() + 1, 1),
-    status: GoalUtils.computeStatus(1200, 3000),
-    createdAt: now,
-    updatedAt: now,
-    userId: 2,
-    transactionIds: [8, 10],
+    status: 'In Progress',
   },
   {
-    id: 2,
+    userEmail: 'alex.johnson@fintrack.local',
     name: 'Europe Vacation',
     description: '2-week trip through Spain and Italy.',
     targetAmount: 4000,
     currentAmount: 1200,
     startDate: new Date(now.getFullYear(), now.getMonth() - 4, 1),
     endDate: new Date(now.getFullYear(), now.getMonth() + 4, 1),
-    status: GoalUtils.computeStatus(1200, 4000),
-    createdAt: now,
-    updatedAt: now,
-    userId: 2,
-    transactionIds: null,
+    status: 'In Progress',
   },
   {
-    id: 3,
+    userEmail: 'alex.johnson@fintrack.local',
     name: 'New Car',
     description: 'Family SUV',
     targetAmount: 15000,
     currentAmount: 8500,
     startDate: new Date(now.getFullYear(), now.getMonth() - 6, 10),
     endDate: new Date(now.getFullYear(), now.getMonth() + 10, 10),
-    status: GoalUtils.computeStatus(8500, 15000),
-    createdAt: now,
-    updatedAt: now,
-    userId: 2,
-    transactionIds: null,
+    status: 'In Progress',
   },
   {
-    id: 4,
+    userEmail: 'maria.lopez@fintrack.local',
     name: 'New laptop',
     description: 'Save for a new work laptop.',
     targetAmount: 1500,
     currentAmount: 1500,
     startDate: new Date(now.getFullYear(), now.getMonth() - 3, 15),
     endDate: new Date(now.getFullYear(), now.getMonth() - 1, 15),
-    status: GoalUtils.computeStatus(1500, 1500),
-    createdAt: now,
-    updatedAt: now,
-    userId: 3,
-    transactionIds: [11],
+    status: 'Completed',
   },
   {
-    id: 5,
+    userEmail: 'daniel.kim@fintrack.local',
     name: 'Investment Course',
     description: 'Advanced personal finance course.',
     targetAmount: 800,
     currentAmount: 400,
     startDate: new Date(now.getFullYear(), now.getMonth() - 1, 1),
     endDate: new Date(now.getFullYear(), now.getMonth() + 2, 1),
-    status: GoalUtils.computeStatus(400, 800),
-    createdAt: now,
-    updatedAt: now,
-    userId: 4,
-    transactionIds: null,
+    status: 'In Progress',
   },
   {
-    id: 6,
+    userEmail: 'jane@email.com',
     name: 'Wedding Gift',
-    description: 'Gift for sister’s wedding.',
+    description: 'Gift for sister\u2019s wedding.',
     targetAmount: 500,
     currentAmount: 100,
     startDate: new Date(now.getFullYear(), now.getMonth(), 1),
     endDate: new Date(now.getFullYear(), now.getMonth() + 1, 1),
-    status: GoalUtils.computeStatus(100, 500),
-    createdAt: now,
-    updatedAt: now,
-    userId: 6,
-    transactionIds: [19],
+    status: 'In Progress',
   },
-
-  // User 5 (John)
   {
-    id: 7,
+    userEmail: 'john@email.com',
     name: 'Emergency fund',
     description: 'Build a safety net for unexpected expenses.',
     targetAmount: 5000,
     currentAmount: 900,
     startDate: new Date(now.getFullYear(), now.getMonth() - 3, 1),
     endDate: new Date(now.getFullYear(), now.getMonth() + 5, 1),
-    status: GoalUtils.computeStatus(900, 5000),
-    createdAt: now,
-    updatedAt: now,
-    userId: 5,
-    transactionIds: [16],
+    status: 'In Progress',
   },
   {
-    id: 8,
+    userEmail: 'john@email.com',
     name: 'Travel fund',
     description: 'Weekend trips and experiences.',
     targetAmount: 1200,
     currentAmount: 300,
     startDate: new Date(now.getFullYear(), now.getMonth() - 1, 10),
     endDate: new Date(now.getFullYear(), now.getMonth() + 3, 10),
-    status: GoalUtils.computeStatus(300, 1200),
-    createdAt: now,
-    updatedAt: now,
-    userId: 5,
-    transactionIds: null,
+    status: 'In Progress',
   },
 ];

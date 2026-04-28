@@ -1,0 +1,294 @@
+export type SeedGoalRef = {
+  userEmail: string;
+  name: string;
+};
+
+export type SeedTransaction = {
+  userEmail: string;
+  amount: number;
+  description: string;
+  date: Date;
+  categoryName: string | null;
+  goalRef: SeedGoalRef | null;
+};
+
+const now = new Date();
+const year = now.getFullYear();
+const month = now.getMonth();
+
+export const TRANSACTION_SEED_DATA: SeedTransaction[] = [
+  // Alex Johnson
+  {
+    userEmail: 'alex.johnson@fintrack.local',
+    amount: 3200,
+    description: 'Salary m0',
+    date: new Date(year, month, 1),
+    categoryName: 'Salary',
+    goalRef: null,
+  },
+  {
+    userEmail: 'alex.johnson@fintrack.local',
+    amount: 3200,
+    description: 'Salary m1',
+    date: new Date(year, month - 1, 1),
+    categoryName: 'Salary',
+    goalRef: null,
+  },
+  {
+    userEmail: 'alex.johnson@fintrack.local',
+    amount: -920,
+    description: 'Rent m0',
+    date: new Date(year, month, 5),
+    categoryName: 'Rent',
+    goalRef: null,
+  },
+  {
+    userEmail: 'alex.johnson@fintrack.local',
+    amount: -910,
+    description: 'Rent m1',
+    date: new Date(year, month - 1, 5),
+    categoryName: 'Rent',
+    goalRef: null,
+  },
+  {
+    userEmail: 'alex.johnson@fintrack.local',
+    amount: -140,
+    description: 'Groceries m0',
+    date: new Date(year, month, 8),
+    categoryName: 'Groceries',
+    goalRef: null,
+  },
+  {
+    userEmail: 'alex.johnson@fintrack.local',
+    amount: -70,
+    description: 'Transport m0',
+    date: new Date(year, month, 9),
+    categoryName: 'Transport',
+    goalRef: null,
+  },
+  {
+    userEmail: 'alex.johnson@fintrack.local',
+    amount: -55,
+    description: 'Utilities m0',
+    date: new Date(year, month, 11),
+    categoryName: 'Utilities',
+    goalRef: null,
+  },
+  {
+    userEmail: 'alex.johnson@fintrack.local',
+    amount: -48,
+    description: 'Dining m0',
+    date: new Date(year, month, 13),
+    categoryName: 'Dining',
+    goalRef: null,
+  },
+  {
+    userEmail: 'alex.johnson@fintrack.local',
+    amount: -300,
+    description: 'Emergency fund transfer m0',
+    date: new Date(year, month, 15),
+    categoryName: 'Savings',
+    goalRef: {
+      userEmail: 'alex.johnson@fintrack.local',
+      name: 'Emergency fund',
+    },
+  },
+  {
+    userEmail: 'alex.johnson@fintrack.local',
+    amount: -220,
+    description: 'Europe vacation transfer m0',
+    date: new Date(year, month, 18),
+    categoryName: 'Savings',
+    goalRef: {
+      userEmail: 'alex.johnson@fintrack.local',
+      name: 'Europe Vacation',
+    },
+  },
+
+  // Maria Lopez
+  {
+    userEmail: 'maria.lopez@fintrack.local',
+    amount: 2800,
+    description: 'Salary m0',
+    date: new Date(year, month, 1),
+    categoryName: 'Salary',
+    goalRef: null,
+  },
+  {
+    userEmail: 'maria.lopez@fintrack.local',
+    amount: 2800,
+    description: 'Salary m1',
+    date: new Date(year, month - 1, 1),
+    categoryName: 'Salary',
+    goalRef: null,
+  },
+  {
+    userEmail: 'maria.lopez@fintrack.local',
+    amount: -110,
+    description: 'Groceries m0',
+    date: new Date(year, month, 6),
+    categoryName: 'Groceries',
+    goalRef: null,
+  },
+  {
+    userEmail: 'maria.lopez@fintrack.local',
+    amount: -45,
+    description: 'Transport m0',
+    date: new Date(year, month, 8),
+    categoryName: 'Transport',
+    goalRef: null,
+  },
+  {
+    userEmail: 'maria.lopez@fintrack.local',
+    amount: -38,
+    description: 'Dining m0',
+    date: new Date(year, month, 10),
+    categoryName: 'Dining',
+    goalRef: null,
+  },
+  {
+    userEmail: 'maria.lopez@fintrack.local',
+    amount: -260,
+    description: 'Laptop transfer m0',
+    date: new Date(year, month, 14),
+    categoryName: 'Savings',
+    goalRef: { userEmail: 'maria.lopez@fintrack.local', name: 'New laptop' },
+  },
+  {
+    userEmail: 'maria.lopez@fintrack.local',
+    amount: -20,
+    description: 'Subscription m0',
+    date: new Date(year, month, 16),
+    categoryName: 'Subscriptions',
+    goalRef: null,
+  },
+
+  // Daniel Kim
+  {
+    userEmail: 'daniel.kim@fintrack.local',
+    amount: 3000,
+    description: 'Salary m0',
+    date: new Date(year, month, 1),
+    categoryName: 'Salary',
+    goalRef: null,
+  },
+  {
+    userEmail: 'daniel.kim@fintrack.local',
+    amount: -170,
+    description: 'Groceries m0',
+    date: new Date(year, month, 7),
+    categoryName: 'Groceries',
+    goalRef: null,
+  },
+  {
+    userEmail: 'daniel.kim@fintrack.local',
+    amount: -80,
+    description: 'Transport m0',
+    date: new Date(year, month, 9),
+    categoryName: 'Transport',
+    goalRef: null,
+  },
+  {
+    userEmail: 'daniel.kim@fintrack.local',
+    amount: -250,
+    description: 'Investment course transfer m0',
+    date: new Date(year, month, 20),
+    categoryName: 'Savings',
+    goalRef: {
+      userEmail: 'daniel.kim@fintrack.local',
+      name: 'Investment Course',
+    },
+  },
+
+  // John Doe
+  {
+    userEmail: 'john@email.com',
+    amount: 3500,
+    description: 'Salary m0',
+    date: new Date(year, month, 1),
+    categoryName: 'Salary',
+    goalRef: null,
+  },
+  {
+    userEmail: 'john@email.com',
+    amount: -160,
+    description: 'Groceries m0',
+    date: new Date(year, month, 4),
+    categoryName: 'Groceries',
+    goalRef: null,
+  },
+  {
+    userEmail: 'john@email.com',
+    amount: -52,
+    description: 'Utilities m0',
+    date: new Date(year, month, 9),
+    categoryName: 'Utilities',
+    goalRef: null,
+  },
+  {
+    userEmail: 'john@email.com',
+    amount: -66,
+    description: 'Transport m0',
+    date: new Date(year, month, 12),
+    categoryName: 'Transport',
+    goalRef: null,
+  },
+  {
+    userEmail: 'john@email.com',
+    amount: -280,
+    description: 'Emergency fund transfer m0',
+    date: new Date(year, month, 17),
+    categoryName: 'Savings',
+    goalRef: { userEmail: 'john@email.com', name: 'Emergency fund' },
+  },
+  {
+    userEmail: 'john@email.com',
+    amount: -150,
+    description: 'Travel fund transfer m0',
+    date: new Date(year, month, 21),
+    categoryName: 'Savings',
+    goalRef: { userEmail: 'john@email.com', name: 'Travel fund' },
+  },
+
+  // Jane Smith
+  {
+    userEmail: 'jane@email.com',
+    amount: 3100,
+    description: 'Salary m0',
+    date: new Date(year, month, 1),
+    categoryName: 'Salary',
+    goalRef: null,
+  },
+  {
+    userEmail: 'jane@email.com',
+    amount: -120,
+    description: 'Groceries m0',
+    date: new Date(year, month, 5),
+    categoryName: 'Groceries',
+    goalRef: null,
+  },
+  {
+    userEmail: 'jane@email.com',
+    amount: -42,
+    description: 'Transport m0',
+    date: new Date(year, month, 8),
+    categoryName: 'Transport',
+    goalRef: null,
+  },
+  {
+    userEmail: 'jane@email.com',
+    amount: -35,
+    description: 'Dining m0',
+    date: new Date(year, month, 10),
+    categoryName: 'Dining',
+    goalRef: null,
+  },
+  {
+    userEmail: 'jane@email.com',
+    amount: -220,
+    description: 'Wedding gift transfer m0',
+    date: new Date(year, month, 16),
+    categoryName: 'Savings',
+    goalRef: { userEmail: 'jane@email.com', name: 'Wedding Gift' },
+  },
+];

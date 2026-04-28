@@ -1,7 +1,7 @@
 <!-- author: Lucas Higuita -->
 <script setup lang="ts">
 // external imports
-import { computed, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 
 // internal imports
 import TransactionExpenseChart from '@/modules/transaction/components/TransactionExpenseChart.vue';
@@ -11,15 +11,35 @@ import TransactionMovementChart from '@/modules/transaction/components/Transacti
 import TransactionSummaryCards from '@/modules/transaction/components/TransactionSummaryCards.vue';
 import TransactionTable from '@/modules/transaction/components/TransactionTable.vue';
 import type { TransactionFilterDTO } from '@/modules/transaction/dtos/TransactionFilterDTO';
+import type { CategoryInterface } from '@/modules/category/interfaces/CategoryInterface';
+import type { GoalInterface } from '@/modules/goal/interfaces/GoalInterface';
 import type { TransactionInterface } from '@/modules/transaction/interfaces/TransactionInterface';
 import { AuthService } from '@/modules/auth/services/AuthService';
 import { CategoryService } from '@/modules/category/services/CategoryService';
 import { TransactionService } from '@/modules/transaction/services/TransactionService';
 import { GoalService } from '@/modules/goal/services/GoalService';
+import { TransactionUtils } from '@/modules/transaction/utils/TransactionUtils';
 import { Formatters } from '@/shared/utils/Formatters';
 
-const userCategories = computed(() => CategoryService.getForCurrentUser(true));
-const userGoals = computed(() => GoalService.getForCurrentUser());
+const userCategories = ref<CategoryInterface[]>([]);
+const userGoals = ref<GoalInterface[]>([]);
+const transactions = ref<TransactionInterface[]>([]);
+
+const loadUserGoals = async (): Promise<void> => {
+  try {
+    userGoals.value = await GoalService.getGoals();
+  } catch {
+    userGoals.value = [];
+  }
+};
+
+const loadUserCategories = async (): Promise<void> => {
+  try {
+    userCategories.value = await CategoryService.getAll();
+  } catch {
+    userCategories.value = [];
+  }
+};
 
 // reactive state
 const showModal = ref(false);
@@ -36,33 +56,30 @@ const filterState = ref<TransactionFilterDTO>({
 
 // computed
 const currentUserId = computed((): number | null => AuthService.getCurrentUser()?.id ?? null);
+const transactionUtils = computed(
+  () =>
+    new TransactionUtils({ transactions: transactions.value, categories: userCategories.value }),
+);
 
 const filteredTransactions = computed((): TransactionInterface[] => {
-  if (!currentUserId.value) return [];
-  return TransactionService.getFilteredByUser(currentUserId.value, filterState.value);
+  return transactionUtils.value.getFiltered(filterState.value);
 });
 
 const totalIncome = computed((): number => {
-  if (!currentUserId.value) return 0;
-  return TransactionService.getTotalIncome(currentUserId.value);
+  return transactionUtils.value.getTotalIncome();
 });
 
 const totalExpenses = computed((): number => {
-  if (!currentUserId.value) return 0;
-  return TransactionService.getTotalExpenses(currentUserId.value);
+  return transactionUtils.value.getTotalExpenses();
 });
 
 const balance = computed((): number => {
-  if (!currentUserId.value) return 0;
-  return TransactionService.getBalance(currentUserId.value);
+  return transactionUtils.value.getBalance();
 });
 
 // Movement trends chart data (last 10 days)
 const movementTrend = computed(() => {
-  if (!currentUserId.value) {
-    return { labels: [], income: [], expenses: [] };
-  }
-  return TransactionService.getMovementTrend(currentUserId.value, 10);
+  return transactionUtils.value.getMovementTrend(10);
 });
 
 const trendLabels = computed((): string[] => movementTrend.value.labels);
@@ -71,8 +88,7 @@ const trendExpenseData = computed((): number[] => movementTrend.value.expenses);
 
 // Expenses by category
 const expensesByCategory = computed(() => {
-  if (!currentUserId.value) return [];
-  return TransactionService.getExpensesByCategory(currentUserId.value);
+  return transactionUtils.value.getExpensesByCategory();
 });
 
 // Modal initial values for editing
@@ -116,14 +132,14 @@ const handleFilter = (payload: {
   filterState.value = payload;
 };
 
-const handleFormSubmit = (payload: {
+const handleFormSubmit = async (payload: {
   type: string;
   amount: number;
   description: string;
   categoryId: number | null;
   date: string;
   goalId: number | null;
-}): void => {
+}): Promise<void> => {
   formLoading.value = true;
   formError.value = null;
 
@@ -133,27 +149,28 @@ const handleFormSubmit = (payload: {
 
     if (editingTransaction.value) {
       // Update
-      TransactionService.update(editingTransaction.value.id, {
+      await TransactionService.update(editingTransaction.value.id, {
         amount: signedAmount,
         description: payload.description,
         categoryId: payload.categoryId,
-        date: new Date(payload.date),
+        date: payload.date,
         goalId: payload.goalId,
       });
     } else {
       // Create
       if (!currentUserId.value) return;
 
-      TransactionService.create({
+      await TransactionService.create({
         amount: signedAmount,
         description: payload.description,
-        date: new Date(payload.date),
-        userId: currentUserId.value,
+        date: payload.date,
         categoryId: payload.categoryId,
         goalId: payload.goalId,
       });
     }
 
+    transactions.value = await TransactionService.getTransactions();
+    await loadUserGoals();
     closeModal();
   } catch (err) {
     formError.value = err instanceof Error ? err.message : 'An unexpected error occurred.';
@@ -162,14 +179,24 @@ const handleFormSubmit = (payload: {
   }
 };
 
-const handleDelete = (id: number): void => {
+const handleDelete = async (id: number): Promise<void> => {
   deleteError.value = null;
   try {
-    TransactionService.delete(id);
+    await TransactionService.delete(id);
+    transactions.value = await TransactionService.getTransactions();
+    await loadUserGoals();
   } catch (err) {
     deleteError.value = err instanceof Error ? err.message : 'Could not delete transaction.';
   }
 };
+
+onMounted(async () => {
+  if (AuthService.isAuthenticated()) {
+    await loadUserCategories();
+    transactions.value = await TransactionService.getTransactions();
+    await loadUserGoals();
+  }
+});
 </script>
 
 <template>
