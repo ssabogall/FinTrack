@@ -19,7 +19,7 @@ export class Transaction {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column('decimal', { precision: 12, scale: 2 })
+  @Column({ type: 'double' })
   amount: number;
 
   @Column()

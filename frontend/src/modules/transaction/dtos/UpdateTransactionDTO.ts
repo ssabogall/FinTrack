@@ -1,6 +1,8 @@
 // author: Lucas Higuita
-import type { TransactionInterface } from '@/modules/transaction/interfaces/TransactionInterface';
-
-export type UpdateTransactionDTO = Partial<
-  Pick<TransactionInterface, 'amount' | 'description' | 'date' | 'categoryId' | 'goalId'>
->;
+export interface UpdateTransactionDTO {
+  amount?: number;
+  description?: string;
+  date?: string;
+  categoryId?: number | null;
+  goalId?: number | null;
+}

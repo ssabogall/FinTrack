@@ -1,30 +1,34 @@
 <!-- author: Lucas Higuita -->
 <script setup lang="ts">
 // external imports
-import { computed } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 
 // internal imports
 import TransactionExpenseChart from '@/modules/transaction/components/TransactionExpenseChart.vue';
 import TransactionMovementChart from '@/modules/transaction/components/TransactionMovementChart.vue';
 import UserDashboardKpiCards from '@/modules/dashboard/components/UserDashboardKpiCards.vue';
 import { AuthService } from '@/modules/auth/services/AuthService';
+import { CategoryService } from '@/modules/category/services/CategoryService';
+import type { TransactionInterface } from '@/modules/transaction/interfaces/TransactionInterface';
 import { TransactionService } from '@/modules/transaction/services/TransactionService';
+import { TransactionUtils } from '@/modules/transaction/utils/TransactionUtils';
 import AdminDashboardView from '@/modules/admin/views/AdminDashboardView.vue';
 
 const isAdmin = computed(() => AuthService.isAdmin());
 
 const currentUserId = computed((): number | null => AuthService.getCurrentUser()?.id ?? null);
+const userCategories = computed(() => CategoryService.getForCurrentUser(true));
+const transactions = ref<TransactionInterface[]>([]);
+const transactionUtils = computed(
+  () => new TransactionUtils({ transactions: transactions.value, categories: userCategories.value }),
+);
 
 const kpis = computed(() => {
-  if (!currentUserId.value) return null;
-  return TransactionService.getDashboardKpis(currentUserId.value);
+  return transactionUtils.value.getDashboardKpis();
 });
 
 const monthlyFlow = computed(() => {
-  if (!currentUserId.value) {
-    return { labels: [], income: [], expenses: [] };
-  }
-  return TransactionService.getMonthlyFlow(currentUserId.value, 6);
+  return transactionUtils.value.getMonthlyFlow(6);
 });
 
 const monthlyFlowLabels = computed(() => monthlyFlow.value.labels);
@@ -32,8 +36,13 @@ const monthlyFlowIncome = computed(() => monthlyFlow.value.income);
 const monthlyFlowExpenses = computed(() => monthlyFlow.value.expenses);
 
 const expensesByCategory = computed(() => {
-  if (!currentUserId.value) return [];
-  return TransactionService.getExpensesByCategory(currentUserId.value);
+  return transactionUtils.value.getExpensesByCategory();
+});
+
+onMounted(async () => {
+  if (AuthService.isAuthenticated()) {
+    transactions.value = await TransactionService.getTransactions();
+  }
 });
 </script>
 
