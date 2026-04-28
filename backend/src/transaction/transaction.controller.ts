@@ -57,8 +57,8 @@ export class TransactionController {
 	@UseGuards(AuthGuard)
 	@Delete(':id')
 	@HttpCode(HttpStatus.NO_CONTENT)
-	public async remove(@Param('id', ParseIntPipe) id: number, @Req() req: AuthenticatedRequest): Promise<void> {
+	public async delete(@Param('id', ParseIntPipe) id: number, @Req() req: AuthenticatedRequest): Promise<void> {
 		const userId = req.user.sub;
-		return this.transactionService.remove(userId, id);
+		return this.transactionService.delete(userId, id);
 	}
 }

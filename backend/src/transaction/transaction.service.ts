@@ -112,7 +112,7 @@ export class TransactionService {
     return this.transactionRepository.save(tx);
   }
 
-  public async remove(userId: number, id: number): Promise<void> {
+  public async delete(userId: number, id: number): Promise<void> {
     const tx = await this.transactionRepository.findOne({ where: { id } });
     if (!tx) throw new NotFoundException('Transaction not found');
     if (tx.userId !== userId) throw new UnauthorizedException('Cannot delete another user\'s transaction');
