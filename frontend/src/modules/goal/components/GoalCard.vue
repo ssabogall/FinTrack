@@ -4,10 +4,9 @@ import { computed, onMounted, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import type { Chart } from 'chart.js';
 
-import type { GoalInterface } from '@/modules/goal/interfaces/GoalInterface';
+import type { GoalInterface, GoalStatus } from '@/modules/goal/interfaces/GoalInterface';
 import { Formatters } from '@/shared/utils/Formatters';
 import { GoalStatusUtils } from '@/modules/goal/utils/GoalUtils';
-import type { GoalStatus } from '@/modules/goal/utils/GoalUtils';
 import { ChartUtils } from '@/shared/utils/ChartUtils';
 
 interface Props {
@@ -47,13 +46,6 @@ const canvasRef = ref<HTMLCanvasElement | null>(null);
 let chartInstance: Chart | null = null;
 
 const percentage = computed((): number => {
-  // Prefer the value computed by the backend (single source of truth).
-  // Fall back to a local calculation only if the goal was constructed
-  // without going through the API (defensive — should not happen in
-  // production flows).
-  if (props.goal.progressPercentage !== undefined) {
-    return Math.min(Math.round(props.goal.progressPercentage), 100);
-  }
   if (props.goal.targetAmount <= 0) return 0;
   return Math.min(Math.round((props.goal.currentAmount / props.goal.targetAmount) * 100), 100);
 });
@@ -75,10 +67,6 @@ const statusBgColor = computed((): string => statusUtils.value.getBackgroundColo
 const statusIcon = computed((): string => statusUtils.value.getIcon());
 
 const remaining = computed((): number => {
-  // Prefer the backend-computed remaining; fall back defensively.
-  if (props.goal.remaining !== undefined) {
-    return props.goal.remaining;
-  }
   return Math.max(props.goal.targetAmount - props.goal.currentAmount, 0);
 });
 

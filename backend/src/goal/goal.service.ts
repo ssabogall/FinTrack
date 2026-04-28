@@ -27,7 +27,15 @@ export class GoalService {
     });
   }
 
-  async create(dto: CreateGoalDto): Promise<Goal> {
+  async findOneByUser(id: number, userId: number): Promise<Goal> {
+    const goal = await this.goalRepository.findOneBy({ id });
+    if (!goal) throw new NotFoundException('Goal not found');
+    if (goal.userId !== userId)
+      throw new ForbiddenException('You do not own this goal');
+    return goal;
+  }
+
+  async create(userId: number, dto: CreateGoalDto): Promise<Goal> {
     if (dto.targetAmount <= 0)
       throw new BadRequestException('Target amount must be greater than 0');
 
@@ -43,15 +51,17 @@ export class GoalService {
       startDate,
       endDate,
       status: GoalService.computeStatus(0, dto.targetAmount),
+      userId,
     });
     return this.goalRepository.save(goal);
   }
 
-  async update(id: number, dto: UpdateGoalDto): Promise<Goal> {
-    const goal = await this.goalRepository.findOneBy({ id });
-    if (!goal) throw new NotFoundException('Goal not found');
-    if (goal.userId !== dto.userId)
-      throw new ForbiddenException('You do not own this goal');
+  async update(
+    id: number,
+    userId: number,
+    dto: UpdateGoalDto,
+  ): Promise<Goal> {
+    const goal = await this.findOneByUser(id, userId);
 
     const { startDate, endDate, ...rest } = dto;
     const updates: Partial<Goal> = { ...rest };
@@ -63,19 +73,13 @@ export class GoalService {
       throw new BadRequestException('Target amount must be greater than 0');
     if (merged.endDate <= merged.startDate)
       throw new BadRequestException('End date must be after start date');
-    merged.status = GoalService.computeStatus(
-      Number(merged.currentAmount),
-      Number(merged.targetAmount),
-    );
+    merged.status = GoalService.computeStatus(merged.currentAmount, merged.targetAmount);
 
     return this.goalRepository.save(merged);
   }
 
   async delete(id: number, userId: number): Promise<void> {
-    const goal = await this.goalRepository.findOneBy({ id });
-    if (!goal) throw new NotFoundException('Goal not found');
-    if (goal.userId !== userId)
-      throw new ForbiddenException('You do not own this goal');
+    const goal = await this.findOneByUser(id, userId);
     if (goal.status === 'Completed')
       throw new ConflictException('Completed goals cannot be deleted');
 

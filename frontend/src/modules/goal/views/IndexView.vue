@@ -10,13 +10,14 @@ import GoalCard from '@/modules/goal/components/GoalCard.vue';
 import GoalProgressChart from '@/modules/goal/components/GoalProgressChart.vue';
 import GoalSummaryCards from '@/modules/goal/components/GoalSummaryCards.vue';
 import type { GoalInterface } from '@/modules/goal/interfaces/GoalInterface';
-import { AuthService } from '@/modules/auth/services/AuthService';
 import { GoalService } from '@/modules/goal/services/GoalService';
 import { GoalUtils } from '@/modules/goal/utils/GoalUtils';
 
 // variables
+// variables
 const router = useRouter();
 
+// reactive variables
 // reactive variables
 const goals = ref<GoalInterface[]>([]);
 const deleteError = ref<string | null>(null);
@@ -24,6 +25,7 @@ const statusFilter = ref<'all' | 'active' | 'completed'>('all');
 const loading = ref<boolean>(true);
 const fetchError = ref<string | null>(null);
 
+// selectors
 // selectors
 const filteredGoals = computed(() => {
   if (statusFilter.value === 'completed') {
@@ -46,14 +48,8 @@ const navigateToCreate = (): void => {
 
 const handleDelete = async (id: number): Promise<void> => {
   deleteError.value = null;
-  const currentUserId = AuthService.getCurrentUser()?.id;
-  if (!currentUserId) {
-    deleteError.value = 'Not authenticated.';
-    return;
-  }
-
   try {
-    await GoalService.deleteGoal(id, currentUserId);
+    await GoalService.deleteGoal(id);
     goals.value = goals.value.filter((g) => g.id !== id);
   } catch (err) {
     deleteError.value = err instanceof Error ? err.message : 'Could not delete goal.';
@@ -63,15 +59,8 @@ const handleDelete = async (id: number): Promise<void> => {
 const loadGoals = async (): Promise<void> => {
   loading.value = true;
   fetchError.value = null;
-  const currentUserId = AuthService.getCurrentUser()?.id;
-  if (!currentUserId) {
-    fetchError.value = 'Not authenticated.';
-    loading.value = false;
-    return;
-  }
-
   try {
-    goals.value = await GoalService.getGoalsByUser(currentUserId);
+    goals.value = await GoalService.getGoals();
   } catch (err) {
     fetchError.value = err instanceof Error ? err.message : 'Could not load goals.';
   } finally {

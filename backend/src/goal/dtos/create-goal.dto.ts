@@ -4,5 +4,4 @@ export class CreateGoalDto {
   targetAmount!: number;
   startDate!: string;
   endDate!: string;
-  userId!: number;
 }

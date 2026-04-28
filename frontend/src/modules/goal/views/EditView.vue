@@ -7,18 +7,14 @@ import { useRoute, useRouter } from 'vue-router';
 // internal imports
 import GoalForm from '@/modules/goal/components/GoalForm.vue';
 import type { GoalInterface } from '@/modules/goal/interfaces/GoalInterface';
-import { AuthService } from '@/modules/auth/services/AuthService';
 import { GoalService } from '@/modules/goal/services/GoalService';
 import { Formatters } from '@/shared/utils/Formatters';
 
-// variables
 const route = useRoute();
 const router = useRouter();
 
-// selectors
 const goalId = computed((): number => Number(route.params.id));
 
-// reactive variables
 const goal = ref<GoalInterface | null>(null);
 const loading = ref<boolean>(false);
 const error = ref<string | null>(null);
@@ -46,13 +42,6 @@ const handleSubmit = async (payload: {
   loading.value = true;
   error.value = null;
 
-  const currentUserId = AuthService.getCurrentUser()?.id;
-  if (!currentUserId) {
-    error.value = 'Not authenticated.';
-    loading.value = false;
-    return;
-  }
-
   try {
     await GoalService.updateGoal(goalId.value, {
       name: payload.name,
@@ -60,9 +49,7 @@ const handleSubmit = async (payload: {
       targetAmount: payload.targetAmount,
       startDate: payload.startDate,
       endDate: payload.endDate,
-      userId: currentUserId,
     });
-
     success.value = true;
   } catch (err) {
     error.value = err instanceof Error ? err.message : 'An unexpected error occurred.';
@@ -77,15 +64,8 @@ const goBack = (): void => {
 
 const loadGoal = async (): Promise<void> => {
   hydrating.value = true;
-  const currentUserId = AuthService.getCurrentUser()?.id;
-  if (!currentUserId) {
-    hydrating.value = false;
-    return;
-  }
-
   try {
-    const goals = await GoalService.getGoalsByUser(currentUserId);
-    goal.value = goals.find((g) => g.id === goalId.value) ?? null;
+    goal.value = await GoalService.getGoalById(goalId.value);
   } catch {
     goal.value = null;
   } finally {

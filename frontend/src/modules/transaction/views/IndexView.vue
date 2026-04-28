@@ -23,14 +23,8 @@ const userCategories = computed(() => CategoryService.getForCurrentUser(true));
 const userGoals = ref<GoalInterface[]>([]);
 
 const loadUserGoals = async (): Promise<void> => {
-  const userId = AuthService.getCurrentUser()?.id;
-  if (!userId) {
-    userGoals.value = [];
-    return;
-  }
-
   try {
-    userGoals.value = await GoalService.getGoalsByUser(userId);
+    userGoals.value = await GoalService.getGoals();
   } catch {
     userGoals.value = [];
   }

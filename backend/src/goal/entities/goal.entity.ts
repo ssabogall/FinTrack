@@ -27,10 +27,10 @@ export class Goal {
   @Column()
   description: string;
 
-  @Column('decimal', { precision: 12, scale: 2 })
+  @Column({ type: 'double' })
   targetAmount: number;
 
-  @Column('decimal', { precision: 12, scale: 2, default: 0 })
+  @Column({ type: 'double', default: 0 })
   currentAmount: number;
 
   @Column({ type: 'datetime' })
