@@ -45,7 +45,9 @@ export class UserController {
 
   @UseGuards(AdminGuard)
   @Post()
-  async create(@Body() createUserDto: CreateUserDto): Promise<Omit<User, 'password'>> {
+  async create(
+    @Body() createUserDto: CreateUserDto,
+  ): Promise<Omit<User, 'password'>> {
     const user = await this.userService.create(createUserDto);
     return this.toSafeUser(user);
   }
@@ -73,7 +75,8 @@ export class UserController {
     if (!requesterId) throw new ForbiddenException('User context not found');
 
     const requester = await this.userService.findOne(requesterId);
-    if (!requester) throw new ForbiddenException('Authenticated user not found');
+    if (!requester)
+      throw new ForbiddenException('Authenticated user not found');
 
     if (requester.role !== 'admin' && requester.id !== resourceUserId) {
       throw new ForbiddenException('You can only access your own user');

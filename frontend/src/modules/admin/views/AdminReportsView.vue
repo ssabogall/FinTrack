@@ -20,9 +20,7 @@ import { ReportUtils } from '@/shared/utils/ReportUtils';
 
 const selectedYear = ref(new Date().getFullYear());
 const selectedMonth = ref(new Date().getMonth() + 1);
-const usersWithStats = ref<
-  (UserInterface & { balance: number; transactionCount: number })[]
->([]);
+const usersWithStats = ref<(UserInterface & { balance: number; transactionCount: number })[]>([]);
 const overview = ref<GlobalOverview>({
   totalIncome: 0,
   totalExpenses: 0,

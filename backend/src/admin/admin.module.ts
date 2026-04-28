@@ -11,7 +11,10 @@ import { AdminController } from './admin.controller';
 import { AdminService } from './admin.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User, Transaction, Category]), UserModule],
+  imports: [
+    TypeOrmModule.forFeature([User, Transaction, Category]),
+    UserModule,
+  ],
   controllers: [AdminController],
   providers: [AdminService, AdminGuard],
 })

@@ -10,9 +10,7 @@ import { AdminService } from '@/modules/admin/services/AdminService';
 import { UserService } from '@/modules/user/services/UserService';
 import { Formatters } from '@/shared/utils/Formatters';
 
-const usersWithStats = ref<
-  (UserInterface & { balance: number; transactionCount: number })[]
->([]);
+const usersWithStats = ref<(UserInterface & { balance: number; transactionCount: number })[]>([]);
 
 const searchQuery = ref('');
 const statusFilter = ref<'all' | 'active' | 'inactive'>('all');

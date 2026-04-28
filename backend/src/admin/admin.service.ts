@@ -63,9 +63,19 @@ export class AdminService {
 
     for (let i = months - 1; i >= 0; i--) {
       const d = new Date(today.getFullYear(), today.getMonth() - i, 1);
-      const label = d.toLocaleDateString('en-US', { month: 'short', year: '2-digit' });
+      const label = d.toLocaleDateString('en-US', {
+        month: 'short',
+        year: '2-digit',
+      });
       const monthStart = new Date(d.getFullYear(), d.getMonth(), 1).getTime();
-      const monthEnd = new Date(d.getFullYear(), d.getMonth() + 1, 0, 23, 59, 59).getTime();
+      const monthEnd = new Date(
+        d.getFullYear(),
+        d.getMonth() + 1,
+        0,
+        23,
+        59,
+        59,
+      ).getTime();
 
       labels.push(label);
       income.push(
@@ -90,16 +100,30 @@ export class AdminService {
   }
 
   async getUserGrowthTrend(months = 7): Promise<UserGrowthPoint> {
-    const users = (await this.userRepository.find()).filter((u) => u.role === 'user');
+    const users = (await this.userRepository.find()).filter(
+      (u) => u.role === 'user',
+    );
     const today = new Date();
     const labels: string[] = [];
     const counts: number[] = [];
 
     for (let i = months - 1; i >= 0; i--) {
       const d = new Date(today.getFullYear(), today.getMonth() - i, 1);
-      const label = d.toLocaleDateString('en-US', { month: 'short', year: '2-digit' });
-      const monthEnd = new Date(d.getFullYear(), d.getMonth() + 1, 0, 23, 59, 59).getTime();
-      const count = users.filter((u) => new Date(u.createdAt).getTime() <= monthEnd).length;
+      const label = d.toLocaleDateString('en-US', {
+        month: 'short',
+        year: '2-digit',
+      });
+      const monthEnd = new Date(
+        d.getFullYear(),
+        d.getMonth() + 1,
+        0,
+        23,
+        59,
+        59,
+      ).getTime();
+      const count = users.filter(
+        (u) => new Date(u.createdAt).getTime() <= monthEnd,
+      ).length;
       labels.push(label);
       counts.push(count);
     }
@@ -116,7 +140,9 @@ export class AdminService {
     return users
       .filter((u) => u.role === 'user')
       .map((user) => {
-        const userTransactions = transactions.filter((t) => t.userId === user.id);
+        const userTransactions = transactions.filter(
+          (t) => t.userId === user.id,
+        );
         const balance = userTransactions.reduce((sum, t) => sum + t.amount, 0);
         const { password: _password, ...safeUser } = user;
         return {
@@ -125,10 +151,16 @@ export class AdminService {
           transactionCount: userTransactions.length,
         };
       })
-      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+      .sort(
+        (a, b) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+      );
   }
 
-  async getTransactionsForMonth(year: number, month: number): Promise<Transaction[]> {
+  async getTransactionsForMonth(
+    year: number,
+    month: number,
+  ): Promise<Transaction[]> {
     this.validateYearMonth(year, month);
     const transactions = await this.transactionRepository.find();
     const monthStart = new Date(year, month - 1, 1).getTime();

@@ -56,11 +56,7 @@ export class GoalService {
     return this.goalRepository.save(goal);
   }
 
-  async update(
-    id: number,
-    userId: number,
-    dto: UpdateGoalDto,
-  ): Promise<Goal> {
+  async update(id: number, userId: number, dto: UpdateGoalDto): Promise<Goal> {
     const goal = await this.findOneByUser(id, userId);
 
     const { startDate, endDate, ...rest } = dto;
@@ -73,7 +69,10 @@ export class GoalService {
       throw new BadRequestException('Target amount must be greater than 0');
     if (merged.endDate <= merged.startDate)
       throw new BadRequestException('End date must be after start date');
-    merged.status = GoalService.computeStatus(merged.currentAmount, merged.targetAmount);
+    merged.status = GoalService.computeStatus(
+      merged.currentAmount,
+      merged.targetAmount,
+    );
 
     return this.goalRepository.save(merged);
   }

@@ -36,9 +36,7 @@ export class TransactionUtils {
   }
 
   public getTotalIncome(): number {
-    return this.transactions
-      .filter((t) => t.amount > 0)
-      .reduce((sum, t) => sum + t.amount, 0);
+    return this.transactions.filter((t) => t.amount > 0).reduce((sum, t) => sum + t.amount, 0);
   }
 
   public getTotalExpenses(): number {
@@ -86,7 +84,9 @@ export class TransactionUtils {
   public getExpensesByCategory(): { name: string; amount: number; color: string }[] {
     const map = new Map<number, { name: string; amount: number; color: string }>();
     const UNCATEGORIZED_ID = -1;
-    const categoriesById = new Map(this.categories.map((category) => [Number(category.id), category]));
+    const categoriesById = new Map(
+      this.categories.map((category) => [Number(category.id), category]),
+    );
 
     for (const tx of this.transactions) {
       const amount = Number(tx.amount);
@@ -94,7 +94,9 @@ export class TransactionUtils {
 
       const rawCategoryId = tx.categoryId;
       const normalizedCategoryId =
-        rawCategoryId === null || rawCategoryId === undefined ? UNCATEGORIZED_ID : Number(rawCategoryId);
+        rawCategoryId === null || rawCategoryId === undefined
+          ? UNCATEGORIZED_ID
+          : Number(rawCategoryId);
       const category = categoriesById.get(normalizedCategoryId);
       const categoryType = category?.type?.toLowerCase();
       const isExpense = amount < 0 || (amount > 0 && categoryType === 'expense');
@@ -130,10 +132,7 @@ export class TransactionUtils {
     const monthIndex = referenceDate.getMonth();
     const current = this.getMonthlyIncomeAndExpenses(year, monthIndex);
     const prevDate = new Date(year, monthIndex - 1, 1);
-    const previous = this.getMonthlyIncomeAndExpenses(
-      prevDate.getFullYear(),
-      prevDate.getMonth(),
-    );
+    const previous = this.getMonthlyIncomeAndExpenses(prevDate.getFullYear(), prevDate.getMonth());
 
     const monthlySavings = current.income - current.expenses;
     const prevMonthlySavings = previous.income - previous.expenses;
@@ -145,10 +144,7 @@ export class TransactionUtils {
       balance,
       balanceChangePct: MathUtils.calculatePercentageChange(balance, prevBalance),
       monthlyIncome: current.income,
-      monthlyIncomeChangePct: MathUtils.calculatePercentageChange(
-        current.income,
-        previous.income,
-      ),
+      monthlyIncomeChangePct: MathUtils.calculatePercentageChange(current.income, previous.income),
       monthlyExpenses: current.expenses,
       monthlyExpensesChangePct: MathUtils.calculatePercentageChange(
         current.expenses,
@@ -162,7 +158,10 @@ export class TransactionUtils {
     };
   }
 
-  public getMonthlyFlow(months = 6, referenceDate: Date = new Date()): {
+  public getMonthlyFlow(
+    months = 6,
+    referenceDate: Date = new Date(),
+  ): {
     labels: string[];
     income: number[];
     expenses: number[];

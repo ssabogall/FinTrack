@@ -32,20 +32,14 @@ export class CategoryService {
     return data;
   }
 
-  public static async update(
-    id: number,
-    dto: UpdateCategoryDTO,
-  ): Promise<CategoryInterface> {
+  public static async update(id: number, dto: UpdateCategoryDTO): Promise<CategoryInterface> {
     const payload = {
       ...dto,
       name: dto.name?.trim(),
       type: dto.type?.trim().toLowerCase(),
       color: dto.color?.trim(),
     };
-    const { data } = await axios.patch<CategoryInterface>(
-      `${this.API_URL}/${id}`,
-      payload,
-    );
+    const { data } = await axios.patch<CategoryInterface>(`${this.API_URL}/${id}`, payload);
     return data;
   }
 

@@ -212,9 +212,7 @@ onMounted(loadData);
         v-for="cat in filteredCategories"
         :key="cat.id"
         :category="cat"
-        :transaction-count="
-          categoryUtils.getTransactionCount(cat.id)
-        "
+        :transaction-count="categoryUtils.getTransactionCount(cat.id)"
         :total-amount="categoryUtils.getTotalAmount(cat.id)"
         @edit="openEdit"
         @delete="handleDelete"

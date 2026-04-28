@@ -17,11 +17,11 @@ import AdminDashboardView from '@/modules/admin/views/AdminDashboardView.vue';
 
 const isAdmin = computed(() => AuthService.isAdmin());
 
-const currentUserId = computed((): number | null => AuthService.getCurrentUser()?.id ?? null);
 const userCategories = ref<CategoryInterface[]>([]);
 const transactions = ref<TransactionInterface[]>([]);
 const transactionUtils = computed(
-  () => new TransactionUtils({ transactions: transactions.value, categories: userCategories.value }),
+  () =>
+    new TransactionUtils({ transactions: transactions.value, categories: userCategories.value }),
 );
 
 const kpis = computed(() => {

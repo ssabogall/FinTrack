@@ -88,7 +88,10 @@ export const TRANSACTION_SEED_DATA: SeedTransaction[] = [
     description: 'Emergency fund transfer m0',
     date: new Date(year, month, 15),
     categoryName: 'Savings',
-    goalRef: { userEmail: 'alex.johnson@fintrack.local', name: 'Emergency fund' },
+    goalRef: {
+      userEmail: 'alex.johnson@fintrack.local',
+      name: 'Emergency fund',
+    },
   },
   {
     userEmail: 'alex.johnson@fintrack.local',
@@ -96,7 +99,10 @@ export const TRANSACTION_SEED_DATA: SeedTransaction[] = [
     description: 'Europe vacation transfer m0',
     date: new Date(year, month, 18),
     categoryName: 'Savings',
-    goalRef: { userEmail: 'alex.johnson@fintrack.local', name: 'Europe Vacation' },
+    goalRef: {
+      userEmail: 'alex.johnson@fintrack.local',
+      name: 'Europe Vacation',
+    },
   },
 
   // Maria Lopez
@@ -188,7 +194,10 @@ export const TRANSACTION_SEED_DATA: SeedTransaction[] = [
     description: 'Investment course transfer m0',
     date: new Date(year, month, 20),
     categoryName: 'Savings',
-    goalRef: { userEmail: 'daniel.kim@fintrack.local', name: 'Investment Course' },
+    goalRef: {
+      userEmail: 'daniel.kim@fintrack.local',
+      name: 'Investment Course',
+    },
   },
 
   // John Doe

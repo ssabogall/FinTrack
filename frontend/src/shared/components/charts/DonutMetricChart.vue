@@ -1,7 +1,7 @@
 <!-- author: Lucas Higuita -->
 <script setup lang="ts">
 // external imports
-import { onMounted, ref, watch } from 'vue';
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import type { Chart } from 'chart.js';
 
 // internal imports
@@ -25,25 +25,47 @@ const props = withDefaults(defineProps<Props>(), {
 const canvasRef = ref<HTMLCanvasElement | null>(null);
 let chartInstance: Chart | null = null;
 
-const buildChart = (): void => {
+const normalizedData = computed(() => {
+  const labels: string[] = [];
+  const values: number[] = [];
+  const colors: string[] = [];
+
+  for (let i = 0; i < props.labels.length; i++) {
+    const value = Number(props.values[i]);
+    if (!Number.isFinite(value) || value <= 0) continue;
+    labels.push(String(props.labels[i] ?? ''));
+    values.push(value);
+    colors.push(props.colors[i] ?? '#94A3B8');
+  }
+
+  return { labels, values, colors };
+});
+
+const hasRenderableData = computed(() => normalizedData.value.labels.length > 0);
+
+const buildChart = async (): Promise<void> => {
+  await nextTick();
   if (!canvasRef.value) return;
   if (chartInstance) chartInstance.destroy();
 
-  if (!props.labels.length || !props.values.length) return;
+  if (!hasRenderableData.value) return;
 
   chartInstance = ChartUtils.buildExpensesByCategoryDoughnut(
     canvasRef.value,
-    props.labels,
-    props.values,
-    props.colors,
+    normalizedData.value.labels,
+    normalizedData.value.values,
+    normalizedData.value.colors,
   );
 };
 
-onMounted(() => buildChart());
+onMounted(async () => buildChart());
+onBeforeUnmount(() => {
+  if (chartInstance) chartInstance.destroy();
+});
 
 watch(
   () => [props.labels, props.values, props.colors],
-  () => buildChart(),
+  async () => buildChart(),
   { deep: true },
 );
 </script>
@@ -55,32 +77,32 @@ watch(
       <p v-if="subtitle" class="text-xs text-slate-500">{{ subtitle }}</p>
     </header>
 
-    <div v-if="!labels.length || !values.length" class="py-10 text-center text-sm text-slate-400">
+    <div v-if="!hasRenderableData" class="py-10 text-center text-sm text-slate-400">
       {{ emptyMessage }}
     </div>
 
     <div v-else class="flex flex-col lg:flex-row items-center gap-6">
       <div class="h-56 w-56">
-        <canvas ref="canvasRef" />
+        <canvas ref="canvasRef" width="320" height="320" />
       </div>
 
       <ul class="w-full lg:w-auto lg:min-w-[260px] lg:max-w-sm space-y-2">
         <li
-          v-for="(label, idx) in labels"
+          v-for="(label, idx) in normalizedData.labels"
           :key="label"
           class="grid grid-cols-[1fr_auto] items-center gap-6 text-sm"
         >
           <div class="flex items-center gap-2">
             <span
               class="w-3 h-3 rounded-full inline-block"
-              :style="{ backgroundColor: colors[idx] }"
+              :style="{ backgroundColor: normalizedData.colors[idx] }"
             />
             <span class="text-slate-600 truncate max-w-[150px] lg:max-w-[220px]">
               {{ label }}
             </span>
           </div>
           <span class="font-medium text-[#0B2C3D] text-right tabular-nums">
-            {{ Formatters.formatCurrency(values[idx] ?? 0) }}
+            {{ Formatters.formatCurrency(normalizedData.values[idx] ?? 0) }}
           </span>
         </li>
       </ul>

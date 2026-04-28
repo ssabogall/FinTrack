@@ -1,10 +1,4 @@
-import {
-  Controller,
-  Get,
-  Query,
-  Req,
-  UseGuards,
-} from '@nestjs/common';
+import { Controller, Get, Query, Req, UseGuards } from '@nestjs/common';
 
 // internal imports
 import { AdminGuard } from '../auth/admin.guard';
@@ -64,7 +58,10 @@ export class AdminController {
     @Query('year') year: string,
     @Query('month') month: string,
   ) {
-    return this.adminService.getTransactionsForMonth(Number(year), Number(month));
+    return this.adminService.getTransactionsForMonth(
+      Number(year),
+      Number(month),
+    );
   }
 
   @Get('category-breakdown')
@@ -73,6 +70,9 @@ export class AdminController {
     @Query('year') year: string,
     @Query('month') month: string,
   ) {
-    return this.adminService.getCategoryBreakdownForMonth(Number(year), Number(month));
+    return this.adminService.getCategoryBreakdownForMonth(
+      Number(year),
+      Number(month),
+    );
   }
 }

@@ -30,10 +30,7 @@ export class TransactionService {
     return data;
   }
 
-  public static async update(
-    id: number,
-    dto: UpdateTransactionDTO,
-  ): Promise<TransactionInterface> {
+  public static async update(id: number, dto: UpdateTransactionDTO): Promise<TransactionInterface> {
     if (dto.description !== undefined && !dto.description.trim()) {
       throw new Error('Description cannot be empty.');
     }
@@ -46,10 +43,7 @@ export class TransactionService {
       description: dto.description?.trim(),
     };
 
-    const { data } = await axios.patch<TransactionInterface>(
-      `${this.API_URL}/${id}`,
-      payload,
-    );
+    const { data } = await axios.patch<TransactionInterface>(`${this.API_URL}/${id}`, payload);
     return data;
   }
 

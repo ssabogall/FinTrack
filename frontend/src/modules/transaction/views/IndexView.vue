@@ -57,7 +57,8 @@ const filterState = ref<TransactionFilterDTO>({
 // computed
 const currentUserId = computed((): number | null => AuthService.getCurrentUser()?.id ?? null);
 const transactionUtils = computed(
-  () => new TransactionUtils({ transactions: transactions.value, categories: userCategories.value }),
+  () =>
+    new TransactionUtils({ transactions: transactions.value, categories: userCategories.value }),
 );
 
 const filteredTransactions = computed((): TransactionInterface[] => {
@@ -143,7 +144,8 @@ const handleFormSubmit = async (payload: {
   formError.value = null;
 
   try {
-    const signedAmount = payload.type === 'income' ? Math.abs(payload.amount) : -Math.abs(payload.amount);
+    const signedAmount =
+      payload.type === 'income' ? Math.abs(payload.amount) : -Math.abs(payload.amount);
 
     if (editingTransaction.value) {
       // Update

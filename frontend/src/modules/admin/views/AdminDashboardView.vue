@@ -24,7 +24,9 @@ const overview = ref<GlobalOverview>({
 const monthlyTrend = ref<MonthlyTrend>({ labels: [], income: [], expenses: [] });
 const userGrowth = ref<UserGrowthTrend>({ labels: [], counts: [] });
 
-const hasData = computed(() => monthlyTrend.value.labels.length > 0 || userGrowth.value.labels.length > 0);
+const hasData = computed(
+  () => monthlyTrend.value.labels.length > 0 || userGrowth.value.labels.length > 0,
+);
 
 onMounted(async () => {
   overview.value = await AdminService.getGlobalOverview();

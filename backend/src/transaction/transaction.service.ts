@@ -36,7 +36,10 @@ export class TransactionService {
     return this.findOwnedTransaction(userId, id);
   }
 
-  async create(userId: number, dto: CreateTransactionDto): Promise<Transaction> {
+  async create(
+    userId: number,
+    dto: CreateTransactionDto,
+  ): Promise<Transaction> {
     if (!dto.description.trim())
       throw new BadRequestException('Description cannot be empty');
     if (dto.amount === 0)
@@ -46,7 +49,10 @@ export class TransactionService {
     if (Number.isNaN(date.getTime()))
       throw new BadRequestException('Invalid transaction date');
 
-    const categoryId = await this.validateCategoryOwnership(userId, dto.categoryId);
+    const categoryId = await this.validateCategoryOwnership(
+      userId,
+      dto.categoryId,
+    );
     const goal = await this.validateGoalOwnership(userId, dto.goalId);
 
     const transaction = this.transactionRepository.create({
@@ -92,7 +98,8 @@ export class TransactionService {
     }
 
     if (dto.amount !== undefined) transaction.amount = dto.amount;
-    if (dto.description !== undefined) transaction.description = dto.description.trim();
+    if (dto.description !== undefined)
+      transaction.description = dto.description.trim();
     if (dto.date !== undefined) {
       const date = new Date(dto.date);
       if (Number.isNaN(date.getTime()))
@@ -105,16 +112,24 @@ export class TransactionService {
     const nextAmountAbs = Math.abs(updated.amount);
 
     if (previousGoalId && previousGoalId !== nextGoalId) {
-      const previousGoal = await this.goalRepository.findOneBy({ id: previousGoalId });
-      if (previousGoal) await this.applyGoalDelta(previousGoal, -previousAmountAbs);
+      const previousGoal = await this.goalRepository.findOneBy({
+        id: previousGoalId,
+      });
+      if (previousGoal)
+        await this.applyGoalDelta(previousGoal, -previousAmountAbs);
     }
 
     if (nextGoalId && previousGoalId !== nextGoalId) {
       const nextGoal = await this.goalRepository.findOneBy({ id: nextGoalId });
       if (nextGoal) await this.applyGoalDelta(nextGoal, nextAmountAbs);
-    } else if (nextGoalId && previousGoalId === nextGoalId && previousAmountAbs !== nextAmountAbs) {
+    } else if (
+      nextGoalId &&
+      previousGoalId === nextGoalId &&
+      previousAmountAbs !== nextAmountAbs
+    ) {
       const sameGoal = await this.goalRepository.findOneBy({ id: nextGoalId });
-      if (sameGoal) await this.applyGoalDelta(sameGoal, nextAmountAbs - previousAmountAbs);
+      if (sameGoal)
+        await this.applyGoalDelta(sameGoal, nextAmountAbs - previousAmountAbs);
     }
 
     return updated;
@@ -150,7 +165,9 @@ export class TransactionService {
   ): Promise<number | null> {
     if (categoryId === undefined || categoryId === null) return null;
 
-    const category = await this.categoryRepository.findOneBy({ id: categoryId });
+    const category = await this.categoryRepository.findOneBy({
+      id: categoryId,
+    });
     if (!category) throw new NotFoundException('Category not found');
     if (category.userId !== userId)
       throw new ForbiddenException('You do not own this category');

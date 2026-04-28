@@ -92,7 +92,9 @@ export class CategoryService {
     if (dto.type !== undefined) {
       const normalizedType = dto.type.trim().toLowerCase();
       if (normalizedType !== 'income' && normalizedType !== 'expense')
-        throw new BadRequestException('Category type must be income or expense');
+        throw new BadRequestException(
+          'Category type must be income or expense',
+        );
       category.type = normalizedType;
     }
 
@@ -101,7 +103,9 @@ export class CategoryService {
 
   async delete(id: number, userId: number): Promise<void> {
     const category = await this.findOneByUser(id, userId);
-    const transactions = await this.transactionRepository.countBy({ categoryId: id });
+    const transactions = await this.transactionRepository.countBy({
+      categoryId: id,
+    });
     if (transactions > 0)
       throw new ConflictException(
         'Cannot delete a category that has associated transactions',
