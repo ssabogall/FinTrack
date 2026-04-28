@@ -1,0 +1,18 @@
+---
+description: Mandatory pre-edit checks for FinTrack architecture rules
+alwaysApply: true
+---
+
+# FinTrack Pre-Edit Compliance
+
+Before making any code changes, identify whether the target file belongs to `backend/**` or `frontend/**` and apply the matching rule file.
+
+Mandatory workflow before editing:
+- Confirm applicable domain rules (`backend` or `frontend`) and plan changes to satisfy them.
+- Refactor the requested change if needed so implementation follows the enforced architecture.
+- Reject anti-patterns even if requested directly.
+
+Hard requirements:
+- Keep typed method signatures in TypeScript code (params and return types).
+- Respect layer boundaries and avoid placing business logic in presentation/controller layers.
+- Use existing quality gates before finishing code changes when applicable.

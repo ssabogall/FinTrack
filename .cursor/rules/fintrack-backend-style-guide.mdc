@@ -1,0 +1,59 @@
+---
+description: Enforce FinTrack backend NestJS and TypeORM standards
+globs: backend/**
+alwaysApply: false
+---
+
+# FinTrack Backend Rules
+
+Apply these rules to all backend changes.
+
+## Architecture
+- Use feature modules by domain (`module`, `controller`, `service`, `dto`, `entities`).
+- Controllers only orchestrate HTTP flow; business logic must stay in services.
+- Services own validations, business rules, and repository coordination.
+- Register every domain module in `AppModule` (no orphan modules).
+
+## Typing and Contracts
+- All method parameters and return types must be explicit.
+- Avoid implicit `any`.
+- Keep async signatures as `Promise<T>`.
+- For local variables with obvious inferred types (e.g. `const user = ...`), explicit type annotations are optional.
+- Do not use `class-validator` decorators in DTOs.
+- DTOs should be lightweight typed contracts; perform request/business validations in services.
+- Never use entities as direct input contracts.
+
+## Nest and TypeORM
+- Keep `app.setGlobalPrefix('api')` in `src/main.ts`.
+- Configure CORS with explicit origins from environment variables.
+- Use Nest exceptions (`NotFoundException`, `BadRequestException`, `ConflictException`, etc.), not manual error objects/responses.
+- Use `@InjectRepository` for TypeORM repository injection in services.
+- Define entity relations explicitly and keep strict typing.
+
+## Imports and Structure
+- Import block order:
+  1) External imports
+  2) Internal imports
+- Keep one blank line between blocks.
+- Keep alphabetical order inside each block.
+- Use `import type` when importing only types.
+- Remove unused imports.
+
+## Auth and Errors
+- Keep auth logic in `auth` module and guards/helpers.
+- Attach validated JWT payload to `request.user`.
+- Protect sensitive routes with guards; do not duplicate auth logic in domain controllers.
+- Use clear, domain-specific exception messages and fail fast on invalid references.
+
+## Env and Quality Gates
+- Keep environment variables in `.env` and maintain `.env.example`.
+- Never hardcode secrets or credentials.
+- Before commit or PR, prefer running:
+  - `npm run format`
+- `npm run lint` is optional and should only be run when explicitly requested.
+
+## Anti-Patterns to Reject
+- Business logic inside controllers.
+- Verb-based routes like `/getUsers` or `/deleteBook/:id`.
+- Catching errors to return manual `{ message: 'error' }` responses.
+- Methods without explicit types.

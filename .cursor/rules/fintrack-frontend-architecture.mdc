@@ -1,0 +1,54 @@
+---
+description: Enforce FinTrack frontend Vue 3 architecture and style
+globs: frontend/**
+alwaysApply: false
+---
+
+# FinTrack Frontend Rules
+
+Apply these rules to all frontend changes.
+
+## Core Architecture
+- Use Vue 3 with `<script setup lang="ts">` only; never use Options API.
+- Keep architecture flow: `View -> Service -> Store -> State`.
+- Views/components must not contain business logic.
+- Components/views must never generate IDs or set `createdAt`/`updatedAt`.
+- Keep typed parameters and return types in functions.
+- For local variables with obvious inferred types, explicit type annotations are optional.
+
+## Components
+- Reusable UI only; not route pages.
+- Follow Single Responsibility Principle.
+- Use PascalCase filenames (e.g., `UserCard.vue`).
+- Type props with `defineProps<T>()`.
+- Type emits with `defineEmits<T>()`.
+- Avoid raw logic in templates; move transformations to computed or typed methods.
+
+## Views and Router
+- Views are SFC `.vue` files named `PascalCaseView.vue`.
+- Each route maps to exactly one View.
+- Routes must use named routes and dot notation for nested names.
+- Keep RESTful paths.
+- Use route `meta` fields for title/auth.
+- Define authentication guards in router config, never inside views.
+
+## Store, Services, DTOs, Interfaces
+- Use Pinia setup stores with typed state and one store per domain.
+- Store actions modify state; avoid direct logic-heavy mutation from components.
+- Store IDs must be camelCase (`useUserStore`).
+- Services must be classes with static methods and one service per domain.
+- Services handle business logic and store interaction.
+- Create methods accept DTO inputs; services generate IDs/timestamps when needed.
+- DTOs represent input data only; avoid `id` and generated fields.
+- Keep one interface per file in `interfaces/` named `PascalCaseInterface`.
+- Use camelCase properties and `Date` type for dates (after parsing API values).
+
+## Imports, Utils, and Errors
+- Import groups:
+  1) External packages
+  2) Internal aliases (`@/`)
+- Keep alphabetical order within each group.
+- Use `@/` alias for `src/`.
+- Utils must be classes with static methods; no loose functions, no side effects.
+- Do not access stores/services from utils.
+- Handle errors in the correct layer and expose user-friendly UI messages.
