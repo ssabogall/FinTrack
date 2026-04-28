@@ -1,249 +1,55 @@
 // author: Lucas Higuita
+// external imports
+import axios from 'axios';
+
 // internal imports
 import type { CreateCategoryDTO } from '@/modules/category/dtos/CreateCategoryDTO';
 import type { UpdateCategoryDTO } from '@/modules/category/dtos/UpdateCategoryDTO';
 import type { CategoryInterface } from '@/modules/category/interfaces/CategoryInterface';
-import { AuthService } from '@/modules/auth/services/AuthService';
-import { useAuthStore } from '@/modules/auth/stores/authstore';
-import { useCategoryStore } from '@/modules/category/stores/categorystore';
-import { useTransactionStore } from '@/modules/transaction/stores/transactionstore';
-import { useUserStore } from '@/modules/user/stores/userstore';
 
 export class CategoryService {
-  public static getAll(): CategoryInterface[] {
-    return useCategoryStore().categories;
+  private static readonly API_BASE_URL =
+    import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
+  private static readonly API_URL = `${this.API_BASE_URL}/api/categories`;
+
+  public static async getAll(): Promise<CategoryInterface[]> {
+    const { data } = await axios.get<CategoryInterface[]>(this.API_URL);
+    return data;
   }
 
-  public static getByUser(userId: number): CategoryInterface[] {
-    return useCategoryStore().categories.filter((c) => c.userId === userId);
+  public static async getById(id: number): Promise<CategoryInterface> {
+    const { data } = await axios.get<CategoryInterface>(`${this.API_URL}/${id}`);
+    return data;
   }
 
-  public static getForCurrentUser(includeAdminGlobal = false): CategoryInterface[] {
-    const currentUser = AuthService.getCurrentUser();
-    if (!currentUser) return [];
-    if (includeAdminGlobal && AuthService.isAdmin()) {
-      return CategoryService.getAll();
-    }
-    return CategoryService.getByUser(currentUser.id);
+  public static async create(dto: CreateCategoryDTO): Promise<CategoryInterface> {
+    const { data } = await axios.post<CategoryInterface>(this.API_URL, {
+      ...dto,
+      name: dto.name.trim(),
+      type: dto.type.trim().toLowerCase(),
+      color: dto.color.trim(),
+    });
+    return data;
   }
 
-  public static getById(id: number): CategoryInterface | undefined {
-    return useCategoryStore().categories.find((c) => c.id === id);
-  }
-
-  public static create(dto: CreateCategoryDTO): void {
-    if (!dto.name.trim()) {
-      throw new Error('Category name cannot be empty.');
-    }
-
-    const currentUser = AuthService.getCurrentUser();
-    if (!currentUser) {
-      throw new Error('You must be logged in to create a category.');
-    }
-
-    const categoryStore = useCategoryStore();
-
-    const normalizedName = CategoryService.normalizeCategoryName(dto.name);
-    const duplicate = categoryStore.categories.find(
-      (c) => c.userId === currentUser.id && c.name.toLowerCase() === normalizedName.toLowerCase(),
+  public static async update(
+    id: number,
+    dto: UpdateCategoryDTO,
+  ): Promise<CategoryInterface> {
+    const payload = {
+      ...dto,
+      name: dto.name?.trim(),
+      type: dto.type?.trim().toLowerCase(),
+      color: dto.color?.trim(),
+    };
+    const { data } = await axios.patch<CategoryInterface>(
+      `${this.API_URL}/${id}`,
+      payload,
     );
-
-    if (duplicate) {
-      throw new Error('A category with this name already exists.');
-    }
-
-    const now = new Date();
-    const id = Date.now();
-
-    const newCategory: CategoryInterface = {
-      id,
-      name: normalizedName,
-      color: dto.color,
-      type: dto.type,
-      createdAt: now,
-      updatedAt: now,
-      userId: currentUser.id,
-      transactionIds: [],
-    };
-
-    categoryStore.categories.push(newCategory);
-
-    CategoryService.syncCategoryIdToUsers(currentUser.id, id, 'add');
+    return data;
   }
 
-  public static update(id: number, dto: UpdateCategoryDTO): void {
-    if (dto.name !== undefined && !dto.name.trim()) {
-      throw new Error('Category name cannot be empty.');
-    }
-
-    const categoryStore = useCategoryStore();
-    const index = categoryStore.categories.findIndex((c) => c.id === id);
-
-    if (index === -1) {
-      throw new Error('Category not found.');
-    }
-
-    const current = categoryStore.categories[index];
-    if (!current) {
-      throw new Error('Category not found.');
-    }
-
-    if (dto.name !== undefined) {
-      const normalizedName = CategoryService.normalizeCategoryName(dto.name);
-      const duplicate = categoryStore.categories.find(
-        (c) =>
-          c.id !== id &&
-          c.userId === current.userId &&
-          c.name.toLowerCase() === normalizedName.toLowerCase(),
-      );
-      if (duplicate) {
-        throw new Error('A category with this name already exists.');
-      }
-    }
-
-    categoryStore.categories[index] = {
-      id: current.id,
-      name: dto.name !== undefined ? CategoryService.normalizeCategoryName(dto.name) : current.name,
-      color: dto.color ?? current.color,
-      type: dto.type ?? current.type,
-      createdAt: current.createdAt,
-      updatedAt: new Date(),
-      userId: current.userId,
-      transactionIds: current.transactionIds,
-    } as CategoryInterface;
-  }
-
-  public static delete(id: number): void {
-    const categoryStore = useCategoryStore();
-    const transactionStore = useTransactionStore();
-    const authStore = useAuthStore();
-
-    const index = categoryStore.categories.findIndex((c) => c.id === id);
-
-    if (index === -1) {
-      throw new Error('Category not found.');
-    }
-
-    const category = categoryStore.categories[index];
-    if (!category) {
-      throw new Error('Category not found.');
-    }
-
-    const hasTransactions = transactionStore.transactions.some((t) => t.categoryId === id);
-
-    if (hasTransactions) {
-      throw new Error('Cannot delete a category that has associated transactions.');
-    }
-
-    categoryStore.categories.splice(index, 1);
-
-    const userId = category.userId;
-    CategoryService.syncCategoryIdToUsers(userId, id, 'remove');
-    if (authStore.currentUser?.id === userId) {
-      const next = (authStore.currentUser.categoryIds ?? []).filter((cid) => cid !== id);
-      authStore.currentUser.categoryIds = next.length > 0 ? next : null;
-    }
-  }
-
-  public static getTransactionCount(categoryId: number, userId: number): number {
-    const transactionStore = useTransactionStore();
-    return transactionStore.transactions.filter(
-      (t) => t.categoryId === categoryId && t.userId === userId,
-    ).length;
-  }
-
-  public static getTotalAmount(categoryId: number, userId: number): number {
-    const transactionStore = useTransactionStore();
-    return transactionStore.transactions
-      .filter((t) => t.categoryId === categoryId && t.userId === userId)
-      .reduce((sum, t) => sum + Math.abs(t.amount), 0);
-  }
-
-  public static getSummary(categories: CategoryInterface[]): {
-    total: number;
-    expense: number;
-    income: number;
-  } {
-    const total = categories.length;
-    const expense = categories.filter((c) => c.type === 'expense').length;
-    const income = categories.filter((c) => c.type === 'income').length;
-
-    return { total, expense, income };
-  }
-
-  public static filter(
-    categories: CategoryInterface[],
-    search: string,
-    type: string,
-  ): CategoryInterface[] {
-    let result = categories;
-
-    if (search) {
-      const q = search.toLowerCase();
-      result = result.filter((c) => c.name.toLowerCase().includes(q));
-    }
-
-    if (type !== 'all') {
-      result = result.filter((c) => c.type === type);
-    }
-
-    return result;
-  }
-
-  public static getExpenseDistribution(userId: number): {
-    name: string;
-    amount: number;
-    color: string;
-  }[] {
-    const transactionStore = useTransactionStore();
-    const categoryStore = useCategoryStore();
-
-    const map = new Map<number, { name: string; amount: number; color: string }>();
-
-    for (const tx of transactionStore.transactions) {
-      if (tx.userId !== userId || tx.amount >= 0 || !tx.categoryId) continue;
-      const cat = categoryStore.categories.find((c) => c.id === tx.categoryId);
-      if (!cat || cat.type !== 'expense') continue;
-
-      const existing = map.get(cat.id);
-      if (existing) {
-        existing.amount += Math.abs(tx.amount);
-      } else {
-        map.set(cat.id, { name: cat.name, amount: Math.abs(tx.amount), color: cat.color });
-      }
-    }
-
-    return Array.from(map.values()).sort((a, b) => b.amount - a.amount);
-  }
-
-  // ---------------------------
-  // Private helpers
-  // ---------------------------
-
-  private static normalizeCategoryName(name: string): string {
-    return name.trim();
-  }
-
-  private static syncCategoryIdToUsers(
-    userId: number,
-    categoryId: number,
-    action: 'add' | 'remove',
-  ): void {
-    const userStore = useUserStore();
-    const userIndex = userStore.users.findIndex((u) => u.id === userId);
-    if (userIndex === -1) return;
-
-    const user = userStore.users[userIndex];
-    if (!user) return;
-
-    const nextCategoryIds =
-      action === 'add'
-        ? [...(user.categoryIds ?? []), categoryId]
-        : (user.categoryIds ?? []).filter((cid) => cid !== categoryId);
-
-    userStore.users[userIndex] = {
-      ...user,
-      categoryIds: nextCategoryIds.length > 0 ? nextCategoryIds : null,
-    };
+  public static async delete(id: number): Promise<void> {
+    await axios.delete(`${this.API_URL}/${id}`);
   }
 }

@@ -8,6 +8,7 @@ import TransactionExpenseChart from '@/modules/transaction/components/Transactio
 import TransactionMovementChart from '@/modules/transaction/components/TransactionMovementChart.vue';
 import UserDashboardKpiCards from '@/modules/dashboard/components/UserDashboardKpiCards.vue';
 import { AuthService } from '@/modules/auth/services/AuthService';
+import type { CategoryInterface } from '@/modules/category/interfaces/CategoryInterface';
 import { CategoryService } from '@/modules/category/services/CategoryService';
 import type { TransactionInterface } from '@/modules/transaction/interfaces/TransactionInterface';
 import { TransactionService } from '@/modules/transaction/services/TransactionService';
@@ -17,7 +18,7 @@ import AdminDashboardView from '@/modules/admin/views/AdminDashboardView.vue';
 const isAdmin = computed(() => AuthService.isAdmin());
 
 const currentUserId = computed((): number | null => AuthService.getCurrentUser()?.id ?? null);
-const userCategories = computed(() => CategoryService.getForCurrentUser(true));
+const userCategories = ref<CategoryInterface[]>([]);
 const transactions = ref<TransactionInterface[]>([]);
 const transactionUtils = computed(
   () => new TransactionUtils({ transactions: transactions.value, categories: userCategories.value }),
@@ -41,6 +42,7 @@ const expensesByCategory = computed(() => {
 
 onMounted(async () => {
   if (AuthService.isAuthenticated()) {
+    userCategories.value = await CategoryService.getAll();
     transactions.value = await TransactionService.getTransactions();
   }
 });
